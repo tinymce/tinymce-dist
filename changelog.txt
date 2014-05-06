@@ -1,3 +1,16 @@
+Version 4.0.4 (2013-08-21)
+	Added new importcss plugin. Lets you auto import classes from CSS files similar to the 3.x behavior.
+	Fixed bug where resize handles would be positioned incorrectly when inline element parent was using position: relative.
+	Fixed bug where IE 8 would throw Unknown runtime error if the editor was placed within a P tag.
+	Fixed bug where removing empty lists wouldn't produce blocks or brs where the old list was in the DOM.
+	Fixed bug where IE 10 wouldn't properly initialize template dialog due to async loading issues.
+	Fixed bug where autosave wouldn't properly display the warning about content not being saved due to isDirty changes.
+	Fixed bug where it wouldn't be possible to type if a touchstart event was bound to the parent document.
+	Fixed bug where code dialog in code plugin wouldn't wouldn't add a proper undo level.
+	Fixed issue where resizing the editor in vertical mode would set the iframe width to a pixel value.
+	Fixed issue with naming of insertdatetime settings. All are now prefixed with the plugin name.
+	Fixed so an initial change event is fired when the user types the first character into the editor.
+	Fixed so swf gets mapped to object element in media plugin. Enables embedding of flash with alternative poster.
 Version 4.0.3 (2013-08-08)
 	Added new code_dialog_width/code_dialog_height options to control code dialog size.
 	Added missing pastetext button that works the same way as the pastetext menu item.
