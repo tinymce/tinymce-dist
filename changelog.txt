@@ -1,3 +1,35 @@
+Version 4.0.1 (2013-06-26)
+	Added new paste_as_text config option to force paste as plaintext mode.
+	Added new pastetext menu item that lets you toggle paste as plain text mode on/off.
+	Added new insertdatetime_element option to insertdatetime plugin. Enables HTML5 time element support.
+	Added new spellchecker_wordchar_pattern option to allow configuration of language specific characters.
+	Added new marker to formats menu displaying the formats used at the current selection/caret location.
+	Fixed bug where the position of the text color picker would be wrong if you switched to fullscreen.
+	Fixed bug where the link plugin would ask to add the mailto: prefix multiple times.
+	Fixed bug where list outdent operation could produce empty list elements on specific selections.
+	Fixed bug where element path wouldn't properly select parent elements on IE.
+	Fixed bug where IE would sometimes throw an exception when extrancting the current selection range.
+	Fixed bug where line feeds wasn't properly rendered in source view on IE.
+	Fixed bug where word count wouldn't be properly rendered on IE 7.
+	Fixed bug where menubuttons/listboxes would have an incorrect height on IE 7.
+	Fixed bug where browser spellchecking was enabled while editing inline on IE 10.
+	Fixed bug where spellchecker wouldn't properly find non English words.
+	Fixed bug where deactivating inline editor instances would force padding-top: 0 on page body.
+	Fixed bug where jQuery would initialize editors multiple times since it didn't check if the editor already existed.
+	Fixed bug where it wasn't possible to paste contents on IE 10 in modern UI mode when paste filtering was enabled.
+	Fixed bug where tabfocus plugin wouldn't work properly on inline editor instances.
+	Fixed bug where fullpage plugin would clear the existing HTML head if contents where inserted into the editor.
+	Fixed bug where deleting all table rows/columns in a table would cause an exception to be thrown on IE.
+	Fixed so color button panels gets toggled on/off when activated/deactivated.
+	Fixed so format menu items that can't be applied to the current selection gets disabled.
+	Fixed so the icon parameter for addButton isn't automatically filled if a button text is provided.
+	Fixed so image size fields gets updated when selecting a new image in the image dialog.
+	Fixed so it doesn't load any language pack if the language option is set to "en".
+	Fixed so ctrl+shift+z works as an alternative redo shortcut to match a common Mac OS X shortcut.
+	Fixed so it's not possible to drag/drop in images in Gecko by default when paste plugin is enabled.
+	Fixed so format menu item texts gets translated using the specified language pack.
+	Fixed so the image dialog title is the same as the insert/edit image button text.
+	Fixed so paste as plain text produces BR:s in PRE block and when forced_root_block is disabled.
 Version 4.0 (2013-06-13)
 	Added new insertdate_dateformat, insertdate_timeformat and insertdate_formats options to insertdatetime.
 	Added new font_formats, fontsize_formats and block_formats options to configure fontselect, fontsizeselect and formatselect.
