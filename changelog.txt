@@ -1,3 +1,20 @@
+Version 4.0.20 (2014-03-18)
+	Fixed so all unit tests can be executed in a headless phantomjs instance for CI testing.
+	Fixed so directionality setting gets applied to the preview dialog as well as the editor body element.
+	Fixed a performance issue with the "is" method in DOMUtils. Patch contributed by Paul Bosselaar.
+	Fixed bug where paste plugin wouldn't paste plain text properly when pasting using browser menus.
+	Fixed bug where focusable SVG elements would throw an error since className isn't a proper string.
+	Fixed bug where the preview plugin didn't properly support the document_base_url setting.
+	Fixed bug where the focusedEditor wouldn't be set to null when that editor was removed.
+	Fixed bug where Gecko would throw an exception when editors where removed.
+	Fixed bug where the FocusManager wouldn't handle selection restoration properly on older IE versions.
+	Fixed bug where the searchreplace plugin would produce an exception on very specific multiple searches.
+	Fixed bug where some events wasn't properly unbound when all editors where removed from page.
+	Fixed bug where tapping links on iOS 7.1 would open the link instead of placing the caret inside.
+	Fixed bug where holding the finger down on iOS 7.1 would open the link/image callout menu.
+	Fixed so the jQuery plugin returns null when getting the the tinymce instance of an element before it's initialized.
+	Fixed so selection normalization gets executed more often to reduce incorrect UI states on Gecko.
+	Fixed so the default action of closing the window on a form submission can be prevented using "preventDefault".
 Version 4.0.19 (2014-03-11)
 	Added support for CSS selector expressions in object_resizing option. Allows you to control what to resize.
 	Added addToTop compatibility to compat3x plugin enables more legacy 3.x plugins to work properly.
