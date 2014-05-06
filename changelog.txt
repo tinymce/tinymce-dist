@@ -1,3 +1,16 @@
+Version 4.0.23 (2014-04-24)
+	Added isSameOrigin method to tinymce.util.URI it handles default protocol port numbers better. Patch contributed by Matt Whelan.
+	Fixed bug where IE 11 would add br elements to the end of the editor body element each time it was shown/hidden.
+	Fixed bug where the autolink plugin would produce an index out of range exception for some very specific HTML.
+	Fixed bug where the charmap plugin wouldn't properly insert non breaking space characters when selected.
+	Fixed bug where pasting from Excel 2011 on Mac didn't produce a proper table when using the paste plugin.
+	Fixed bug where drag/dropping inside a table wouldn't properly end the table cell selection.
+	Fixed bug where drag/dropping images within tables on Safari on Mac wouldn't work properly.
+	Fixed bug where editors couldn't be re-initialized if they where externally destroyed.
+	Fixed bug where inline editors would produce a range index exception when clicking on buttons like bold.
+	Fixed bug where the preview plugin wouldn't properly handle non encoded upper UTF-8 characters.
+	Fixed so document.currentScript is used when detecting the current script location. Patch contributed by Mickael Desgranges.
+	Fixed issue with the paste_webkit_styles option so is disabled by default since it might produce a lot of extra styles.
 Version 4.0.22 (2014-04-16)
 	Added lastLevel to BeforeAddUndo level event so it's easier to block undo level creation based.
 	Fixed so multiple list elements can be indented properly. Patch contributed by Dan Villiom Podlaski Christiansen.
