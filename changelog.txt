@@ -1,3 +1,30 @@
+Version 4.0.6 (2013-09-12)
+	Added new compat3x plugin that makes it possible to load most 3.x plugins. Only available in the development package.
+	Added new skin_url option enables you to load local skins when using the CDN version.
+	Added new theme_url option enables you to load local themes when using the CDN version.
+	Added new importcss_file_filter option to importcss to enable users to specify what files to import from.
+	Added new template_preview_replace_values option to template plugin to add example data for variables.
+	Added image option support for addMenuItem calls. Enables you to provide a custom image for menu items.
+	Fixed bug where editor.insertContent wouldn't set format and selection type on events.
+	Fixed bug where inserting BR elements on IE 8 would thrown an exception when the range is at a empty text node.
+	Fixed bug where outdent of single LI element within another LI would produce an empty list element OL/UL.
+	Fixed bug where the bullist/numlist buttons wouldn't be deselected when deleting all contents.
+	Fixed bug where toggling an empty list item off wouldn't produce a new empty block element.
+	Fixed bug where it wasn't possible to apply lists to mixed text blocks and br lines.
+	Fixed bug where it wasn't possible to paste contents on iOS when the paste plugin was enabled.
+	Fixed bug where it wasn't possible to delete HR elements on Gecko.
+	Fixed bug where scrolling and refocusing using the mouse would place the caret incorrectly on IE.
+	Fixed bug where you needed to hit the empty paragraph to get editor focus in IE 11.
+	Fixed bug where activeEditor wasn't set to the correct editor when opening windows.
+	Fixed bug where dirty state wasn't set to false when undoing to the first undo level.
+	Fixed bug where pasting in inline mode on Safari on Mac wouldn't work properly.
+	Fixed bug where content_css wasn't loaded into the insert template dialog.
+	Fixed bug where setting the contents of the editor to non text contents would produce an incorrect selection range.
+	Fixed so code dialog height gets smaller that the viewport height if it doesn't fit.
+	Fixed so inline editable regions scroll when pressing enter/return.
+	Fixed so inline toolbar gets positioned correctly when inline element is within a scrollable container.
+	Fixed various memory leaks when removing editor instances dynamically.
+	Removed CSS for BR elements in visualblocks due to problems with Chrome and IE.
 Version 4.0.5 (2013-08-27)
 	Added visuals for UL, LI and BR to visualblocks plugin. Patch contributed by Dan Ransom.
 	Added new autosave_restore_when_empty option to autosave plugin. Enabled by default.
