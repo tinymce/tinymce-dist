@@ -1,4 +1,4 @@
-// 4.1.1 (2014-07-08)
+// 4.1.2 (2014-07-15)
 
 /**
  * Compiled inline version. (Library mode)
@@ -1330,9 +1330,6 @@ define("tinymce/Env", [], function() {
  *
  * License: http://www.tinymce.com/license
  * Contributing: http://www.tinymce.com/contributing
- *
- * Some of this logic is based on jQuery code that is released under
- * MIT license that grants us to sublicense it under LGPL.
  */
 
 /**
@@ -1345,7 +1342,6 @@ define("tinymce/Env", [], function() {
  * - Event binding
  *
  * This is not currently implemented:
- * - Offset
  * - Dimension
  * - Ajax
  * - Animation
@@ -1394,7 +1390,7 @@ define("tinymce/dom/DomQuery", [
 		var i;
 
 		if (isString(sourceItem)) {
-			sourceItem = createFragment(sourceItem);
+			sourceItem = createFragment(sourceItem, getElementDocument(targetNodes[0]));
 		} else if (sourceItem.length && !sourceItem.nodeType) {
 			sourceItem = DomQuery.makeArray(sourceItem);
 
@@ -1517,6 +1513,30 @@ define("tinymce/dom/DomQuery", [
 		return obj;
 	}
 
+	function grep(array, callback) {
+		var out = [];
+
+		each(array, function(i, item) {
+			if (callback(item, i)) {
+				out.push(item);
+			}
+		});
+
+		return out;
+	}
+
+	function getElementDocument(element) {
+		if (!element) {
+			return doc;
+		}
+
+		if (element.nodeType == 9) {
+			return element;
+		}
+
+		return element.ownerDocument;
+	}
+
 	DomQuery.fn = DomQuery.prototype = {
 		constructor: DomQuery,
 
@@ -1587,14 +1607,18 @@ define("tinymce/dom/DomQuery", [
 
 				if (match) {
 					if (match[1]) {
-						node = createFragment(selector, context).firstChild;
+						node = createFragment(selector, getElementDocument(context)).firstChild;
 
 						while (node) {
 							push.call(self, node);
 							node = node.nextSibling;
 						}
 					} else {
-						node = doc.getElementById(match[2]);
+						node = getElementDocument(context).getElementById(match[2]);
+
+						if (!node) {
+							return self;
+						}
 
 						if (node.id !== match[2]) {
 							return self.find(selector);
@@ -2317,10 +2341,16 @@ define("tinymce/dom/DomQuery", [
 		 * Filters the current set with the specified selector.
 		 *
 		 * @method filter
-		 * @param {String} selector Selector to filter elements by.
+		 * @param {String/function} selector Selector to filter elements by.
 		 * @return {tinymce.dom.DomQuery} Set with filtered elements.
 		 */
 		filter: function(selector) {
+			if (typeof selector == 'function') {
+				return DomQuery(grep(this.toArray(), function(item, i) {
+					return selector(i, item);
+				}));
+			}
+
 			return DomQuery(DomQuery.filter(selector, this.toArray()));
 		},
 
@@ -2353,6 +2383,40 @@ define("tinymce/dom/DomQuery", [
 			});
 
 			return DomQuery(result);
+		},
+
+		/**
+		 * Returns the offset of the first element in set or sets the top/left css properties of all elements in set.
+		 *
+		 * @method offset
+		 * @param {Object} offset Optional offset object to set on each item.
+		 * @return {Object/tinymce.dom.DomQuery} Returns the first element offset or the current set if you specified an offset.
+		 */
+		offset: function(offset) {
+			var elm, doc, docElm;
+			var x = 0, y = 0, pos;
+
+			if (!offset) {
+				elm = this[0];
+
+				if (elm) {
+					doc = elm.ownerDocument;
+					docElm = doc.documentElement;
+
+					if (elm.getBoundingClientRect) {
+						pos = elm.getBoundingClientRect();
+						x = pos.left + (docElm.scrollLeft || doc.body.scrollLeft) - docElm.clientLeft;
+						y = pos.top + (docElm.scrollTop || doc.body.scrollTop) - docElm.clientTop;
+					}
+				}
+
+				return {
+					left: x,
+					top: y
+				};
+			}
+
+			return this.css(offset);
 		},
 
 		push: push,
@@ -2424,6 +2488,21 @@ define("tinymce/dom/DomQuery", [
 		 * @return {String} New string with removed whitespace.
 		 */
 		trim: trim,
+
+		/**
+		 * Filters out items from the input array by calling the specified function for each item.
+		 * If the function returns false the item will be excluded if it returns true it will be included.
+		 *
+		 * @static
+		 * @method grep
+		 * @param {Array} array Array of items to loop though.
+		 * @param {function} callback Function to call for each item. Include/exclude depends on it's return value.
+		 * @return {Array} New array with values imported and filtered based in input.
+		 * @example
+		 * // Filter out some items, this will return an array with 4 and 5
+		 * var items = DomQuery.grep([1, 2, 3, 4, 5], function(v) {return v > 3;});
+		 */
+		grep: grep,
 
 		// Sizzle
 		find: Sizzle,
@@ -4711,7 +4790,7 @@ define("tinymce/dom/DOMUtils", [
 		getRoot: function() {
 			var self = this;
 
-			return self.get(self.settings.root_element) || self.doc.body;
+			return self.settings.root_element || self.doc.body;
 		},
 
 		/**
@@ -4925,7 +5004,7 @@ define("tinymce/dom/DOMUtils", [
 			var self = this;
 
 			/*eslint new-cap:0 */
-			return Sizzle(selector, self.get(scope) || self.get(self.settings.root_element) || self.doc, []);
+			return Sizzle(selector, self.get(scope) || self.settings.root_element || self.doc, []);
 		},
 
 		/**
@@ -5166,7 +5245,7 @@ define("tinymce/dom/DOMUtils", [
 				name = isIE ? 'styleFloat' : 'cssFloat';
 			}
 
-			return elm[0].style ? elm[0].style[name] : undefined;
+			return elm[0] && elm[0].style ? elm[0].style[name] : undefined;
 		},
 
 		/**
@@ -7408,6 +7487,12 @@ define("tinymce/NodeChange", [
 				lastRng = fakeRng;
 			});
 		}
+
+		// IE has a bug where it fires a selectionchange on right click that has a range at the start of the body
+		// When the contextmenu event fires the selection is located at the right location
+		editor.on('contextmenu', function() {
+			editor.fire('SelectionChange');
+		});
 
 		editor.on('SelectionChange', function() {
 			var startElm = editor.selection.getStart();
@@ -12074,7 +12159,7 @@ define("tinymce/dom/ControlSelection", [
 					editor.on('mouseup', function(e) {
 						var nodeName = e.target.nodeName;
 
-						if (/^(TABLE|IMG|HR)$/.test(nodeName)) {
+						if (!resizeStarted && /^(TABLE|IMG|HR)$/.test(nodeName)) {
 							editor.selection.select(e.target, nodeName == 'TABLE');
 							editor.nodeChanged();
 						}
@@ -23850,44 +23935,41 @@ define("tinymce/ui/MessageBox", [
 			msgBox: function(settings) {
 				var buttons, callback = settings.callback || function() {};
 
+				function createButton(text, status, primary) {
+					return {
+						type: "button",
+						text: text,
+						subtype: primary ? 'primary' : '',
+						onClick: function(e) {
+							e.control.parents()[1].close();
+							callback(status);
+						}
+					};
+				}
+
 				switch (settings.buttons) {
 					case MessageBox.OK_CANCEL:
 						buttons = [
-							{type: "button", text: "Ok", subtype: "primary", onClick: function(e) {
-								e.control.parents()[1].close();
-								callback(true);
-							}},
-
-							{type: "button", text: "Cancel", onClick: function(e) {
-								e.control.parents()[1].close();
-								callback(false);
-							}}
+							createButton('Ok', true, true),
+							createButton('Cancel', false)
 						];
 						break;
 
 					case MessageBox.YES_NO:
-						buttons = [
-							{type: "button", text: "Ok", subtype: "primary", onClick: function(e) {
-								e.control.parents()[1].close();
-								callback(true);
-							}}
-						];
-						break;
-
 					case MessageBox.YES_NO_CANCEL:
 						buttons = [
-							{type: "button", text: "Ok", subtype: "primary", onClick: function(e) {
-								e.control.parents()[1].close();
-							}}
+							createButton('Yes', 1, true),
+							createButton('No', 0)
 						];
+
+						if (settings.buttons == MessageBox.YES_NO_CANCEL) {
+							buttons.push(createButton('Cancel', -1));
+						}
 						break;
 
 					default:
 						buttons = [
-							{type: "button", text: "Ok", subtype: "primary", onClick: function(e) {
-								e.control.parents()[1].close();
-								callback(true);
-							}}
+							createButton('Ok', true, true)
 						];
 						break;
 				}
@@ -26042,6 +26124,10 @@ define("tinymce/Editor", [
 		self.queryValueCommands = {};
 		self.loadedCSS = {};
 
+		if (settings.target) {
+			self.targetElm = settings.target;
+		}
+
 		self.suffix = editorManager.suffix;
 		self.editorManager = editorManager;
 		self.inline = settings.inline;
@@ -26428,8 +26514,9 @@ define("tinymce/Editor", [
 				bodyClass = bodyClass[self.id] || '';
 			}
 
-			self.iframeHTML += '</head><body id="' + bodyId + '" class="mce-content-body ' + bodyClass + '" ' +
-				'onload="window.parent.tinymce.get(\'' + self.id + '\').fire(\'load\');"><br></body></html>';
+			self.iframeHTML += '</head><body id="' + bodyId +
+				'" class="mce-content-body ' + bodyClass +
+				'" data-id="' + self.id + '"><br></body></html>';
 
 			/*eslint no-script-url:0 */
 			var domainRelaxUrl = 'javascript:(function(){' +
@@ -26444,14 +26531,14 @@ define("tinymce/Editor", [
 
 			// Create iframe
 			// TODO: ACC add the appropriate description on this.
-			n = DOM.add(o.iframeContainer, 'iframe', {
+			var ifr = DOM.create('iframe', {
 				id: self.id + "_ifr",
-				src: url || 'javascript:""', // Workaround for HTTPS warning in IE6/7
+				//src: url || 'javascript:""', // Workaround for HTTPS warning in IE6/7
 				frameBorder: '0',
 				allowTransparency: "true",
 				title: self.editorManager.translate(
-					"Rich Text Area. Press ALT-F9 for menu. " +
-					"Press ALT-F10 for toolbar. Press ALT-0 for help"
+						"Rich Text Area. Press ALT-F9 for menu. " +
+						"Press ALT-F10 for toolbar. Press ALT-0 for help"
 				),
 				style: {
 					width: '100%',
@@ -26459,6 +26546,15 @@ define("tinymce/Editor", [
 					display: 'block' // Important for Gecko to render the iframe correctly
 				}
 			});
+
+			ifr.onload = function() {
+				ifr.onload = null;
+				self.fire("load");
+			};
+
+			DOM.setAttrib("src", url || 'javascript:""');
+
+			n = DOM.add(o.iframeContainer, ifr);
 
 			// Try accessing the document this will fail on IE when document.domain is set to the same as location.hostname
 			// Then we have to force domain relaxing using the domainRelaxUrl approach very ugly!!
@@ -26471,12 +26567,14 @@ define("tinymce/Editor", [
 			}
 
 			self.contentAreaContainer = o.iframeContainer;
+			self.iframeElement = ifr;
 
 			if (o.editorContainer) {
 				DOM.get(o.editorContainer).style.display = self.orgDisplay;
+				self.hidden = DOM.isHidden(o.editorContainer);
 			}
 
-			DOM.get(self.id).style.display = 'none';
+			self.getElement().style.display = 'none';
 			DOM.setAttrib(self.id, 'aria-hidden', true);
 
 			if (!url) {
@@ -26494,7 +26592,7 @@ define("tinymce/Editor", [
 		 * @private
 		 */
 		initContentBody: function(skipWrite) {
-			var self = this, settings = self.settings, targetElm = DOM.get(self.id), doc = self.getDoc(), body, contentCssText;
+			var self = this, settings = self.settings, targetElm = self.getElement(), doc = self.getDoc(), body, contentCssText;
 
 			// Restore visibility on target element
 			if (!settings.inline) {
@@ -26567,7 +26665,7 @@ define("tinymce/Editor", [
 				hex_colors: settings.force_hex_style_colors,
 				class_filter: settings.class_filter,
 				update_styles: true,
-				root_element: settings.content_editable ? self.id : null,
+				root_element: self.inline ? self.getBody() : null,
 				collect: settings.content_editable,
 				schema: self.schema,
 				onSetAttrib: function(e) {
@@ -27676,7 +27774,11 @@ define("tinymce/Editor", [
 		 * @return {Element} HTML DOM element for the replaced element.
 		 */
 		getElement: function() {
-			return DOM.get(this.settings.content_element || this.id);
+			if (!this.targetElm) {
+				this.targetElm = DOM.get(this.id);
+			}
+
+			return this.targetElm;
 		},
 
 		/**
@@ -27689,7 +27791,7 @@ define("tinymce/Editor", [
 			var self = this, elm;
 
 			if (!self.contentWindow) {
-				elm = DOM.get(self.id + "_ifr");
+				elm = self.iframeElement;
 
 				if (elm) {
 					self.contentWindow = elm.contentWindow;
@@ -27914,7 +28016,8 @@ define("tinymce/Editor", [
 			}
 
 			self.contentAreaContainer = self.formElement = self.container = self.editorContainer = null;
-			self.settings.content_element = self.bodyElement = self.contentDocument = self.contentWindow = null;
+			self.bodyElement = self.contentDocument = self.contentWindow = null;
+			self.iframeElement = self.targetElm = null;
 
 			if (self.selection) {
 				self.selection = self.selection.win = self.selection.dom = self.selection.dom.doc = null;
@@ -28401,7 +28504,7 @@ define("tinymce/EditorManager", [
 		 * @property minorVersion
 		 * @type String
 		 */
-		minorVersion: '1.1',
+		minorVersion: '1.2',
 
 		/**
 		 * Release date of TinyMCE build.
@@ -28409,7 +28512,7 @@ define("tinymce/EditorManager", [
 		 * @property releaseDate
 		 * @type String
 		 */
-		releaseDate: '2014-07-08',
+		releaseDate: '2014-07-15',
 
 		/**
 		 * Collection of editor instances.
@@ -28569,26 +28672,27 @@ define("tinymce/EditorManager", [
 				return id;
 			}
 
-			function createEditor(id, settings) {
+			function createEditor(id, settings, targetElm) {
 				if (!purgeDestroyedEditor(self.get(id))) {
 					var editor = new Editor(id, settings, self);
+					editor.targetElm = editor.targetElm || targetElm;
 					editors.push(editor);
 					editor.render();
 				}
 			}
 
-			function execCallback(se, n, s) {
-				var f = se[n];
+			function execCallback(name) {
+				var callback = settings[name];
 
-				if (!f) {
+				if (!callback) {
 					return;
 				}
 
-				return f.apply(s || this, Array.prototype.slice.call(arguments, 2));
+				return callback.apply(self, Array.prototype.slice.call(arguments, 2));
 			}
 
-			function hasClass(n, c) {
-				return c.constructor === RegExp ? c.test(n.className) : DOM.hasClass(n, c);
+			function hasClass(elm, className) {
+				return className.constructor === RegExp ? className.test(elm.className) : DOM.hasClass(elm, className);
 			}
 
 			function readyHandler() {
@@ -28596,13 +28700,13 @@ define("tinymce/EditorManager", [
 
 				DOM.unbind(window, 'ready', readyHandler);
 
-				execCallback(settings, 'onpageload');
+				execCallback('onpageload');
 
 				if (settings.types) {
 					// Process type specific selector
 					each(settings.types, function(type) {
 						each(DOM.select(type.selector), function(elm) {
-							createEditor(createId(elm), extend({}, settings, type));
+							createEditor(createId(elm), extend({}, settings, type), elm);
 						});
 					});
 
@@ -28610,10 +28714,12 @@ define("tinymce/EditorManager", [
 				} else if (settings.selector) {
 					// Process global selector
 					each(DOM.select(settings.selector), function(elm) {
-						createEditor(createId(elm), settings);
+						createEditor(createId(elm), settings, elm);
 					});
 
 					return;
+				} else if (settings.target) {
+					createEditor(createId(settings.target), settings);
 				}
 
 				// Fallback to old setting
@@ -28633,7 +28739,7 @@ define("tinymce/EditorManager", [
 											if (e.name === v) {
 												v = 'mce_editor_' + instanceCounter++;
 												DOM.setAttrib(e, 'id', v);
-												createEditor(v, settings);
+												createEditor(v, settings, e);
 											}
 										});
 									});
@@ -28650,7 +28756,7 @@ define("tinymce/EditorManager", [
 							}
 
 							if (!settings.editor_selector || hasClass(elm, settings.editor_selector)) {
-								createEditor(createId(elm), settings);
+								createEditor(createId(elm), settings, elm);
 							}
 						});
 						break;
@@ -28670,7 +28776,7 @@ define("tinymce/EditorManager", [
 
 								// All done
 								if (l == co) {
-									execCallback(settings, 'oninit');
+									execCallback('oninit');
 								}
 							});
 						} else {
@@ -28679,7 +28785,7 @@ define("tinymce/EditorManager", [
 
 						// All done
 						if (l == co) {
-							execCallback(settings, 'oninit');
+							execCallback('oninit');
 						}
 					});
 				}
@@ -28799,7 +28905,11 @@ define("tinymce/EditorManager", [
 				selector = selector.selector || selector;
 
 				each(DOM.select(selector), function(elm) {
-					self.remove(editors[elm.id]);
+					editor = editors[elm.id];
+
+					if (editor) {
+						self.remove(editor);
+					}
 				});
 
 				return;
