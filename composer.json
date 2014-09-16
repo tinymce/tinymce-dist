@@ -29,7 +29,9 @@
 				"tinymce.min.js",
 				"plugins/*/plugin.min.js",
 				"themes/*/theme.min.js",
-				"skins/*"
+				"skins/*/*.min.css",
+				"skins/*/img/*.gif",
+				"skins/*/fonts/*"
 			]
 		}
 	},
