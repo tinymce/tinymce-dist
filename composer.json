@@ -14,7 +14,25 @@
 		"html"
 	],
 	"homepage": "http://www.tinymce.com",
-	"type": "library",
+	"type": "component",
+	"require": {
+		"robloach/component-installer": "*"
+	},
+	"extra": {
+		"component": {
+			"scripts": [
+				"tinymce.js",
+				"plugins/*/plugin.js",
+				"themes/*/theme.js"
+			],
+			"files": [
+				"tinymce.min.js",
+				"plugins/*/plugin.min.js",
+				"themes/*/theme.min.js",
+				"skins/*"
+			]
+		}
+	},
 	"archive": {
 		"exclude": [
 			"readme.md",
