@@ -579,12 +579,12 @@ define("tinymce/pasteplugin/Clipboard", [
 		}
 
 		/**
-		 * Chrome on Andoid doesn't support proper clipboard access so we have no choice but to allow the browser default behavior.
+		 * Chrome on Android doesn't support proper clipboard access so we have no choice but to allow the browser default behavior.
 		 *
 		 * @param {Event} e Paste event object to check if it contains any data.
 		 * @return {Boolean} true/false if the clipboard is empty or not.
 		 */
-		function isBrokenAndoidClipboardEvent(e) {
+		function isBrokenAndroidClipboardEvent(e) {
 			var clipboardData = e.clipboardData;
 
 			return navigator.userAgent.indexOf('Android') != -1 && clipboardData && clipboardData.items && clipboardData.items.length === 0;
@@ -678,7 +678,7 @@ define("tinymce/pasteplugin/Clipboard", [
 
 				keyboardPastePlainTextState = false;
 
-				if (e.isDefaultPrevented() || isBrokenAndoidClipboardEvent(e)) {
+				if (e.isDefaultPrevented() || isBrokenAndroidClipboardEvent(e)) {
 					removePasteBin();
 					return;
 				}
@@ -1032,10 +1032,22 @@ define("tinymce/pasteplugin/WordFilter", [
 					trimListStart(paragraphNode, /^\u00a0+/);
 				}
 
-				var paragraphs = node.getAll('p');
+				// Build a list of all root level elements before we start
+				// altering them in the loop below.
+				var elements = [], child = node.firstChild;
+				while (typeof child !== 'undefined' && child !== null) {
+					elements.push(child);
 
-				for (var i = 0; i < paragraphs.length; i++) {
-					node = paragraphs[i];
+					child = child.walk();
+					if (child !== null) {
+						while (typeof child !== 'undefined' && child.parent !== node) {
+							child = child.walk();
+						}
+					}
+				}
+
+				for (var i = 0; i < elements.length; i++) {
+					node = elements[i];
 
 					if (node.name == 'p' && node.firstChild) {
 						// Find first text node in paragraph
@@ -1066,6 +1078,13 @@ define("tinymce/pasteplugin/WordFilter", [
 							continue;
 						}
 
+						currentListNode = null;
+					} else {
+						// If the root level element isn't a p tag which can be
+						// processed by convertParagraphToLi, it interrupts the
+						// lists, causing a new list to start instead of having
+						// elements from the next list inserted above this tag.
+						prevListNode = currentListNode;
 						currentListNode = null;
 					}
 				}
@@ -1200,8 +1219,11 @@ define("tinymce/pasteplugin/WordFilter", [
 
 				var validElements = settings.paste_word_valid_elements;
 				if (!validElements) {
-					validElements = '-strong/b,-em/i,-span,-p,-ol,-ul,-li,-h1,-h2,-h3,-h4,-h5,-h6,-p/div,' +
-						'-table[width],-tr,-td[colspan|rowspan|width],-th,-thead,-tfoot,-tbody,-a[href|name],sub,sup,strike,br,del';
+					validElements = (
+						'-strong/b,-em/i,-u,-span,-p,-ol,-ul,-li,-h1,-h2,-h3,-h4,-h5,-h6,' +
+						'-p/div,-a[href|name],sub,sup,strike,br,del,table[width],tr,' +
+						'td[colspan|rowspan|width],th[colspan|rowspan|width],thead,tfoot,tbody'
+					);
 				}
 
 				// Setup strict schema
@@ -1309,7 +1331,9 @@ define("tinymce/pasteplugin/WordFilter", [
 				var rootNode = domParser.parse(content);
 
 				// Process DOM
-				convertFakeListsToProperLists(rootNode);
+				if (settings.paste_convert_word_fake_lists !== false) {
+					convertFakeListsToProperLists(rootNode);
+				}
 
 				// Serialize DOM back to HTML
 				e.content = new Serializer({}, schema).serialize(rootNode);
