@@ -15,9 +15,6 @@
 	],
 	"homepage": "http://www.tinymce.com",
 	"type": "component",
-	"require": {
-		"robloach/component-installer": "*"
-	},
 	"extra": {
 		"component": {
 			"scripts": [
