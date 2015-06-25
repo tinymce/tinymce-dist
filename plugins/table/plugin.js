@@ -80,13 +80,50 @@
 		}
 	}
 
+// Included from: js/tinymce/plugins/table/classes/Utils.js
+
+/**
+ * Utils.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
+
+/**
+ * Various utility functions.
+ *
+ * @class tinymce.tableplugin.Utils
+ * @private
+ */
+define("tinymce/tableplugin/Utils", [
+	"tinymce/Env"
+], function(Env) {
+	function getSpanVal(td, name) {
+		return parseInt(td.getAttribute(name) || 1, 10);
+	}
+
+	function paddCell(cell) {
+		if (!Env.ie || Env.ie > 10) {
+			cell.innerHTML = '<br data-mce-bogus="1" />';
+		}
+	}
+
+	return {
+		getSpanVal: getSpanVal,
+		paddCell: paddCell
+	};
+});
+
 // Included from: js/tinymce/plugins/table/classes/TableGrid.js
 
 /**
  * TableGrid.js
  *
- * Copyright, Moxiecode Systems AB
  * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
  *
  * License: http://www.tinymce.com/license
  * Contributing: http://www.tinymce.com/contributing
@@ -102,13 +139,10 @@
  */
 define("tinymce/tableplugin/TableGrid", [
 	"tinymce/util/Tools",
-	"tinymce/Env"
-], function(Tools, Env) {
-	var each = Tools.each;
-
-	function getSpanVal(td, name) {
-		return parseInt(td.getAttribute(name) || 1, 10);
-	}
+	"tinymce/Env",
+	"tinymce/tableplugin/Utils"
+], function(Tools, Env, Utils) {
+	var each = Tools.each, getSpanVal = Utils.getSpanVal;
 
 	return function(editor, table) {
 		var grid, gridWidth, startPos, endPos, selectedCell, selection = editor.selection, dom = selection.dom;
@@ -269,9 +303,7 @@ define("tinymce/tableplugin/TableGrid", [
 			if (formatNode) {
 				cell.appendChild(formatNode);
 			} else {
-				if (!Env.ie || Env.ie > 10) {
-					cell.innerHTML = '<br data-mce-bogus="1" />';
-				}
+				Utils.paddCell(cell);
 			}
 
 			return cell;
@@ -952,8 +984,8 @@ define("tinymce/tableplugin/TableGrid", [
 /**
  * Quirks.js
  *
- * Copyright, Moxiecode Systems AB
  * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
  *
  * License: http://www.tinymce.com/license
  * Contributing: http://www.tinymce.com/contributing
@@ -968,13 +1000,10 @@ define("tinymce/tableplugin/TableGrid", [
 define("tinymce/tableplugin/Quirks", [
 	"tinymce/util/VK",
 	"tinymce/Env",
-	"tinymce/util/Tools"
-], function(VK, Env, Tools) {
-	var each = Tools.each;
-
-	function getSpanVal(td, name) {
-		return parseInt(td.getAttribute(name) || 1, 10);
-	}
+	"tinymce/util/Tools",
+	"tinymce/tableplugin/Utils"
+], function(VK, Env, Tools, Utils) {
+	var each = Tools.each, getSpanVal = Utils.getSpanVal;
 
 	return function(editor) {
 		/**
@@ -1284,20 +1313,47 @@ define("tinymce/tableplugin/Quirks", [
 		 * Delete table if all cells are selected.
 		 */
 		function deleteTable() {
+			function placeCaretInCell(cell) {
+				editor.selection.select(cell, true);
+				editor.selection.collapse(true);
+			}
+
+			function clearCell(cell) {
+				editor.$(cell).empty();
+				Utils.paddCell(cell);
+			}
+
 			editor.on('keydown', function(e) {
 				if ((e.keyCode == VK.DELETE || e.keyCode == VK.BACKSPACE) && !e.isDefaultPrevented()) {
-					var table = editor.dom.getParent(editor.selection.getStart(), 'table');
+					var table, tableCells, selectedTableCells, cell;
 
+					table = editor.dom.getParent(editor.selection.getStart(), 'table');
 					if (table) {
-						var cells = editor.dom.select('td,th', table), i = cells.length;
-						while (i--) {
-							if (!editor.dom.hasClass(cells[i], 'mce-item-selected')) {
-								return;
+						tableCells = editor.dom.select('td,th', table);
+						selectedTableCells = Tools.grep(tableCells, function(cell) {
+							return editor.dom.hasClass(cell, 'mce-item-selected');
+						});
+
+						if (selectedTableCells.length === 0) {
+							// If caret is within an empty table cell then empty it for real
+							cell = editor.dom.getParent(editor.selection.getStart(), 'td,th');
+							if (editor.selection.isCollapsed() && cell && editor.dom.isEmpty(cell)) {
+								e.preventDefault();
+								clearCell(cell);
+								placeCaretInCell(cell);
 							}
+
+							return;
 						}
 
 						e.preventDefault();
-						editor.execCommand('mceTableDelete');
+
+						if (tableCells.length == selectedTableCells.length) {
+							editor.execCommand('mceTableDelete');
+						} else {
+							Tools.each(selectedTableCells, clearCell);
+							placeCaretInCell(selectedTableCells[0]);
+						}
 					}
 				}
 			});
@@ -1327,8 +1383,8 @@ define("tinymce/tableplugin/Quirks", [
 /**
  * CellSelection.js
  *
- * Copyright, Moxiecode Systems AB
  * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
  *
  * License: http://www.tinymce.com/license
  * Contributing: http://www.tinymce.com/contributing
@@ -1506,8 +1562,8 @@ define("tinymce/tableplugin/CellSelection", [
 /**
  * Dialogs.js
  *
- * Copyright, Moxiecode Systems AB
  * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
  *
  * License: http://www.tinymce.com/license
  * Contributing: http://www.tinymce.com/contributing
@@ -2333,8 +2389,8 @@ define("tinymce/tableplugin/Dialogs", [
 /**
  * Plugin.js
  *
- * Copyright, Moxiecode Systems AB
  * Released under LGPL License.
+ * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
  *
  * License: http://www.tinymce.com/license
  * Contributing: http://www.tinymce.com/contributing
