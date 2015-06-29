@@ -835,8 +835,8 @@ define("tinymce/imagetoolsplugin/ImagePanel", [
 			zoom = this.zoom();
 			rect = this.state.get('rect');
 			$img = this.$el.find('img');
-			pw = elm.clientWidth;
-			ph = elm.clientHeight;
+			pw = elm.offsetWidth;
+			ph = elm.offsetHeight;
 			w = $img[0].naturalWidth * zoom;
 			h = $img[0].naturalHeight * zoom;
 			x = Math.max(0, pw / 2 - w / 2);
@@ -865,10 +865,10 @@ define("tinymce/imagetoolsplugin/ImagePanel", [
 				});
 
 				this.cropRect.setViewPortRect({
-					x: x,
-					y: y,
-					w: w,
-					h: h
+					x: 0,
+					y: 0,
+					w: pw,
+					h: ph
 				});
 			}
 		},
@@ -1447,6 +1447,7 @@ define("tinymce/imagetoolsplugin/UndoStack", [
  * ...
  */
 define("tinymce/imagetoolsplugin/Dialog", [
+	"tinymce/dom/DOMUtils",
 	"tinymce/util/Tools",
 	"tinymce/util/Promise",
 	"tinymce/ui/Factory",
@@ -1457,7 +1458,7 @@ define("tinymce/imagetoolsplugin/Dialog", [
 	"tinymce/imagetoolsplugin/Filters",
 	"tinymce/imagetoolsplugin/Conversions",
 	"tinymce/imagetoolsplugin/UndoStack"
-], function(Tools, Promise, Factory, Form, Container, ImagePanel, ImageTools, Filters, Conversions, UndoStack) {
+], function(DOMUtils, Tools, Promise, Factory, Form, Container, ImagePanel, ImageTools, Filters, Conversions, UndoStack) {
 	function createState(blob) {
 		return {
 			blob: blob,
@@ -1640,6 +1641,7 @@ define("tinymce/imagetoolsplugin/Dialog", [
 				pack: 'center',
 				padding: '0 10 0 10',
 				spacing: 5,
+				flex: 0,
 				minHeight: 60,
 				defaults: {
 					classes: 'imagetool',
@@ -1822,9 +1824,7 @@ define("tinymce/imagetoolsplugin/Dialog", [
 
 		imagePanel = new ImagePanel({
 			flex: 1,
-			imageSrc: currentState.url,
-			minWidth: 800,
-			minHeight: 600
+			imageSrc: currentState.url
 		});
 
 		sidePanel = new Container({
@@ -1874,8 +1874,8 @@ define("tinymce/imagetoolsplugin/Dialog", [
 			layout: 'flex',
 			direction: 'column',
 			align: 'stretch',
-			minWidth: 800,
-			minHeight: 600,
+			minWidth: Math.min(DOMUtils.DOM.getViewPort().w, 800),
+			minHeight: Math.min(DOMUtils.DOM.getViewPort().h, 650),
 			title: 'Edit image',
 			items: panels.concat([mainViewContainer]),
 			buttons: [

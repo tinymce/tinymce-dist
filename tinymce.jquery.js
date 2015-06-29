@@ -1,4 +1,4 @@
-// 4.2.0 (2015-06-25)
+// 4.2.1 (2015-06-29)
 
 /**
  * Compiled inline version. (Library mode)
@@ -7048,6 +7048,7 @@ define("tinymce/dom/RangeUtils", [
 		/**
 		 * Walks the specified range like object and executes the callback for each sibling collection it finds.
 		 *
+		 * @private
 		 * @method walk
 		 * @param {Object} rng Range like object.
 		 * @param {function} callback Callback function to execute for each sibling collection.
@@ -12205,8 +12206,8 @@ define("tinymce/dom/ControlSelection", [
 				}
 			}
 
-			// Ignore all events while resizing
-			if (resizeStarted) {
+			// Ignore all events while resizing or if the editor instance was removed
+			if (resizeStarted || editor.removed) {
 				return;
 			}
 
@@ -12383,7 +12384,15 @@ define("tinymce/dom/ControlSelection", [
 				}
 			}
 
-			editor.on('nodechange ResizeEditor ResizeWindow', updateResizeRect);
+			editor.on('nodechange ResizeEditor ResizeWindow', function(e) {
+				if (window.requestAnimationFrame) {
+					window.requestAnimationFrame(function() {
+						updateResizeRect(e);
+					});
+				} else {
+					updateResizeRect(e);
+				}
+			});
 
 			// Update resize rect while typing in a table
 			editor.on('keydown keyup', function(e) {
@@ -27240,6 +27249,7 @@ define("tinymce/EditorObservable", [
 /**
  * Contains all logic for handling of keyboard shortcuts.
  *
+ * @class tinymce.Shortcuts
  * @example
  * editor.shortcuts.add('ctrl+a', function() {});
  * editor.shortcuts.add('meta+a', function() {}); // "meta" maps to Command on Mac and Ctrl on PC
@@ -28068,22 +28078,25 @@ define("tinymce/EditorUpload", [
 	return function(editor) {
 		var blobCache = new BlobCache();
 
-		function regExpEscape(str) {
-			return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-		}
+		// Replaces strings without regexps to avoid FF regexp to big issue
+		function replaceString(content, search, replace) {
+			var index = 0;
 
-		function replaceAttribValue(content, name, targetValue, newValue) {
-			return content.replace(
-				new RegExp(name + '="' + regExpEscape(targetValue) + '"', 'g'),
-				function() {
-					return name + '="' + newValue + '"';
+			do {
+				index = content.indexOf(search, index);
+
+				if (index !== -1) {
+					content = content.substring(0, index) + replace + content.substr(index + search.length);
+					index += replace.length - search.length + 1;
 				}
-			);
+			} while (index !== -1);
+
+			return content;
 		}
 
 		function replaceImageUrl(content, targetUrl, replacementUrl) {
-			content = replaceAttribValue(content, "src", targetUrl, replacementUrl);
-			content = replaceAttribValue(content, "data-mce-src", targetUrl, replacementUrl);
+			content = replaceString(content, 'src="' + targetUrl + '"', 'src="' + replacementUrl + '"');
+			content = replaceString(content, 'data-mce-src="' + targetUrl + '"', 'data-mce-src="' + replacementUrl + '"');
 
 			return content;
 		}
@@ -28155,18 +28168,26 @@ define("tinymce/EditorUpload", [
 			blobCache.destroy();
 		}
 
+		function replaceBlobWithBase64(content) {
+			return content.replace(/src="(blob:[^"]+)"/g, function(match, blobUri) {
+				var blobInfo = blobCache.getByUri(blobUri);
+
+				return 'src="data:' + blobInfo.blob().type + ';base64,' + blobInfo.base64() + '"';
+			});
+		}
+
 		editor.on('setContent paste', scanForImages);
+
+		editor.on('RawSaveContent', function(e) {
+			e.content = replaceBlobWithBase64(e.content);
+		});
 
 		editor.on('getContent', function(e) {
 			if (e.source_view || e.format == 'raw') {
 				return;
 			}
 
-			e.content = e.content.replace(/src="(blob:[^"]+)"/g, function(match, blobUri) {
-				var blobInfo = blobCache.getByUri(blobUri);
-
-				return 'src="data:' + blobInfo.blob().type + ';base64,' + blobInfo.base64() + '"';
-			});
+			e.content = replaceBlobWithBase64(e.content);
 		});
 
 		return {
@@ -29786,6 +29807,11 @@ define("tinymce/Editor", [
 				self.fire('SaveContent', args);
 			}
 
+			// Always run this internal event
+			if (args.format == 'raw') {
+				self.fire('RawSaveContent', args);
+			}
+
 			html = args.content;
 
 			if (!/TEXTAREA|INPUT/i.test(elm.nodeName)) {
@@ -30344,6 +30370,7 @@ define("tinymce/util/I18n", [], function() {
 		/**
 		 * Returns the current language code.
 		 *
+		 * @method getCode
 		 * @return {String} Current language code.
 		 */
 		getCode: function() {
@@ -30805,7 +30832,7 @@ define("tinymce/EditorManager", [
 		 * @property minorVersion
 		 * @type String
 		 */
-		minorVersion: '2.0',
+		minorVersion: '2.1',
 
 		/**
 		 * Release date of TinyMCE build.
@@ -30813,7 +30840,7 @@ define("tinymce/EditorManager", [
 		 * @property releaseDate
 		 * @type String
 		 */
-		releaseDate: '2015-06-25',
+		releaseDate: '2015-06-29',
 
 		/**
 		 * Collection of editor instances.
@@ -33016,6 +33043,10 @@ define("tinymce/ui/ComboBox", [
 
 			self.on('click', function(e) {
 				var elm = e.target, root = self.getEl();
+
+				if (!$.contains(root, elm) && elm != root) {
+					return;
+				}
 
 				while (elm && elm != root) {
 					if (elm.id && elm.id.indexOf('-open') != -1) {
@@ -36785,12 +36816,14 @@ define("tinymce/ui/ListBox", [
 					if (selected) {
 						selectedText = selectedText || menuValues[i].text;
 						self.state.set('value', menuValues[i].value);
-						break;
+						return true;
 					}
 
 					// If the value has a submenu, try to find the selected values in that menu
 					if (menuValues[i].menu) {
-						setSelected(menuValues[i].menu);
+						if (setSelected(menuValues[i].menu)) {
+							return true;
+						}
 					}
 				}
 			}
@@ -36847,7 +36880,9 @@ define("tinymce/ui/ListBox", [
 			function activateMenuItemsByValue(menu, value) {
 				if (menu instanceof Menu) {
 					menu.items().each(function(ctrl) {
-						ctrl.active(ctrl.value() === value);
+						if (!ctrl.hasMenus()) {
+							ctrl.active(ctrl.value() === value);
+						}
 					});
 				}
 			}
@@ -36860,12 +36895,12 @@ define("tinymce/ui/ListBox", [
 				}
 
 				for (var i = 0; i < menuValues.length; i++) {
-					if (menuValues[i].value == value) {
+					if (menuValues[i].value === value) {
 						return menuValues[i];
 					}
 
 					if (menuValues[i].menu) {
-						selectedItem = getSelectedItem(menuValues[i].menu);
+						selectedItem = getSelectedItem(menuValues[i].menu, value);
 						if (selectedItem) {
 							return selectedItem;
 						}
@@ -37155,7 +37190,7 @@ define("tinymce/ui/ResizeHandle", [
 			self.classes.add('resizehandle');
 
 			if (self.settings.direction == "both") {
-				self.addClass('resizehandle-both');
+				self.classes.add('resizehandle-both');
 			}
 
 			self.canFocus = false;
