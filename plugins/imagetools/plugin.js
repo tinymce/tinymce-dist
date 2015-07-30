@@ -1468,7 +1468,7 @@ define("tinymce/imagetoolsplugin/Dialog", [
 
 	function destroyState(state) {
 		if (state) {
-			URL.revokeObjectURL(state.blob);
+			URL.revokeObjectURL(state.url);
 		}
 	}
 
