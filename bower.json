@@ -14,6 +14,7 @@
 	"homepage": "http://www.tinymce.com",
 	"main": "tinymce.min.js",
 	"ignore": [
+		".npmignore",
 		"readme.md",
 		"composer.json",
 		"package.json"
