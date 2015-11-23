@@ -80,7 +80,7 @@
 
 			target[fragments[fragments.length - 1]] = modules[id];
 		}
-		
+
 		// Expose private modules for unit tests
 		if (exports.AMDLC_TESTS) {
 			privateModules = exports.privateModules || {};
@@ -118,6 +118,10 @@
  * @private
  */
 define("tinymce/spellcheckerplugin/DomTextMatcher", [], function() {
+	function isContentEditableFalse(node) {
+		return node && node.nodeType == 1 && node.contentEditable === "false";
+	}
+
 	// Based on work developed by: James Padolsey http://james.padolsey.com
 	// released under UNLICENSE that is compatible with LGPL
 	// TODO: Handle contentEditable edgecase:
@@ -154,6 +158,10 @@ define("tinymce/spellcheckerplugin/DomTextMatcher", [], function() {
 				return '';
 			}
 
+			if (isContentEditableFalse(node)) {
+				return '\n';
+			}
+
 			txt = '';
 
 			if (blockElementsMap[node.nodeName] || shortEndedElementsMap[node.nodeName]) {
@@ -182,7 +190,7 @@ define("tinymce/spellcheckerplugin/DomTextMatcher", [], function() {
 			matchLocation = matches.shift();
 
 			out: while (true) {
-				if (blockElementsMap[curNode.nodeName] || shortEndedElementsMap[curNode.nodeName]) {
+				if (blockElementsMap[curNode.nodeName] || shortEndedElementsMap[curNode.nodeName] || isContentEditableFalse(curNode)) {
 					atIndex++;
 				}
 
@@ -230,9 +238,11 @@ define("tinymce/spellcheckerplugin/DomTextMatcher", [], function() {
 						break; // no more matches
 					}
 				} else if ((!hiddenTextElementsMap[curNode.nodeName] || blockElementsMap[curNode.nodeName]) && curNode.firstChild) {
-					// Move down
-					curNode = curNode.firstChild;
-					continue;
+					if (!isContentEditableFalse(curNode)) {
+						// Move down
+						curNode = curNode.firstChild;
+						continue;
+					}
 				} else if (curNode.nextSibling) {
 					// Move forward:
 					curNode = curNode.nextSibling;
@@ -762,15 +772,19 @@ define("tinymce/spellcheckerplugin/Plugin", [
 					result = JSON.parse(result);
 
 					if (!result) {
-						errorCallback("Sever response wasn't proper JSON.");
+						var message = editor.translate("Server response wasn't proper JSON.");
+						errorCallback(message);
 					} else if (result.error) {
 						errorCallback(result.error);
 					} else {
 						doneCallback(result);
 					}
 				},
-				error: function(type, xhr) {
-					errorCallback("Spellchecker request error: " + xhr.status);
+				error: function() {
+					var message = editor.translate("The spelling service was not found: (") +
+							settings.spellchecker_rpc_url +
+							editor.translate(")");
+					errorCallback(message);
 				}
 			});
 		}
@@ -786,7 +800,7 @@ define("tinymce/spellcheckerplugin/Plugin", [
 			}
 
 			function errorCallback(message) {
-				editor.windowManager.alert(message);
+				editor.notificationManager.open({text: message, type: 'error'});
 				editor.setProgressState(false);
 				finish();
 			}
@@ -810,7 +824,7 @@ define("tinymce/spellcheckerplugin/Plugin", [
 				editor.dom.remove(spans, true);
 				checkIfFinished();
 			}, function(message) {
-				editor.windowManager.alert(message);
+				editor.notificationManager.open({text: message, type: 'error'});
 				editor.setProgressState(false);
 			});
 		}
@@ -941,7 +955,8 @@ define("tinymce/spellcheckerplugin/Plugin", [
 			editor.setProgressState(false);
 
 			if (isEmpty(suggestions)) {
-				editor.windowManager.alert('No misspellings found');
+				var message = editor.translate('No misspellings found.');
+				editor.notificationManager.open({text: message, type: 'info'});
 				started = false;
 				return;
 			}
@@ -1008,4 +1023,4 @@ define("tinymce/spellcheckerplugin/Plugin", [
 });
 
 expose(["tinymce/spellcheckerplugin/DomTextMatcher"]);
-})(this);
+})(window);

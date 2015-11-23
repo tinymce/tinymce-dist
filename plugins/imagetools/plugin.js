@@ -80,7 +80,7 @@
 
 			target[fragments[fragments.length - 1]] = modules[id];
 		}
-		
+
 		// Expose private modules for unit tests
 		if (exports.AMDLC_TESTS) {
 			privateModules = exports.privateModules || {};
@@ -519,7 +519,7 @@ define("tinymce/imagetoolsplugin/ImageTools", [
 define("tinymce/imagetoolsplugin/CropRect", [
 	"tinymce/dom/DomQuery",
 	"tinymce/ui/DragHelper",
-	"tinymce/ui/Rect",
+	"tinymce/geom/Rect",
 	"tinymce/util/Tools",
 	"tinymce/util/Observable"
 ], function($, DragHelper, Rect, Tools, Observable) {
@@ -738,7 +738,7 @@ define("tinymce/imagetoolsplugin/CropRect", [
 define("tinymce/imagetoolsplugin/ImagePanel", [
 	"tinymce/ui/Control",
 	"tinymce/ui/DragHelper",
-	"tinymce/ui/Rect",
+	"tinymce/geom/Rect",
 	"tinymce/util/Tools",
 	"tinymce/util/Promise",
 	"tinymce/imagetoolsplugin/CropRect"
@@ -1962,10 +1962,11 @@ define("tinymce/imagetoolsplugin/Plugin", [
 	"tinymce/util/Promise",
 	"tinymce/util/URI",
 	"tinymce/util/Tools",
+	"tinymce/util/Delay",
 	"tinymce/imagetoolsplugin/ImageTools",
 	"tinymce/imagetoolsplugin/Conversions",
 	"tinymce/imagetoolsplugin/Dialog"
-], function(PluginManager, Env, Promise, URI, Tools, ImageTools, Conversions, Dialog) {
+], function(PluginManager, Env, Promise, URI, Tools, Delay, ImageTools, Conversions, Dialog) {
 	PluginManager.add('imagetools', function(editor) {
 		var count = 0, imageUploadTimer, lastSelectedImage;
 
@@ -2142,9 +2143,9 @@ define("tinymce/imagetoolsplugin/Plugin", [
 		}
 
 		function startTimedUpload() {
-			imageUploadTimer = setTimeout(function() {
-								editor.editorUpload.uploadImagesAuto();
-							}, 30000);
+			imageUploadTimer = Delay.setEditorTimeout(editor, function() {
+				editor.editorUpload.uploadImagesAuto();
+			}, 30000);
 		}
 
 		function cancelTimedUpload() {
@@ -2331,4 +2332,4 @@ define("tinymce/imagetoolsplugin/Plugin", [
 });
 
 expose(["tinymce/imagetoolsplugin/Canvas","tinymce/imagetoolsplugin/Mime","tinymce/imagetoolsplugin/ImageSize","tinymce/imagetoolsplugin/Conversions","tinymce/imagetoolsplugin/ImageTools","tinymce/imagetoolsplugin/CropRect","tinymce/imagetoolsplugin/ImagePanel","tinymce/imagetoolsplugin/ColorMatrix","tinymce/imagetoolsplugin/Filters","tinymce/imagetoolsplugin/UndoStack","tinymce/imagetoolsplugin/Dialog","tinymce/imagetoolsplugin/Plugin"]);
-})(this);
+})(window);
