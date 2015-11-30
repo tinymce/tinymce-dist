@@ -80,7 +80,7 @@
 
 			target[fragments[fragments.length - 1]] = modules[id];
 		}
-
+		
 		// Expose private modules for unit tests
 		if (exports.AMDLC_TESTS) {
 			privateModules = exports.privateModules || {};
@@ -915,7 +915,7 @@ define("tinymce/tableplugin/TableGrid", [
 				endX = Math.max(startPos.x, endPos.x);
 				endY = Math.max(startPos.y, endPos.y);
 
-				// Expand end positon to include spans
+				// Expand end position to include spans
 				maxX = endX;
 				maxY = endY;
 
@@ -2488,8 +2488,7 @@ define("tinymce/tableplugin/ResizeBars", [
 		var percentageBasedSizeRegex = new RegExp(/(\d+(\.\d+)?%)/),
 			pixelBasedSizeRegex = new RegExp(/px|em/);
 
-		var delayDrop, dragging, blockerElement, dragBar, lastX, lastY, hoverTable,
-			objectResizeTarget, objectResizeStartWidth, objectResizeStartHeight;
+		var delayDrop, dragging, blockerElement, dragBar, lastX, lastY, hoverTable;
 
 		// Get the absolute position's top edge.
 		function getTopEdge(index, row) {
@@ -2907,22 +2906,6 @@ define("tinymce/tableplugin/ResizeBars", [
 			return isPercentageBased ? pixelWidth / getComputedStyleSize(table, 'width') * 100 : pixelWidth;
 		}
 
-		// Attempt to get the pixel width of a cell but only if it's a defined static value.
-		function getNonPercentagePixelWidth(element) {
-
-			var widthString = editor.dom.getStyle(element, 'width');
-
-			if (!widthString) {
-				widthString = editor.dom.getAttrib(element, 'width');
-			}
-			if (!widthString) {
-				return false;
-			}
-			var widthNumber = parseInt(widthString, 10);
-			return widthString.indexOf('%', widthString.length - 1) > 0 ?
-				false : widthNumber;
-		}
-
 		function getStyleOrAttrib(element, property) {
 			var sizeString = editor.dom.getStyle(element, property);
 			if (!sizeString) {
@@ -3156,8 +3139,13 @@ define("tinymce/tableplugin/ResizeBars", [
 			}
 
 			function getNewTablePercentWidth() {
-				return index < tableGrid.maxCols - 1 ? getCurrentTablePercentWidth(table) :
+				return index < tableGrid.grid.maxCols - 1 ? getCurrentTablePercentWidth(table) :
 					getCurrentTablePercentWidth(table) + getTablePercentDelta(table, delta);
+			}
+
+			function getNewTablePixelWidth() {
+				return index < tableGrid.grid.maxCols - 1 ? getComputedStyleSize(table, 'width') :
+					getComputedStyleSize(table, 'width') + delta;
 			}
 
 			function setTableSize(newTableWidth, styleExtension, isPercentBased) {
@@ -3175,11 +3163,10 @@ define("tinymce/tableplugin/ResizeBars", [
 			var step = percentageBased ? getCellPercentDelta(table, delta) : delta;
 			// TODO: change the min for percentage maybe?
 			var deltas = determineDeltas(widths, index, step, RESIZE_MINIMUM_WIDTH, percentageBased, table);
-			var newWidths = [], newTotalWidth = 0;
+			var newWidths = [];
 
 			for (var i = 0; i < deltas.length; i++) {
 				newWidths.push(deltas[i] + widths[i]);
-				newTotalWidth += newWidths[i];
 			}
 
 			var newSizes = recalculateWidths(tableGrid, newWidths);
@@ -3187,7 +3174,7 @@ define("tinymce/tableplugin/ResizeBars", [
 			setSizes(newSizes, styleExtension);
 
 			var newTableWidth = percentageBased ? getNewTablePercentWidth() :
-			newTotalWidth;
+                getNewTablePixelWidth();
 
 			setTableSize(newTableWidth, styleExtension, percentageBased);
 
@@ -3356,37 +3343,23 @@ define("tinymce/tableplugin/ResizeBars", [
 			});
 		});
 
-		editor.on('ObjectResizeStart', function(e) {
-			if (e.target.nodeName === 'TABLE') {
-				objectResizeTarget = e.target;
-				objectResizeStartWidth = e.width;
-				objectResizeStartHeight = e.height;
-			}
-		});
-
 		// If we're updating the table width via the old mechanic, we need to update the constituent cells' widths/heights too.
 		editor.on('ObjectResized', function(e) {
-			if (objectResizeTarget === e.target) {
-				var objectResizeEndWidth = e.width,
-					objectResizeEndHeight = e.height,
-					widthRatio = objectResizeEndWidth / objectResizeStartWidth,
-					heightRatio = objectResizeEndHeight / objectResizeStartHeight;
-
-				Tools.each(objectResizeTarget.rows, function(row) {
+			var table = e.target;
+			if (table.nodeName === 'TABLE') {
+				var newCellSizes = [];
+				Tools.each(table.rows, function(row) {
 					Tools.each(row.cells, function(cell) {
-						var width = getNonPercentagePixelWidth(cell);
-						if (width) {
-							width = Math.round(width * widthRatio);
-							editor.dom.setStyle(cell, 'width', width + 'px');
-							editor.dom.setAttrib(cell, 'width', null);
-						}
-						var height = getPixelHeight(cell);
-						if (height) {
-							height = Math.round(height * heightRatio);
-							editor.dom.setStyle(cell, 'height', height + 'px');
-							editor.dom.setAttrib(cell, 'height', null);
-						}
+						var width = editor.dom.getStyle(cell, 'width', true);
+						newCellSizes.push({
+							cell: cell,
+							width: width
+						});
 					});
+				});
+				Tools.each(newCellSizes, function(newCellSize) {
+					editor.dom.setStyle(newCellSize.cell, 'width', newCellSize.width);
+					editor.dom.setAttrib(newCellSize.cell, 'width', null);
 				});
 			}
 		});
@@ -3925,6 +3898,10 @@ define("tinymce/tableplugin/Plugin", [
 		function addToolbars() {
 			var toolbarItems = editor.settings.table_toolbar;
 
+			if (toolbarItems === '' || toolbarItems === false) {
+				return;
+			}
+
 			if (!toolbarItems) {
 				toolbarItems = 'tableprops tabledelete | ' +
 					'tableinsertrowbefore tableinsertrowafter tabledeleterow | ' +
@@ -3971,4 +3948,4 @@ define("tinymce/tableplugin/Plugin", [
 
 	PluginManager.add('table', Plugin);
 });
-})(window);
+})(this);
