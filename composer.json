@@ -1,6 +1,6 @@
 {
 	"name": "tinymce/tinymce",
-	"version": "4.3.3",
+	"version": "4.3.4",
 	"description": "Web based JavaScript HTML WYSIWYG editor control.",
 	"license": [
 		"LGPL-2.1"
@@ -34,7 +34,9 @@
 		"exclude": [
 			"readme.md",
 			"bower.js",
-			"package.json"
+			"package.json",
+			".npmignore",
+			"changelog.txt"
 		]
 	}
 }

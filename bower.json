@@ -14,6 +14,8 @@
 	"ignore": [
 		"readme.md",
 		"composer.json",
-		"package.json"
+		"package.json",
+		".npmignore",
+		"changelog.txt"
 	]
 }
