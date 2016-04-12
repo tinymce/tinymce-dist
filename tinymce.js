@@ -1,4 +1,4 @@
-// 4.3.9 (2016-04-12)
+// 4.3.10 (2016-04-12)
 
 /**
  * Compiled inline version. (Library mode)
@@ -38772,7 +38772,7 @@ define("tinymce/EditorManager", [
 		 * @property minorVersion
 		 * @type String
 		 */
-		minorVersion: '3.9',
+		minorVersion: '3.10',
 
 		/**
 		 * Release date of TinyMCE build.
