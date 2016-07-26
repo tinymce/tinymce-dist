@@ -1,5 +1,5 @@
 window.console && console.log('Use tinymce.js instead of tinymce.jquery.js.');
-// 4.4.0 (2016-06-30)
+// 4.4.1 (2016-07-26)
 
 /**
  * Compiled inline version. (Library mode)
@@ -570,7 +570,7 @@ define("tinymce/util/Delay", [
 
 	function wrappedSetInterval(callback, time) {
 		if (typeof time != 'number') {
-			time = 0;
+			time = 1; // IE 8 needs it to be > 0
 		}
 
 		return setInterval(callback, time);
@@ -10203,8 +10203,9 @@ define("tinymce/dom/RangeUtils", [
 	"tinymce/util/Tools",
 	"tinymce/dom/TreeWalker",
 	"tinymce/dom/NodeType",
+	"tinymce/dom/Range",
 	"tinymce/caret/CaretContainer"
-], function(Tools, TreeWalker, NodeType, CaretContainer) {
+], function(Tools, TreeWalker, NodeType, Range, CaretContainer) {
 	var each = Tools.each,
 		isContentEditableFalse = NodeType.isContentEditableFalse,
 		isCaretContainer = CaretContainer.isCaretContainer;
@@ -15237,6 +15238,19 @@ define("tinymce/dom/ControlSelection", [
 	"tinymce/dom/NodeType"
 ], function(VK, Tools, Delay, Env, NodeType) {
 	var isContentEditableFalse = NodeType.isContentEditableFalse;
+	var isContentEditableTrue = NodeType.isContentEditableTrue;
+
+	function getContentEditableRoot(root, node) {
+		while (node && node != root) {
+			if (isContentEditableTrue(node) || isContentEditableFalse(node)) {
+				return node;
+			}
+
+			node = node.parentNode;
+		}
+
+		return null;
+	}
 
 	return function(selection, editor) {
 		var dom = editor.dom, each = Tools.each;
@@ -15676,10 +15690,14 @@ define("tinymce/dom/ControlSelection", [
 			}
 		}
 
+		function isWithinContentEditableFalse(elm) {
+			return isContentEditableFalse(getContentEditableRoot(editor.getBody(), elm));
+		}
+
 		function nativeControlSelect(e) {
 			var target = e.srcElement;
 
-			if (isContentEditableFalse(target)) {
+			if (isWithinContentEditableFalse(target)) {
 				preventDefault(e);
 				return;
 			}
@@ -15766,10 +15784,10 @@ define("tinymce/dom/ControlSelection", [
 					// Needs to be mousedown for drag/drop to work on IE 11
 					// Needs to be click on Edge to properly select images
 					editor.on('mousedown click', function(e) {
-						var nodeName = e.target.nodeName;
+						var target = e.target, nodeName = target.nodeName;
 
-						if (!resizeStarted && /^(TABLE|IMG|HR)$/.test(nodeName)) {
-							editor.selection.select(e.target, nodeName == 'TABLE');
+						if (!resizeStarted && /^(TABLE|IMG|HR)$/.test(nodeName) && !isWithinContentEditableFalse(target)) {
+							editor.selection.select(target, nodeName == 'TABLE');
 
 							// Only fire once since nodeChange is expensive
 							if (e.type == 'mousedown') {
@@ -15785,7 +15803,7 @@ define("tinymce/dom/ControlSelection", [
 							});
 						}
 
-						if (isContentEditableFalse(e.target)) {
+						if (isWithinContentEditableFalse(e.target)) {
 							e.preventDefault();
 							delayedSelect(e.target);
 							return;
@@ -16265,6 +16283,10 @@ define("tinymce/caret/CaretPosition", [
 		nodeIndex = DOMUtils.nodeIndex,
 		resolveIndex = RangeUtils.getNode;
 
+	function createRange(doc) {
+		return "createRange" in doc ? doc.createRange() : DOMUtils.DOM.createRng();
+	}
+
 	function isWhiteSpace(chr) {
 		return chr && /[\r\n\t ]/.test(chr);
 	}
@@ -16292,7 +16314,7 @@ define("tinymce/caret/CaretPosition", [
 		// support getBoundingClientRect on BR elements
 		function getBrClientRect(brNode) {
 			var doc = brNode.ownerDocument,
-				rng = doc.createRange(),
+				rng = createRange(doc),
 				nbsp = doc.createTextNode('\u00a0'),
 				parentNode = brNode.parentNode,
 				clientRect;
@@ -16346,7 +16368,7 @@ define("tinymce/caret/CaretPosition", [
 		}
 
 		function addCharacterOffset(container, offset) {
-			var range = container.ownerDocument.createRange();
+			var range = createRange(container.ownerDocument);
 
 			if (offset < container.data.length) {
 				if (ExtendingChar.isExtendingChar(container.data[offset])) {
@@ -16455,7 +16477,7 @@ define("tinymce/caret/CaretPosition", [
 		function toRange() {
 			var range;
 
-			range = container.ownerDocument.createRange();
+			range = createRange(container.ownerDocument);
 			range.setStart(container, offset);
 			range.setEnd(container, offset);
 
@@ -23323,8 +23345,8 @@ define("tinymce/InsertContent", [
 		fragment = parser.parse(value, parserArgs);
 
 		// Custom handling of lists
-		if (InsertList.isListFragment(fragment) && InsertList.isParentBlockLi(dom, parentNode)) {
-			rng = InsertList.insertAtCaret(serializer, dom, editor.selection.getRng(), fragment);
+		if (details.paste === true && InsertList.isListFragment(fragment) && InsertList.isParentBlockLi(dom, parentNode)) {
+			rng = InsertList.insertAtCaret(serializer, dom, editor.selection.getRng(true), fragment);
 			editor.selection.setRng(rng);
 			editor.fire('SetContent', args);
 			return;
@@ -24835,7 +24857,7 @@ define("tinymce/util/EventDispatcher", [
 		"focus blur focusin focusout click dblclick mousedown mouseup mousemove mouseover beforepaste paste cut copy selectionchange " +
 		"mouseout mouseenter mouseleave wheel keydown keypress keyup input contextmenu dragstart dragend dragover " +
 		"draggesture dragdrop drop drag submit " +
-		"compositionstart compositionend compositionupdate touchstart touchend",
+		"compositionstart compositionend compositionupdate touchstart touchmove touchend",
 		' '
 	);
 
@@ -33644,7 +33666,7 @@ define("tinymce/EditorObservable", [
 
 		// Need to bind mousedown/mouseup etc to document not body in iframe mode
 		// Since the user might click on the HTML element not the BODY
-		if (!editor.inline && /^mouse|click|contextmenu|drop|dragover|dragend/.test(eventName)) {
+		if (!editor.inline && /^mouse|touch|click|contextmenu|drop|dragover|dragend/.test(eventName)) {
 			return editor.getDoc().documentElement;
 		}
 
@@ -36365,6 +36387,31 @@ define("tinymce/SelectionOverrides", [
 				}
 			});
 
+			function handleTouchSelect(editor) {
+				var moved = false;
+
+				editor.on('touchstart', function () {
+					moved = false;
+				});
+
+				editor.on('touchmove', function () {
+					moved = true;
+				});
+
+				editor.on('touchend', function (e) {
+					var contentEditableRoot	= getContentEditableRoot(e.target);
+
+					if (isContentEditableFalse(contentEditableRoot)) {
+						if (!moved) {
+							e.preventDefault();
+							setContentEditableSelection(selectNode(contentEditableRoot));
+						}
+					} else {
+						clearContentEditableSelection();
+					}
+				});
+			}
+
 			var hasNormalCaretPosition = function (elm) {
 				var caretWalker = new CaretWalker(elm);
 
@@ -36393,6 +36440,8 @@ define("tinymce/SelectionOverrides", [
 
 				return targetBlock && !isInSameBlock(targetBlock, caretBlock) && hasNormalCaretPosition(targetBlock);
 			};
+
+			handleTouchSelect(editor);
 
 			editor.on('mousedown', function(e) {
 				var contentEditableRoot;
@@ -36740,7 +36789,8 @@ define("tinymce/util/Uuid", [
 			return Math.round(Math.random() * 0xFFFFFFFF).toString(36);
 		};
 
-		return 's' + Date.now().toString(36) + rnd() + rnd() + rnd();
+		var now = new Date().getTime();
+		return 's' + now.toString(36) + rnd() + rnd() + rnd();
 	};
 
 	var uuid = function (prefix) {
@@ -39471,7 +39521,7 @@ define("tinymce/EditorManager", [
 		 * @property minorVersion
 		 * @type String
 		 */
-		minorVersion: '4.0',
+		minorVersion: '4.1',
 
 		/**
 		 * Release date of TinyMCE build.
@@ -39479,7 +39529,7 @@ define("tinymce/EditorManager", [
 		 * @property releaseDate
 		 * @type String
 		 */
-		releaseDate: '2016-06-30',
+		releaseDate: '2016-07-26',
 
 		/**
 		 * Collection of editor instances.
@@ -42718,9 +42768,8 @@ define("tinymce/ui/Path", [
  * @extends tinymce.ui.Path
  */
 define("tinymce/ui/ElementPath", [
-	"tinymce/ui/Path",
-	"tinymce/EditorManager"
-], function(Path, EditorManager) {
+	"tinymce/ui/Path"
+], function(Path) {
 	return Path.extend({
 		/**
 		 * Post render method. Called after the control has been rendered to the target.
@@ -42729,7 +42778,7 @@ define("tinymce/ui/ElementPath", [
 		 * @return {tinymce.ui.ElementPath} Current combobox instance.
 		 */
 		postRender: function() {
-			var self = this, editor = EditorManager.activeEditor;
+			var self = this, editor = self.settings.editor;
 
 			function isHidden(elm) {
 				if (elm.nodeType === 1) {
