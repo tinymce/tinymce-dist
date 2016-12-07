@@ -1,4 +1,4 @@
-// 4.5.0 (2016-11-23)
+// 4.5.1 (2016-12-07)
 
 /**
  * Compiled inline version. (Library mode)
@@ -18824,34 +18824,36 @@ define("tinymce/fmt/Preview", [
 
 		item = obj.selector = Tools.trim(item);
 
-		// matching IDs, CLASSes, ATTRIBUTES and PSEUDOs
-		tagName = item.replace(/(?:([#\.]|::?)([\w\-]+)|(\[)([^\]]+)\]?)/g, function($0, $1, $2, $3, $4) {
-			switch ($1) {
-				case '#':
-					obj.attrs.id = $2;
-					break;
+		if (item !== '*') {
+			// matching IDs, CLASSes, ATTRIBUTES and PSEUDOs
+			tagName = item.replace(/(?:([#\.]|::?)([\w\-]+)|(\[)([^\]]+)\]?)/g, function($0, $1, $2, $3, $4) {
+				switch ($1) {
+					case '#':
+						obj.attrs.id = $2;
+						break;
 
-				case '.':
-					obj.classes.push($2);
-					break;
+					case '.':
+						obj.classes.push($2);
+						break;
 
-				case ':':
-					if (Tools.inArray('checked disabled enabled read-only required'.split(' '), $2) !== -1) {
-						obj.attrs[$2] = $2;
-					}
-					break;
-			}
-
-			// atribute matched
-			if ($3 == '[') {
-				var m = $4.match(/([\w\-]+)(?:\=\"([^\"]+))?/);
-				if (m) {
-					obj.attrs[m[1]] = m[2];
+					case ':':
+						if (Tools.inArray('checked disabled enabled read-only required'.split(' '), $2) !== -1) {
+							obj.attrs[$2] = $2;
+						}
+						break;
 				}
-			}
 
-			return '';
-		});
+				// atribute matched
+				if ($3 == '[') {
+					var m = $4.match(/([\w\-]+)(?:\=\"([^\"]+))?/);
+					if (m) {
+						obj.attrs[m[1]] = m[2];
+					}
+				}
+
+				return '';
+			});
+		}
 
 		obj.name = tagName || 'div';
 		return obj;
@@ -37715,6 +37717,7 @@ define("tinymce/SelectionOverrides", [
 				rootClass + ' .mce-offscreen-selection {' +
 					'position: absolute;' +
 					'left: -9999999999px;' +
+					'max-width: 1000000px;' +
 				'}' +
 				rootClass + ' *[contentEditable=false] {' +
 					'cursor: default;' +
@@ -40692,7 +40695,7 @@ define("tinymce/EditorManager", [
 		 * @property minorVersion
 		 * @type String
 		 */
-		minorVersion: '5.0',
+		minorVersion: '5.1',
 
 		/**
 		 * Release date of TinyMCE build.
@@ -40700,7 +40703,7 @@ define("tinymce/EditorManager", [
 		 * @property releaseDate
 		 * @type String
 		 */
-		releaseDate: '2016-11-23',
+		releaseDate: '2016-12-07',
 
 		/**
 		 * Collection of editor instances.
@@ -44065,7 +44068,7 @@ define("tinymce/ui/Path", [
 				html += (
 					(i > 0 ? '<div class="' + prefix + 'divider" aria-hidden="true"> ' + self.settings.delimiter + ' </div>' : '') +
 					'<div role="button" class="' + prefix + 'path-item' + (i == l - 1 ? ' ' + prefix + 'last' : '') + '" data-index="' +
-					i + '" tabindex="-1" id="' + self._id + '-' + i + '" aria-level="' + i + '">' + parts[i].name + '</div>'
+					i + '" tabindex="-1" id="' + self._id + '-' + i + '" aria-level="' + (i + 1) + '">' + parts[i].name + '</div>'
 				);
 			}
 
@@ -44766,8 +44769,8 @@ define("tinymce/ui/FilePicker", [
 			ctrl.focus();
 		});
 
-		ctrl.on('click', function () {
-			if (ctrl.value().length === 0) {
+		ctrl.on('click', function (e) {
+			if (ctrl.value().length === 0 && e.target.nodeName === 'INPUT') {
 				autocomplete('');
 			}
 		});
