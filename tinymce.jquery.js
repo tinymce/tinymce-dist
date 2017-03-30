@@ -1,5 +1,5 @@
 window.console && console.log('Use tinymce.js instead of tinymce.jquery.js.');
-// 4.5.5 (2017-03-07)
+// 4.5.6 (2017-03-30)
 
 /**
  * Compiled inline version. (Library mode)
@@ -18280,7 +18280,7 @@ define("tinymce/dom/Selection", [
 								// need to detect if it's doing the wrong thing and falling back to the
 								// crazy incorrect behavior api call since that seems to be the only way
 								// to get it to work on Safari WebKit as of 2017-02-23
-								if (sel.anchorNode !== rng.startContainer) {
+								if (sel.anchorNode !== rng.startContainer || sel.focusNode !== rng.endContainer) {
 									sel.setBaseAndExtent(node, 0, node, 1);
 								}
 							}
@@ -40985,7 +40985,7 @@ define("tinymce/EditorManager", [
 		 * @property minorVersion
 		 * @type String
 		 */
-		minorVersion: '5.5',
+		minorVersion: '5.6',
 
 		/**
 		 * Release date of TinyMCE build.
@@ -40993,7 +40993,7 @@ define("tinymce/EditorManager", [
 		 * @property releaseDate
 		 * @type String
 		 */
-		releaseDate: '2017-03-07',
+		releaseDate: '2017-03-30',
 
 		/**
 		 * Collection of editor instances.
