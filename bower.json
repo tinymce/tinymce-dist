@@ -12,6 +12,7 @@
 	],
 	"homepage": "http://www.tinymce.com",
 	"ignore": [
+		".npmignore",
 		"readme.md",
 		"composer.json",
 		"package.json",
