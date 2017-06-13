@@ -51755,7 +51755,7 @@ define(
   ],
   function (Fun, Option, Element, Node, DOMUtils) {
     var getSpecifiedFontProp = function (propName, rootElm, elm) {
-      while (elm !== rootElm) {
+      while (elm && elm !== rootElm) {
         if (elm.style[propName]) {
           var foundStyle = elm.style[propName];
           return foundStyle !== '' ? Option.some(foundStyle) : Option.none();
