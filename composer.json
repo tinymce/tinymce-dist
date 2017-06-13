@@ -1,6 +1,6 @@
 {
 	"name": "tinymce/tinymce",
-	"version": "4.6.3",
+	"version": "4.6.4",
 	"description": "Web based JavaScript HTML WYSIWYG editor control.",
 	"license": [
 		"LGPL-2.1"
