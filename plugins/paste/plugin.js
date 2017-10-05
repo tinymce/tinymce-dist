@@ -247,11 +247,16 @@ define("tinymce/pasteplugin/Utils", [
 		};
 	}
 
+	var isMsEdge = function () {
+		return navigator.userAgent.indexOf(' Edge/') !== -1;
+	};
+
 	return {
 		filter: filter,
 		innerText: innerText,
 		trimHtml: trimHtml,
-		createIdGenerator: createIdGenerator
+		createIdGenerator: createIdGenerator,
+		isMsEdge: isMsEdge
 	};
 });
 
@@ -383,10 +388,11 @@ define("tinymce/pasteplugin/Clipboard", [
 	"tinymce/Env",
 	"tinymce/dom/RangeUtils",
 	"tinymce/util/VK",
+	"tinymce/util/Tools",
 	"tinymce/pasteplugin/Utils",
 	"tinymce/pasteplugin/SmartPaste",
 	"tinymce/util/Delay"
-], function(Env, RangeUtils, VK, Utils, SmartPaste, Delay) {
+], function(Env, RangeUtils, VK, Tools, Utils, SmartPaste, Delay) {
 	return function(editor) {
 		var self = this, pasteBinElm, lastRng, keyboardPasteTimeStamp = 0, draggingInternally = false;
 		var pasteBinDefaultContent = '%MCEPASTEBIN%', keyboardPastePlainTextState;
@@ -673,7 +679,10 @@ define("tinymce/pasteplugin/Clipboard", [
 		 * @return {Object} Object with mime types and data for those mime types.
 		 */
 		function getClipboardContent(clipboardEvent) {
-			return getDataTransferItems(clipboardEvent.clipboardData || editor.getDoc().dataTransfer);
+			var content = getDataTransferItems(clipboardEvent.clipboardData || editor.getDoc().dataTransfer);
+
+			// Edge 15 has a broken HTML Clipboard API see https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/11877517/
+			return Utils.isMsEdge() ? Tools.extend(content, {'text/html': ''}) : content;
 		}
 
 		function hasHtmlOrText(content) {

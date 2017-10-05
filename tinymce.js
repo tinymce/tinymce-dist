@@ -1,4 +1,4 @@
-// 4.5.7 (2017-04-25)
+// 4.5.8 (2017-10-05)
 
 /**
  * Compiled inline version. (Library mode)
@@ -34379,7 +34379,7 @@ define("tinymce/util/Quirks", [
 		 * object it's not possible anymore. So we need to hack in a ungly CSS to force the
 		 * body to be at least 150px. If the user clicks the HTML element out side this 150px region
 		 * we simply move the focus into the first paragraph. Not ideal since you loose the
-		 * positioning of the caret but goot enough for most cases.
+		 * positioning of the caret but good enough for most cases.
 		 */
 		function bodyHeight() {
 			if (!editor.inline) {
@@ -34667,11 +34667,11 @@ define("tinymce/util/Quirks", [
 		}
 
 		if (Env.ie >= 11) {
-			bodyHeight();
 			disableBackspaceIntoATable();
 		}
 
 		if (Env.ie) {
+			bodyHeight();
 			selectAll();
 			disableAutoUrlDetect();
 			ieInternalDragAndDrop();
@@ -35469,21 +35469,37 @@ define("tinymce/file/Conversions", [
 	"tinymce/util/Promise"
 ], function(Promise) {
 	function blobUriToBlob(url) {
-		return new Promise(function(resolve) {
-			var xhr = new XMLHttpRequest();
+      return new Promise(function (resolve, reject) {
 
-			xhr.open('GET', url, true);
-			xhr.responseType = 'blob';
+        var rejectWithError = function () {
+          reject("Cannot convert " + url + " to Blob. Resource might not exist or is inaccessible.");
+        };
 
-			xhr.onload = function() {
-				if (this.status == 200) {
-					resolve(this.response);
-				}
-			};
+        try {
+          var xhr = new XMLHttpRequest();
 
-			xhr.send();
-		});
-	}
+          xhr.open('GET', url, true);
+          xhr.responseType = 'blob';
+
+          xhr.onload = function () {
+            if (this.status == 200) {
+              resolve(this.response);
+            } else {
+              // IE11 makes it into onload but responds with status 500
+              rejectWithError();
+            }
+          };
+
+          // Chrome fires an error event instead of the exception
+          // Also there seems to be no way to intercept the message that is logged to the console
+          xhr.onerror = rejectWithError;
+
+          xhr.send();
+        } catch (ex) {
+          rejectWithError();
+        }
+      });
+    }
 
 	function parseDataUri(uri) {
 		var type, matches;
@@ -35593,7 +35609,7 @@ define("tinymce/file/ImageScanner", [
 		function findAll(elm, predicate) {
 			var images, promises;
 
-			function imageToBlobInfo(img, resolve) {
+			function imageToBlobInfo(img, resolve, reject) {
 				var base64, blobInfo;
 
 				if (img.src.indexOf('blob:') === 0) {
@@ -35616,6 +35632,8 @@ define("tinymce/file/ImageScanner", [
 									blobInfo: blobInfo
 								});
 							});
+						}, function (err) {
+							reject(err);
 						});
 					}
 
@@ -35641,6 +35659,8 @@ define("tinymce/file/ImageScanner", [
 							image: img,
 							blobInfo: blobInfo
 						});
+					}, function (err) {
+						reject(err);
 					});
 				}
 			}
@@ -35687,6 +35707,10 @@ define("tinymce/file/ImageScanner", [
 					// We need to wrap it and resolve with the actual image
 					return new Promise(function(resolve) {
 						cachedPromises[img.src].then(function(imageInfo) {
+							if (typeof imageInfo === 'string') { // error apparently
+								return imageInfo;
+							}
+
 							resolve({
 								image: img,
 								blobInfo: imageInfo.blobInfo
@@ -35695,8 +35719,8 @@ define("tinymce/file/ImageScanner", [
 					});
 				}
 
-				newPromise = new Promise(function(resolve) {
-					imageToBlobInfo(img, resolve);
+				newPromise = new Promise(function(resolve, reject) {
+					imageToBlobInfo(img, resolve, reject);
 				}).then(function(result) {
 					delete cachedPromises[result.image.src];
 					return result;
@@ -35953,7 +35977,8 @@ define("tinymce/ErrorReporter", [
 
 	return {
 		pluginLoadError: pluginLoadError,
-		uploadError: uploadError
+		uploadError: uploadError,
+		displayError: displayError
 	};
 });
 
@@ -36113,6 +36138,16 @@ define("tinymce/EditorUpload", [
 			}
 
 			return imageScanner.findAll(editor.getBody(), isValidDataUriImage).then(aliveGuard(function(result) {
+				result = Arr.filter(result, function (resultItem) {
+					// ImageScanner internally converts images that it finds, but it may fail to do so if image source is inaccessible.
+					// In such case resultItem will contain appropriate text error message, instead of image data.
+					if (typeof resultItem === 'string') {
+						ErrorReporter.displayError(editor, resultItem);
+						return false;
+					}
+					return true;
+				});
+
 				Arr.each(result, function(resultItem) {
 					replaceUrlInUndoStack(resultItem.image.src, resultItem.blobInfo.blobUri());
 					resultItem.image.src = resultItem.blobInfo.blobUri();
@@ -36141,7 +36176,7 @@ define("tinymce/EditorUpload", [
 
 				if (!blobInfo) {
 					blobInfo = Arr.reduce(editor.editorManager.editors, function(result, editor) {
-						return result || editor.editorUpload.blobCache.getByUri(blobUri);
+						return result || editor.editorUpload && editor.editorUpload.blobCache.getByUri(blobUri);
 					}, null);
 				}
 
@@ -40993,7 +41028,7 @@ define("tinymce/EditorManager", [
 		 * @property minorVersion
 		 * @type String
 		 */
-		minorVersion: '5.7',
+		minorVersion: '5.8',
 
 		/**
 		 * Release date of TinyMCE build.
@@ -41001,7 +41036,7 @@ define("tinymce/EditorManager", [
 		 * @property releaseDate
 		 * @type String
 		 */
-		releaseDate: '2017-04-25',
+		releaseDate: '2017-10-05',
 
 		/**
 		 * Collection of editor instances.
