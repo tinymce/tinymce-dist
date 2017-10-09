@@ -81,7 +81,7 @@ var defineGlobal = function (id, ref) {
   define(id, [], function () { return ref; });
 };
 /*jsc
-["tinymce.plugins.paste.Plugin","ephox.katamari.api.Cell","tinymce.core.PluginManager","tinymce.plugins.paste.api.Api","tinymce.plugins.paste.api.Commands","tinymce.plugins.paste.core.Clipboard","tinymce.plugins.paste.core.CutCopy","tinymce.plugins.paste.core.DragDrop","tinymce.plugins.paste.core.PrePostProcess","tinymce.plugins.paste.core.Quirks","tinymce.plugins.paste.ui.Buttons","tinymce.plugins.spellchecker.core.DetectProPlugin","global!tinymce.util.Tools.resolve","tinymce.plugins.paste.core.Actions","global!Image","global!navigator","global!window","tinymce.core.Env","tinymce.core.util.Delay","tinymce.core.util.Tools","tinymce.core.util.VK","tinymce.plugins.paste.api.Events","tinymce.plugins.paste.core.InternalHtml","tinymce.plugins.paste.core.Newlines","tinymce.plugins.paste.core.PasteBin","tinymce.plugins.paste.core.ProcessFilters","tinymce.plugins.paste.core.SmartPaste","tinymce.plugins.paste.core.Utils","global!setTimeout","tinymce.core.dom.RangeUtils","tinymce.plugins.paste.api.Settings","tinymce.plugins.paste.core.WordFilter","ephox.katamari.api.Fun","tinymce.core.html.Entities","tinymce.core.html.DomParser","tinymce.core.html.Node","tinymce.core.html.Schema","tinymce.core.html.Serializer","global!Array","global!Error"]
+["tinymce.plugins.paste.Plugin","ephox.katamari.api.Cell","tinymce.core.PluginManager","tinymce.plugins.paste.alien.DetectProPlugin","tinymce.plugins.paste.api.Api","tinymce.plugins.paste.api.Commands","tinymce.plugins.paste.core.Clipboard","tinymce.plugins.paste.core.CutCopy","tinymce.plugins.paste.core.DragDrop","tinymce.plugins.paste.core.PrePostProcess","tinymce.plugins.paste.core.Quirks","tinymce.plugins.paste.ui.Buttons","global!tinymce.util.Tools.resolve","global!window","tinymce.plugins.paste.core.Actions","global!Image","global!navigator","tinymce.core.Env","tinymce.core.util.Delay","tinymce.core.util.Tools","tinymce.core.util.VK","tinymce.plugins.paste.api.Events","tinymce.plugins.paste.api.Settings","tinymce.plugins.paste.core.InternalHtml","tinymce.plugins.paste.core.Newlines","tinymce.plugins.paste.core.PasteBin","tinymce.plugins.paste.core.ProcessFilters","tinymce.plugins.paste.core.SmartPaste","tinymce.plugins.paste.core.Utils","global!setTimeout","tinymce.core.dom.RangeUtils","tinymce.plugins.paste.core.WordFilter","ephox.katamari.api.Fun","tinymce.core.html.Entities","tinymce.core.html.DomParser","tinymce.core.html.Node","tinymce.core.html.Schema","tinymce.core.html.Serializer","global!Array","global!Error"]
 jsc*/
 define(
   'ephox.katamari.api.Cell',
@@ -134,6 +134,43 @@ define(
   ],
   function (resolve) {
     return resolve('tinymce.PluginManager');
+  }
+);
+
+defineGlobal("global!window", window);
+/**
+ * DetectProPlugin.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
+
+define(
+  'tinymce.plugins.paste.alien.DetectProPlugin',
+  [
+    'global!window',
+    'tinymce.core.PluginManager'
+  ],
+  function (window, PluginManager) {
+    var hasProPlugin = function (editor) {
+      // draw back if power version is requested and registered
+      if (/(^|[ ,])powerpaste([, ]|$)/.test(editor.settings.plugins) && PluginManager.get('powerpaste')) {
+        /*eslint no-console:0 */
+        if (typeof window.console !== "undefined" && window.console.log) {
+          window.console.log("PowerPaste is incompatible with Paste plugin! Remove 'paste' from the 'plugins' option.");
+        }
+        return true;
+      } else {
+        return false;
+      }
+    };
+
+    return {
+      hasProPlugin: hasProPlugin
+    };
   }
 );
 
@@ -260,6 +297,10 @@ define(
       return editor.getParam('smart_paste', true);
     };
 
+    var isPasteAsTextEnabled = function (editor) {
+      return editor.getParam('paste_as_text', false);
+    };
+
     var getRetainStyleProps = function (editor) {
       return editor.getParam('paste_retain_style_properties');
     };
@@ -293,6 +334,7 @@ define(
       shouldRemoveWebKitStyles: shouldRemoveWebKitStyles,
       shouldMergeFormats: shouldMergeFormats,
       isSmartPasteEnabled: isSmartPasteEnabled,
+      isPasteAsTextEnabled: isPasteAsTextEnabled,
       getRetainStyleProps: getRetainStyleProps,
       getWordValidElements: getWordValidElements,
       shouldConvertWordFakeLists: shouldConvertWordFakeLists,
@@ -318,8 +360,8 @@ define(
     'tinymce.plugins.paste.api.Settings'
   ],
   function (Events, Settings) {
-    var isUserInformedAboutPlainText = function (editor, userIsInformedState) {
-      return userIsInformedState.get() || Settings.shouldPlainTextInform(editor);
+    var shouldInformUserAboutPlainText = function (editor, userIsInformedState) {
+      return userIsInformedState.get() === false && Settings.shouldPlainTextInform(editor);
     };
 
     var displayNotification = function (editor, message) {
@@ -337,7 +379,7 @@ define(
         clipboard.pasteFormat = "text";
         Events.firePastePlainTextToggle(editor, true);
 
-        if (!isUserInformedAboutPlainText(editor, userIsInformedState)) {
+        if (shouldInformUserAboutPlainText(editor, userIsInformedState)) {
           displayNotification(editor, 'Paste is now in plain text mode. Contents will now be pasted as plain text until you toggle this option off.');
           userIsInformedState.set(true);
         }
@@ -391,7 +433,6 @@ define(
 
 defineGlobal("global!Image", Image);
 defineGlobal("global!navigator", navigator);
-defineGlobal("global!window", window);
 /**
  * ResolveGlobal.js
  *
@@ -1778,6 +1819,7 @@ define(
     'tinymce.core.util.Tools',
     'tinymce.core.util.VK',
     'tinymce.plugins.paste.api.Events',
+    'tinymce.plugins.paste.api.Settings',
     'tinymce.plugins.paste.core.InternalHtml',
     'tinymce.plugins.paste.core.Newlines',
     'tinymce.plugins.paste.core.PasteBin',
@@ -1785,13 +1827,15 @@ define(
     'tinymce.plugins.paste.core.SmartPaste',
     'tinymce.plugins.paste.core.Utils'
   ],
-  function (Image, navigator, window, Env, Delay, Tools, VK, Events, InternalHtml, Newlines, PasteBin, ProcessFilters, SmartPaste, Utils) {
+  function (Image, navigator, window, Env, Delay, Tools, VK, Events, Settings, InternalHtml, Newlines, PasteBin, ProcessFilters, SmartPaste, Utils) {
     return function (editor) {
       var self = this, keyboardPasteTimeStamp = 0;
       var pasteBin = new PasteBin(editor);
       var keyboardPastePlainTextState;
       var mceInternalUrlPrefix = 'data:text/mce-internal,';
       var uniqueId = Utils.createIdGenerator("mceclip");
+
+      self.pasteFormat = Settings.isPasteAsTextEnabled(editor) ? 'text' : 'html';
 
       /**
        * Pastes the specified HTML. This means that the HTML is filtered and then
@@ -2833,45 +2877,6 @@ define(
   }
 );
 /**
- * DetectProPlugin.js
- *
- * Released under LGPL License.
- * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
- *
- * License: http://www.tinymce.com/license
- * Contributing: http://www.tinymce.com/contributing
- */
-
-define(
-  'tinymce.plugins.spellchecker.core.DetectProPlugin',
-  [
-    'global!window',
-    'tinymce.core.PluginManager'
-  ],
-  function (window, PluginManager) {
-    var hasProPlugin = function (editor) {
-      // draw back if power version is requested and registered
-      if (/(^|[ ,])tinymcespellchecker([, ]|$)/.test(editor.settings.plugins) && PluginManager.get('tinymcespellchecker')) {
-        /*eslint no-console:0 */
-        if (typeof window.console !== "undefined" && window.console.log) {
-          window.console.log(
-            "Spell Checker Pro is incompatible with Spell Checker plugin! " +
-            "Remove 'spellchecker' from the 'plugins' option."
-          );
-        }
-        return true;
-      } else {
-        return false;
-      }
-    };
-
-    return {
-      hasProPlugin: hasProPlugin
-    };
-  }
-);
-
-/**
  * Plugin.js
  *
  * Released under LGPL License.
@@ -2886,6 +2891,7 @@ define(
   [
     'ephox.katamari.api.Cell',
     'tinymce.core.PluginManager',
+    'tinymce.plugins.paste.alien.DetectProPlugin',
     'tinymce.plugins.paste.api.Api',
     'tinymce.plugins.paste.api.Commands',
     'tinymce.plugins.paste.core.Clipboard',
@@ -2893,10 +2899,9 @@ define(
     'tinymce.plugins.paste.core.DragDrop',
     'tinymce.plugins.paste.core.PrePostProcess',
     'tinymce.plugins.paste.core.Quirks',
-    'tinymce.plugins.paste.ui.Buttons',
-    'tinymce.plugins.spellchecker.core.DetectProPlugin'
+    'tinymce.plugins.paste.ui.Buttons'
   ],
-  function (Cell, PluginManager, Api, Commands, Clipboard, CutCopy, DragDrop, PrePostProcess, Quirks, Buttons, DetectProPlugin) {
+  function (Cell, PluginManager, DetectProPlugin, Api, Commands, Clipboard, CutCopy, DragDrop, PrePostProcess, Quirks, Buttons) {
     var userIsInformedState = Cell(false);
 
     PluginManager.add('paste', function (editor) {

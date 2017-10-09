@@ -81,7 +81,7 @@ var defineGlobal = function (id, ref) {
   define(id, [], function () { return ref; });
 };
 /*jsc
-["tinymce.plugins.textpattern.Plugin","ephox.katamari.api.Cell","tinymce.core.PluginManager","tinymce.plugins.textpattern.api.Api","tinymce.plugins.textpattern.api.Settings","tinymce.plugins.textpattern.core.Keyboard","global!tinymce.util.Tools.resolve","tinymce.core.util.Delay","tinymce.core.util.VK","tinymce.plugins.textpattern.core.KeyHandler","tinymce.plugins.textpattern.core.Formatter","tinymce.core.dom.TreeWalker","tinymce.core.util.Tools","tinymce.plugins.textpattern.core.Patterns"]
+["tinymce.plugins.textpattern.Plugin","ephox.katamari.api.Cell","tinymce.core.PluginManager","tinymce.plugins.textpattern.api.Api","tinymce.plugins.textpattern.api.Settings","tinymce.plugins.textpattern.core.Keyboard","global!tinymce.util.Tools.resolve","tinymce.core.util.Delay","tinymce.core.util.VK","tinymce.plugins.textpattern.core.KeyHandler","tinymce.plugins.textpattern.core.Formatter","global!document","tinymce.core.dom.TreeWalker","tinymce.core.util.Tools","tinymce.plugins.textpattern.core.Patterns"]
 jsc*/
 define(
   'ephox.katamari.api.Cell',
@@ -190,6 +190,7 @@ define(
     var defaultPatterns = [
       { start: '*', end: '*', format: 'italic' },
       { start: '**', end: '**', format: 'bold' },
+      { start: '***', end: '***', format: ['bold', 'italic'] },
       { start: '#', format: 'h1' },
       { start: '##', format: 'h2' },
       { start: '###', format: 'h3' },
@@ -253,6 +254,7 @@ define(
   }
 );
 
+defineGlobal("global!document", document);
 /**
  * ResolveGlobal.js
  *
@@ -381,82 +383,103 @@ define(
 define(
   'tinymce.plugins.textpattern.core.Formatter',
   [
+    'global!document',
     'tinymce.core.dom.TreeWalker',
     'tinymce.core.util.Tools',
     'tinymce.plugins.textpattern.core.Patterns'
   ],
-  function (TreeWalker, Tools, Patterns) {
-    var splitContainer = function (container, pattern, offset, startOffset, delta) {
+  function (document, TreeWalker, Tools, Patterns) {
+    var splitContainer = function (container, pattern, endOffset, startOffset, space) {
 
       // Split text node and remove start/end from text node
       container = startOffset > 0 ? container.splitText(startOffset) : container;
-      container.splitText(offset - startOffset - delta);
+      container.splitText(endOffset - startOffset + pattern.end.length);
       container.deleteData(0, pattern.start.length);
       container.deleteData(container.data.length - pattern.end.length, pattern.end.length);
 
       return container;
     };
 
-    // Handles inline formats like *abc* and **abc**
-    var applyInlineFormat = function (editor, patterns, space) {
-      var selection, dom, rng, container, offset, startOffset, text, patternRng, pattern, delta, format;
-
-      selection = editor.selection;
-      dom = editor.dom;
-
-      if (!selection.isCollapsed()) {
+    var patternFromRng = function (patterns, rng, space) {
+      if (rng.collapsed === false) {
         return;
       }
 
-      rng = selection.getRng(true);
-      container = rng.startContainer;
-      offset = rng.startOffset;
-      text = container.data;
-      delta = space === true ? 1 : 0;
+      var container = rng.startContainer;
+      var text = container.data;
+      var delta = space === true ? 1 : 0;
 
       if (container.nodeType !== 3) {
         return;
       }
 
       // Find best matching end
-      pattern = Patterns.findEndPattern(patterns, text, offset, delta);
-      if (pattern === undefined) {
+      var endPattern = Patterns.findEndPattern(patterns, text, rng.startOffset, delta);
+      if (endPattern === undefined) {
         return;
       }
 
       // Find start of matched pattern
-      // TODO: Might need to improve this if there is nested formats
-      startOffset = Math.max(0, offset - delta);
-      startOffset = text.lastIndexOf(pattern.start, startOffset - pattern.end.length - 1);
+      var endOffset = text.lastIndexOf(endPattern.end, rng.startOffset - delta);
+      var startOffset = text.lastIndexOf(endPattern.start, endOffset - endPattern.end.length);
+      endOffset = text.indexOf(endPattern.end, startOffset + endPattern.start.length);
 
       if (startOffset === -1) {
         return;
       }
 
       // Setup a range for the matching word
-      patternRng = dom.createRng();
+      var patternRng = document.createRange();
       patternRng.setStart(container, startOffset);
-      patternRng.setEnd(container, offset - delta);
-      pattern = Patterns.findPattern(patterns, patternRng.toString());
+      patternRng.setEnd(container, endOffset + endPattern.end.length);
 
-      if (!pattern || !pattern.end) {
+      var startPattern = Patterns.findPattern(patterns, patternRng.toString());
+
+      if (endPattern === undefined || startPattern !== endPattern || (container.data.length <= endPattern.start.length + endPattern.end.length)) {
         return;
       }
 
-      // If container match doesn't have anything between start/end then do nothing
-      if (container.data.length <= pattern.start.length + pattern.end.length) {
-        return;
-      }
+      return {
+        pattern: endPattern,
+        startOffset: startOffset,
+        endOffset: endOffset
+      };
+    };
 
-      format = editor.formatter.get(pattern.format);
-      if (format && format[0].inline) {
+    var splitAndApply = function (editor, container, found, space) {
+      var formatArray = Tools.isArray(found.pattern.format) ? found.pattern.format : [found.pattern.format];
+      var validFormats = Tools.grep(formatArray, function (formatName) {
+        var format = editor.formatter.get(formatName);
+        return format && format[0].inline;
+      });
+
+      if (validFormats.length !== 0) {
         editor.undoManager.transact(function () {
-          container = splitContainer(container, pattern, offset, startOffset, delta);
-          editor.formatter.apply(pattern.format, {}, container);
+          container = splitContainer(container, found.pattern, found.endOffset, found.startOffset, space);
+          formatArray.forEach(function (format) {
+            editor.formatter.apply(format, {}, container);
+          });
         });
 
         return container;
       }
+    };
+
+    // Handles inline formats like *abc* and **abc**
+    var doApplyInlineFormat = function (editor, patterns, space) {
+      var rng = editor.selection.getRng(true);
+      var foundPattern = patternFromRng(patterns, rng, space);
+
+      if (foundPattern) {
+        return splitAndApply(editor, rng.startContainer, foundPattern, space);
+      }
+    };
+
+    var applyInlineFormatSpace = function (editor, patterns) {
+      return doApplyInlineFormat(editor, patterns, true);
+    };
+    var applyInlineFormatEnter = function (editor, patterns) {
+      return doApplyInlineFormat(editor, patterns, false);
     };
 
     // Handles block formats like ##abc or 1. abc
@@ -521,7 +544,9 @@ define(
     };
 
     return {
-      applyInlineFormat: applyInlineFormat,
+      patternFromRng: patternFromRng,
+      applyInlineFormatSpace: applyInlineFormatSpace,
+      applyInlineFormatEnter: applyInlineFormatEnter,
       applyBlockFormat: applyBlockFormat
     };
   }
@@ -545,9 +570,9 @@ define(
   ],
   function (VK, Formatter) {
     function handleEnter(editor, patterns) {
-      var rng, wrappedTextNode;
+      var wrappedTextNode, rng;
 
-      wrappedTextNode = Formatter.applyInlineFormat(editor, patterns, false);
+      wrappedTextNode = Formatter.applyInlineFormatEnter(editor, patterns);
       if (wrappedTextNode) {
         rng = editor.dom.createRng();
         rng.setStart(wrappedTextNode, wrappedTextNode.data.length);
@@ -561,7 +586,7 @@ define(
     function handleInlineKey(editor, patterns) {
       var wrappedTextNode, lastChar, lastCharNode, rng, dom;
 
-      wrappedTextNode = Formatter.applyInlineFormat(editor, patterns, true);
+      wrappedTextNode = Formatter.applyInlineFormatSpace(editor, patterns);
       if (wrappedTextNode) {
         dom = editor.dom;
         lastChar = wrappedTextNode.data.slice(-1);
@@ -571,11 +596,7 @@ define(
           wrappedTextNode.deleteData(wrappedTextNode.data.length - 1, 1);
           lastCharNode = dom.doc.createTextNode(lastChar);
 
-          if (wrappedTextNode.nextSibling) {
-            dom.insertAfter(lastCharNode, wrappedTextNode.nextSibling);
-          } else {
-            wrappedTextNode.parentNode.appendChild(lastCharNode);
-          }
+          dom.insertAfter(lastCharNode, wrappedTextNode.parentNode);
 
           rng = dom.createRng();
           rng.setStart(lastCharNode, 1);

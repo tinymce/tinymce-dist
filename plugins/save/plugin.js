@@ -81,7 +81,7 @@ var defineGlobal = function (id, ref) {
   define(id, [], function () { return ref; });
 };
 /*jsc
-["tinymce.plugins.save.Plugin","tinymce.core.PluginManager","tinymce.plugins.save.api.Commands","tinymce.plugins.save.ui.Buttons","global!tinymce.util.Tools.resolve","tinymce.plugins.save.core.Actions","tinymce.plugins.save.api.Settings","tinymce.core.dom.DOMUtils","tinymce.core.EditorManager","tinymce.core.util.Tools"]
+["tinymce.plugins.save.Plugin","tinymce.core.PluginManager","tinymce.plugins.save.api.Commands","tinymce.plugins.save.ui.Buttons","global!tinymce.util.Tools.resolve","tinymce.plugins.save.core.Actions","tinymce.plugins.save.api.Settings","tinymce.core.dom.DOMUtils","tinymce.core.util.Tools"]
 jsc*/
 defineGlobal("global!tinymce.util.Tools.resolve", tinymce.util.Tools.resolve);
 /**
@@ -121,26 +121,6 @@ define(
   ],
   function (resolve) {
     return resolve('tinymce.dom.DOMUtils');
-  }
-);
-
-/**
- * ResolveGlobal.js
- *
- * Released under LGPL License.
- * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
- *
- * License: http://www.tinymce.com/license
- * Contributing: http://www.tinymce.com/contributing
- */
-
-define(
-  'tinymce.core.EditorManager',
-  [
-    'global!tinymce.util.Tools.resolve'
-  ],
-  function (resolve) {
-    return resolve('tinymce.EditorManager');
   }
 );
 
@@ -212,11 +192,10 @@ define(
   'tinymce.plugins.save.core.Actions',
   [
     'tinymce.core.dom.DOMUtils',
-    'tinymce.core.EditorManager',
     'tinymce.core.util.Tools',
     'tinymce.plugins.save.api.Settings'
   ],
-  function (DOMUtils, EditorManager, Tools, Settings) {
+  function (DOMUtils, Tools, Settings) {
     var displayErrorMessage = function (editor, message) {
       editor.notificationManager.open({
         text: editor.translate(message),
@@ -233,8 +212,7 @@ define(
         return;
       }
 
-      // TODO: This should only save the specific editor not all editors
-      EditorManager.triggerSave();
+      editor.save();
 
       // Use callback instead
       if (Settings.hasOnSaveCallback(editor)) {

@@ -81,7 +81,7 @@ var defineGlobal = function (id, ref) {
   define(id, [], function () { return ref; });
 };
 /*jsc
-["tinymce.themes.modern.Theme","global!window","tinymce.core.ThemeManager","tinymce.themes.modern.api.ThemeApi","tinymce.ui.Api","tinymce.ui.FormatControls","global!tinymce.util.Tools.resolve","tinymce.themes.modern.ui.Render","tinymce.themes.modern.ui.Resize","tinymce.ui.NotificationManagerImpl","tinymce.ui.WindowManagerImpl","tinymce.core.ui.Factory","tinymce.core.util.Tools","tinymce.ui.AbsoluteLayout","tinymce.ui.BrowseButton","tinymce.ui.Button","tinymce.ui.ButtonGroup","tinymce.ui.Checkbox","tinymce.ui.Collection","tinymce.ui.ColorBox","tinymce.ui.ColorButton","tinymce.ui.ColorPicker","tinymce.ui.ComboBox","tinymce.ui.Container","tinymce.ui.Control","tinymce.ui.DragHelper","tinymce.ui.DropZone","tinymce.ui.ElementPath","tinymce.ui.FieldSet","tinymce.ui.FilePicker","tinymce.ui.FitLayout","tinymce.ui.FlexLayout","tinymce.ui.FloatPanel","tinymce.ui.FlowLayout","tinymce.ui.Form","ephox.katamari.api.Arr","ephox.katamari.api.Fun","ephox.sugar.api.node.Element","ephox.sugar.api.search.SelectorFind","global!document","tinymce.core.dom.DOMUtils","tinymce.core.EditorManager","tinymce.core.Env","tinymce.ui.editorui.Align","tinymce.ui.editorui.FormatSelect","tinymce.ui.editorui.SimpleFormats","tinymce.ui.fmt.FontInfo","tinymce.ui.Widget","tinymce.ui.FormItem","tinymce.ui.GridLayout","tinymce.ui.Iframe","tinymce.ui.InfoBox","tinymce.ui.KeyboardNavigation","tinymce.ui.Label","tinymce.ui.Layout","tinymce.ui.ListBox","tinymce.ui.Menu","tinymce.ui.MenuBar","tinymce.ui.MenuButton","tinymce.ui.MenuItem","tinymce.ui.MessageBox","tinymce.ui.Movable","tinymce.ui.Notification","tinymce.ui.Panel","tinymce.ui.PanelButton","tinymce.ui.Path","tinymce.ui.Progress","tinymce.ui.Radio","tinymce.ui.ReflowQueue","tinymce.ui.Resizable","tinymce.ui.ResizeHandle","tinymce.ui.Scrollable","tinymce.ui.SelectBox","tinymce.ui.Selector","tinymce.ui.Slider","tinymce.ui.Spacer","tinymce.ui.SplitButton","tinymce.ui.StackLayout","tinymce.ui.TabPanel","tinymce.ui.TextBox","tinymce.ui.Throbber","tinymce.ui.Toolbar","tinymce.ui.Tooltip","tinymce.ui.Window","tinymce.themes.modern.api.Settings","tinymce.themes.modern.modes.Iframe","tinymce.themes.modern.modes.Inline","tinymce.themes.modern.ui.ProgressState","tinymce.themes.modern.api.Events","ephox.katamari.api.Option","global!Array","global!Error","global!String","global!setTimeout","tinymce.ui.DomUtils","tinymce.core.dom.DomQuery","tinymce.core.util.Class","tinymce.core.util.EventDispatcher","tinymce.ui.BoxUtils","tinymce.ui.ClassList","tinymce.ui.data.ObservableObject","tinymce.core.util.Delay","global!RegExp","tinymce.core.util.VK","tinymce.core.util.Color","tinymce.ui.content.LinkTargets","global!console","ephox.sugar.api.search.PredicateFind","ephox.sugar.api.search.Selectors","ephox.sugar.impl.ClosestOrAncestor","tinymce.ui.editorui.FormatUtils","ephox.sugar.api.node.Node","tinymce.themes.modern.ui.A11y","tinymce.themes.modern.ui.ContextToolbars","tinymce.themes.modern.ui.Menubar","tinymce.themes.modern.ui.Sidebar","tinymce.themes.modern.ui.SkinLoaded","tinymce.themes.modern.ui.Toolbar","tinymce.ui.data.Binding","tinymce.core.util.Observable","global!Object","ephox.katamari.api.Id","ephox.sugar.api.search.SelectorFilter","ephox.katamari.api.Type","ephox.sugar.api.node.Body","ephox.sugar.api.dom.Compare","ephox.sugar.api.node.NodeTypes","tinymce.core.geom.Rect","global!Date","global!Math","ephox.sugar.api.search.PredicateFilter","ephox.katamari.api.Thunk","ephox.sand.api.Node","ephox.sand.api.PlatformDetection","ephox.sugar.api.search.Traverse","ephox.sand.util.Global","ephox.sand.core.PlatformDetection","global!navigator","ephox.katamari.api.Struct","ephox.sugar.alien.Recurse","ephox.katamari.api.Resolve","ephox.sand.core.Browser","ephox.sand.core.OperatingSystem","ephox.sand.detect.DeviceType","ephox.sand.detect.UaString","ephox.sand.info.PlatformInfo","ephox.katamari.data.Immutable","ephox.katamari.data.MixedBag","ephox.katamari.api.Global","ephox.sand.detect.Version","ephox.katamari.api.Strings","ephox.katamari.api.Obj","ephox.katamari.util.BagUtils","global!Number","ephox.katamari.str.StrAppend","ephox.katamari.str.StringParts"]
+["tinymce.themes.modern.Theme","global!window","tinymce.core.ThemeManager","tinymce.themes.modern.api.ThemeApi","tinymce.ui.Api","tinymce.ui.FormatControls","global!tinymce.util.Tools.resolve","tinymce.themes.modern.ui.Render","tinymce.themes.modern.ui.Resize","tinymce.ui.NotificationManagerImpl","tinymce.ui.WindowManagerImpl","tinymce.core.ui.Factory","tinymce.core.util.Tools","tinymce.ui.AbsoluteLayout","tinymce.ui.BrowseButton","tinymce.ui.Button","tinymce.ui.ButtonGroup","tinymce.ui.Checkbox","tinymce.ui.Collection","tinymce.ui.ColorBox","tinymce.ui.ColorButton","tinymce.ui.ColorPicker","tinymce.ui.ComboBox","tinymce.ui.Container","tinymce.ui.Control","tinymce.ui.DragHelper","tinymce.ui.DropZone","tinymce.ui.ElementPath","tinymce.ui.FieldSet","tinymce.ui.FilePicker","tinymce.ui.FitLayout","tinymce.ui.FlexLayout","tinymce.ui.FloatPanel","tinymce.ui.FlowLayout","tinymce.ui.Form","ephox.katamari.api.Fun","ephox.sugar.api.node.Element","ephox.sugar.api.search.SelectorFind","global!document","tinymce.core.EditorManager","tinymce.core.Env","tinymce.ui.Widget","tinymce.ui.editorui.Align","tinymce.ui.editorui.FontSelect","tinymce.ui.editorui.FontSizeSelect","tinymce.ui.editorui.FormatSelect","tinymce.ui.editorui.Formats","tinymce.ui.editorui.InsertButton","tinymce.ui.editorui.SimpleControls","tinymce.ui.editorui.UndoRedo","tinymce.ui.editorui.VisualAid","tinymce.ui.FormItem","tinymce.ui.GridLayout","tinymce.ui.Iframe","tinymce.ui.InfoBox","tinymce.ui.KeyboardNavigation","tinymce.ui.Label","tinymce.ui.Layout","tinymce.ui.ListBox","tinymce.ui.Menu","tinymce.ui.MenuBar","tinymce.ui.MenuButton","tinymce.ui.MenuItem","tinymce.ui.MessageBox","tinymce.ui.Movable","tinymce.ui.Notification","tinymce.ui.Panel","tinymce.ui.PanelButton","tinymce.ui.Path","tinymce.ui.Progress","tinymce.ui.Radio","tinymce.ui.ReflowQueue","tinymce.ui.Resizable","tinymce.ui.ResizeHandle","tinymce.ui.Scrollable","tinymce.ui.SelectBox","tinymce.ui.Selector","tinymce.ui.Slider","tinymce.ui.Spacer","tinymce.ui.SplitButton","tinymce.ui.StackLayout","tinymce.ui.TabPanel","tinymce.ui.TextBox","tinymce.ui.Throbber","tinymce.ui.Toolbar","tinymce.ui.Tooltip","tinymce.ui.Window","tinymce.themes.modern.api.Settings","tinymce.themes.modern.modes.Iframe","tinymce.themes.modern.modes.Inline","tinymce.themes.modern.ui.ProgressState","tinymce.core.dom.DOMUtils","tinymce.themes.modern.api.Events","ephox.katamari.api.Arr","global!setTimeout","tinymce.ui.DomUtils","tinymce.core.dom.DomQuery","tinymce.core.util.Class","tinymce.core.util.EventDispatcher","tinymce.ui.BoxUtils","tinymce.ui.ClassList","tinymce.ui.data.ObservableObject","tinymce.core.util.Delay","global!RegExp","tinymce.core.util.VK","tinymce.core.util.Color","global!Array","global!Error","tinymce.ui.content.LinkTargets","global!console","ephox.sugar.api.search.PredicateFind","ephox.sugar.api.search.Selectors","ephox.sugar.impl.ClosestOrAncestor","tinymce.ui.editorui.FormatUtils","tinymce.ui.fmt.FontInfo","tinymce.themes.modern.ui.A11y","tinymce.themes.modern.ui.ContextToolbars","tinymce.themes.modern.ui.Menubar","tinymce.themes.modern.ui.Sidebar","tinymce.themes.modern.ui.SkinLoaded","tinymce.themes.modern.ui.Toolbar","tinymce.ui.data.Binding","tinymce.core.util.Observable","ephox.katamari.api.Option","global!String","ephox.katamari.api.Id","ephox.sugar.api.search.SelectorFilter","ephox.katamari.api.Type","ephox.sugar.api.node.Body","ephox.sugar.api.dom.Compare","ephox.sugar.api.node.NodeTypes","ephox.sugar.api.node.Node","tinymce.core.geom.Rect","global!Object","global!Date","global!Math","ephox.sugar.api.search.PredicateFilter","ephox.katamari.api.Thunk","ephox.sand.api.Node","ephox.sand.api.PlatformDetection","ephox.sugar.api.search.Traverse","ephox.sand.util.Global","ephox.sand.core.PlatformDetection","global!navigator","ephox.katamari.api.Struct","ephox.sugar.alien.Recurse","ephox.katamari.api.Resolve","ephox.sand.core.Browser","ephox.sand.core.OperatingSystem","ephox.sand.detect.DeviceType","ephox.sand.detect.UaString","ephox.sand.info.PlatformInfo","ephox.katamari.data.Immutable","ephox.katamari.data.MixedBag","ephox.katamari.api.Global","ephox.sand.detect.Version","ephox.katamari.api.Strings","ephox.katamari.api.Obj","ephox.katamari.util.BagUtils","global!Number","ephox.katamari.str.StrAppend","ephox.katamari.str.StringParts"]
 jsc*/
 defineGlobal("global!window", window);
 defineGlobal("global!tinymce.util.Tools.resolve", tinymce.util.Tools.resolve);
@@ -1525,7 +1525,9 @@ define(
       help: { title: 'Help' }
     };
 
-    var delimiterMenuNamePair = Fun.constant({ name: '|', item: { text: '|' } });
+    var delimiterMenuNamePair = function () {
+      return { name: '|', item: { text: '|' } };
+    };
 
     var createMenuNameItemPair = function (name, item) {
       var menuItem = item ? { name: name, item: item } : null;
@@ -1542,13 +1544,17 @@ define(
       return namedMenuItem && namedMenuItem.item.text === '|';
     };
 
-    var cleanupMenu = function (namedMenuItems) {
-      return Arr.filter(namedMenuItems, function (namedMenuItem, i, namedMenuItems) {
-        if (isSeparator(namedMenuItem)) {
-          return i > 0 && i < namedMenuItems.length - 1 && !isSeparator(namedMenuItems[i - 1]);
-        } else {
-          return true;
-        }
+    var cleanupMenu = function (namedMenuItems, removedMenuItems) {
+      var menuItemsPass1 = Arr.filter(namedMenuItems, function (namedMenuItem) {
+        return removedMenuItems.hasOwnProperty(namedMenuItem.name) === false;
+      });
+
+      var menuItemsPass2 = Arr.filter(menuItemsPass1, function (namedMenuItem, i, namedMenuItems) {
+        return !isSeparator(namedMenuItem) || !isSeparator(namedMenuItems[i - 1]);
+      });
+
+      return Arr.filter(menuItemsPass2, function (namedMenuItem, i, namedMenuItems) {
+        return !isSeparator(namedMenuItem) || i > 0 && i < namedMenuItems.length - 1;
       });
     };
 
@@ -1571,7 +1577,7 @@ define(
         Tools.each((menu.items || '').split(/[ ,]/), function (name) {
           var namedMenuItem = createMenuNameItemPair(name, editorMenuItems[name]);
 
-          if (namedMenuItem && !removedMenuItems[name]) {
+          if (namedMenuItem) {
             namedMenuItems.push(namedMenuItem);
           }
         });
@@ -1597,7 +1603,7 @@ define(
           });
         }
 
-        menuButton.menu = Arr.map(cleanupMenu(namedMenuItems), function (menuItem) {
+        menuButton.menu = Arr.map(cleanupMenu(namedMenuItems, removedMenuItems), function (menuItem) {
           return menuItem.item;
         });
 
@@ -14066,6 +14072,308 @@ define(
 );
 
 /**
+ * FontInfo.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
+
+/**
+ * Internal class for computing font size for elements.
+ *
+ * @private
+ * @class tinymce.fmt.FontInfo
+ */
+define(
+  'tinymce.ui.fmt.FontInfo',
+  [
+    'ephox.katamari.api.Fun',
+    'ephox.katamari.api.Option',
+    'ephox.sugar.api.node.Element',
+    'ephox.sugar.api.node.Node',
+    'tinymce.core.dom.DOMUtils'
+  ],
+  function (Fun, Option, Element, Node, DOMUtils) {
+    var getSpecifiedFontProp = function (propName, rootElm, elm) {
+      while (elm !== rootElm) {
+        if (elm.style[propName]) {
+          var foundStyle = elm.style[propName];
+          return foundStyle !== '' ? Option.some(foundStyle) : Option.none();
+        }
+        elm = elm.parentNode;
+      }
+      return Option.none();
+    };
+
+    var toPt = function (fontSize) {
+      if (/[0-9.]+px$/.test(fontSize)) {
+        return Math.round(parseInt(fontSize, 10) * 72 / 96) + 'pt';
+      }
+
+      return fontSize;
+    };
+
+    var normalizeFontFamily = function (fontFamily) {
+      // 'Font name', Font -> Font name,Font
+      return fontFamily.replace(/[\'\"]/g, '').replace(/,\s+/g, ',');
+    };
+
+    var getComputedFontProp = function (propName, elm) {
+      return Option.from(DOMUtils.DOM.getStyle(elm, propName, true));
+    };
+
+    var getFontProp = function (propName) {
+      return function (rootElm, elm) {
+        return Option.from(elm)
+          .map(Element.fromDom)
+          .filter(Node.isElement)
+          .bind(function (element) {
+            return getSpecifiedFontProp(propName, rootElm, element.dom())
+              .or(getComputedFontProp(propName, element.dom()));
+          })
+          .getOr('');
+      };
+    };
+
+    return {
+      getFontSize: getFontProp('fontSize'),
+      getFontFamily: Fun.compose(normalizeFontFamily, getFontProp('fontFamily')),
+      toPt: toPt
+    };
+  }
+);
+
+/**
+ * FontSelect.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
+
+define(
+  'tinymce.ui.editorui.FontSelect',
+  [
+    'tinymce.core.util.Tools',
+    'tinymce.ui.fmt.FontInfo'
+  ],
+  function (Tools, FontInfo) {
+    var getFirstFont = function (fontFamily) {
+      return fontFamily ? fontFamily.split(',')[0] : '';
+    };
+
+    var findMatchingValue = function (items, fontFamily) {
+      var value;
+
+      Tools.each(items, function (item) {
+        if (item.value.toLowerCase() === fontFamily.toLowerCase()) {
+          value = item.value;
+        }
+      });
+
+      Tools.each(items, function (item) {
+        if (!value && getFirstFont(item.value).toLowerCase() === getFirstFont(fontFamily).toLowerCase()) {
+          value = item.value;
+        }
+      });
+
+      return value;
+    };
+
+    var createFontNameListBoxChangeHandler = function (editor, items) {
+      return function () {
+        var self = this;
+
+        editor.on('init nodeChange', function (e) {
+          var fontFamily = FontInfo.getFontFamily(editor.getBody(), e.element);
+          var match = findMatchingValue(items, fontFamily);
+
+          self.value(match ? match : null);
+
+          if (!match && fontFamily) {
+            self.text(getFirstFont(fontFamily));
+          }
+        });
+      };
+    };
+
+    var createFormats = function (formats) {
+      formats = formats.replace(/;$/, '').split(';');
+
+      var i = formats.length;
+      while (i--) {
+        formats[i] = formats[i].split('=');
+      }
+
+      return formats;
+    };
+
+    var getFontItems = function (editor) {
+      var defaultFontsFormats = (
+        'Andale Mono=andale mono,monospace;' +
+        'Arial=arial,helvetica,sans-serif;' +
+        'Arial Black=arial black,sans-serif;' +
+        'Book Antiqua=book antiqua,palatino,serif;' +
+        'Comic Sans MS=comic sans ms,sans-serif;' +
+        'Courier New=courier new,courier,monospace;' +
+        'Georgia=georgia,palatino,serif;' +
+        'Helvetica=helvetica,arial,sans-serif;' +
+        'Impact=impact,sans-serif;' +
+        'Symbol=symbol;' +
+        'Tahoma=tahoma,arial,helvetica,sans-serif;' +
+        'Terminal=terminal,monaco,monospace;' +
+        'Times New Roman=times new roman,times,serif;' +
+        'Trebuchet MS=trebuchet ms,geneva,sans-serif;' +
+        'Verdana=verdana,geneva,sans-serif;' +
+        'Webdings=webdings;' +
+        'Wingdings=wingdings,zapf dingbats'
+      );
+
+      var fonts = createFormats(editor.settings.font_formats || defaultFontsFormats);
+
+      return Tools.map(fonts, function (font) {
+        return {
+          text: { raw: font[0] },
+          value: font[1],
+          textStyle: font[1].indexOf('dings') === -1 ? 'font-family:' + font[1] : ''
+        };
+      });
+    };
+
+    var registerButtons = function (editor) {
+      editor.addButton('fontselect', function () {
+        var items = getFontItems(editor);
+
+        return {
+          type: 'listbox',
+          text: 'Font Family',
+          tooltip: 'Font Family',
+          values: items,
+          fixedWidth: true,
+          onPostRender: createFontNameListBoxChangeHandler(editor, items),
+          onselect: function (e) {
+            if (e.control.settings.value) {
+              editor.execCommand('FontName', false, e.control.settings.value);
+            }
+          }
+        };
+      });
+    };
+
+    var register = function (editor) {
+      registerButtons(editor);
+    };
+
+    return {
+      register: register
+    };
+  }
+);
+
+/**
+ * FontSizeSelect.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
+
+define(
+  'tinymce.ui.editorui.FontSizeSelect',
+  [
+    'tinymce.core.util.Tools',
+    'tinymce.ui.fmt.FontInfo'
+  ],
+  function (Tools, FontInfo) {
+    var findMatchingValue = function (items, pt, px) {
+      var value ;
+
+      Tools.each(items, function (item) {
+        if (item.value === px) {
+          value = px;
+        } else if (item.value === pt) {
+          value = pt;
+        }
+      });
+
+      return value;
+    };
+
+    var createFontSizeListBoxChangeHandler = function (editor, items) {
+      return function () {
+        var self = this;
+
+        editor.on('init nodeChange', function (e) {
+          var px, pt;
+
+          px = FontInfo.getFontSize(editor.getBody(), e.element);
+          pt = FontInfo.toPt(px);
+
+          var match = findMatchingValue(items, pt, px);
+          self.value(match ? match : null);
+
+          if (!match) {
+            self.text(pt);
+          }
+        });
+      };
+    };
+
+    var getFontSizeItems = function (editor) {
+      var defaultFontsizeFormats = '8pt 10pt 12pt 14pt 18pt 24pt 36pt';
+      var fontsizeFormats = editor.settings.fontsize_formats || defaultFontsizeFormats;
+
+      return Tools.map(fontsizeFormats.split(' '), function (item) {
+        var text = item, value = item;
+        // Allow text=value font sizes.
+        var values = item.split('=');
+        if (values.length > 1) {
+          text = values[0];
+          value = values[1];
+        }
+
+        return { text: text, value: value };
+      });
+    };
+
+    var registerButtons = function (editor) {
+      editor.addButton('fontsizeselect', function () {
+        var items = getFontSizeItems(editor);
+
+        return {
+          type: 'listbox',
+          text: 'Font Sizes',
+          tooltip: 'Font Sizes',
+          values: items,
+          fixedWidth: true,
+          onPostRender: createFontSizeListBoxChangeHandler(editor, items),
+          onclick: function (e) {
+            if (e.control.settings.value) {
+              editor.execCommand('FontSize', false, e.control.settings.value);
+            }
+          }
+        };
+      });
+    };
+
+    var register = function (editor) {
+      registerButtons(editor);
+    };
+
+    return {
+      register: register
+    };
+  }
+);
+
+/**
  * FormatSelect.js
  *
  * Released under LGPL License.
@@ -14200,7 +14508,7 @@ define(
 
 
 /**
- * SimpleFormats.js
+ * Formats.js
  *
  * Released under LGPL License.
  * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
@@ -14210,13 +14518,365 @@ define(
  */
 
 define(
-  'tinymce.ui.editorui.SimpleFormats',
+  'tinymce.ui.editorui.Formats',
   [
     'tinymce.core.util.Tools',
     'tinymce.ui.editorui.FormatUtils'
   ],
   function (Tools, FormatUtils) {
+    var hideMenuObjects = function (editor, menu) {
+      var count = menu.length;
+
+      Tools.each(menu, function (item) {
+        if (item.menu) {
+          item.hidden = hideMenuObjects(editor, item.menu) === 0;
+        }
+
+        var formatName = item.format;
+        if (formatName) {
+          item.hidden = !editor.formatter.canApply(formatName);
+        }
+
+        if (item.hidden) {
+          count--;
+        }
+      });
+
+      return count;
+    };
+
+    var hideFormatMenuItems = function (editor, menu) {
+      var count = menu.items().length;
+
+      menu.items().each(function (item) {
+        if (item.menu) {
+          item.visible(hideFormatMenuItems(editor, item.menu) > 0);
+        }
+
+        if (!item.menu && item.settings.menu) {
+          item.visible(hideMenuObjects(editor, item.settings.menu) > 0);
+        }
+
+        var formatName = item.settings.format;
+        if (formatName) {
+          item.visible(editor.formatter.canApply(formatName));
+        }
+
+        if (!item.visible()) {
+          count--;
+        }
+      });
+
+      return count;
+    };
+
+    var createFormatMenu = function (editor) {
+      var count = 0, newFormats = [];
+
+      var defaultStyleFormats = [
+        {
+          title: 'Headings', items: [
+            { title: 'Heading 1', format: 'h1' },
+            { title: 'Heading 2', format: 'h2' },
+            { title: 'Heading 3', format: 'h3' },
+            { title: 'Heading 4', format: 'h4' },
+            { title: 'Heading 5', format: 'h5' },
+            { title: 'Heading 6', format: 'h6' }
+          ]
+        },
+
+        {
+          title: 'Inline', items: [
+            { title: 'Bold', icon: 'bold', format: 'bold' },
+            { title: 'Italic', icon: 'italic', format: 'italic' },
+            { title: 'Underline', icon: 'underline', format: 'underline' },
+            { title: 'Strikethrough', icon: 'strikethrough', format: 'strikethrough' },
+            { title: 'Superscript', icon: 'superscript', format: 'superscript' },
+            { title: 'Subscript', icon: 'subscript', format: 'subscript' },
+            { title: 'Code', icon: 'code', format: 'code' }
+          ]
+        },
+
+        {
+          title: 'Blocks', items: [
+            { title: 'Paragraph', format: 'p' },
+            { title: 'Blockquote', format: 'blockquote' },
+            { title: 'Div', format: 'div' },
+            { title: 'Pre', format: 'pre' }
+          ]
+        },
+
+        {
+          title: 'Alignment', items: [
+            { title: 'Left', icon: 'alignleft', format: 'alignleft' },
+            { title: 'Center', icon: 'aligncenter', format: 'aligncenter' },
+            { title: 'Right', icon: 'alignright', format: 'alignright' },
+            { title: 'Justify', icon: 'alignjustify', format: 'alignjustify' }
+          ]
+        }
+      ];
+
+      var createMenu = function (formats) {
+        var menu = [];
+
+        if (!formats) {
+          return;
+        }
+
+        Tools.each(formats, function (format) {
+          var menuItem = {
+            text: format.title,
+            icon: format.icon
+          };
+
+          if (format.items) {
+            menuItem.menu = createMenu(format.items);
+          } else {
+            var formatName = format.format || "custom" + count++;
+
+            if (!format.format) {
+              format.name = formatName;
+              newFormats.push(format);
+            }
+
+            menuItem.format = formatName;
+            menuItem.cmd = format.cmd;
+          }
+
+          menu.push(menuItem);
+        });
+
+        return menu;
+      };
+
+      var createStylesMenu = function () {
+        var menu;
+
+        if (editor.settings.style_formats_merge) {
+          if (editor.settings.style_formats) {
+            menu = createMenu(defaultStyleFormats.concat(editor.settings.style_formats));
+          } else {
+            menu = createMenu(defaultStyleFormats);
+          }
+        } else {
+          menu = createMenu(editor.settings.style_formats || defaultStyleFormats);
+        }
+
+        return menu;
+      };
+
+      editor.on('init', function () {
+        Tools.each(newFormats, function (format) {
+          editor.formatter.register(format.name, format);
+        });
+      });
+
+      return {
+        type: 'menu',
+        items: createStylesMenu(),
+        onPostRender: function (e) {
+          editor.fire('renderFormatsMenu', { control: e.control });
+        },
+        itemDefaults: {
+          preview: true,
+
+          textStyle: function () {
+            if (this.settings.format) {
+              return editor.formatter.getCssText(this.settings.format);
+            }
+          },
+
+          onPostRender: function () {
+            var self = this;
+
+            self.parent().on('show', function () {
+              var formatName, command;
+
+              formatName = self.settings.format;
+              if (formatName) {
+                self.disabled(!editor.formatter.canApply(formatName));
+                self.active(editor.formatter.match(formatName));
+              }
+
+              command = self.settings.cmd;
+              if (command) {
+                self.active(editor.queryCommandState(command));
+              }
+            });
+          },
+
+          onclick: function () {
+            if (this.settings.format) {
+              FormatUtils.toggleFormat(editor, this.settings.format)();
+            }
+
+            if (this.settings.cmd) {
+              editor.execCommand(this.settings.cmd);
+            }
+          }
+        }
+      };
+    };
+
+    var registerMenuItems = function (editor, formatMenu) {
+      editor.addMenuItem('formats', {
+        text: 'Formats',
+        menu: formatMenu
+      });
+    };
+
+    var registerButtons = function (editor, formatMenu) {
+      editor.addButton('styleselect', {
+        type: 'menubutton',
+        text: 'Formats',
+        menu: formatMenu,
+        onShowMenu: function () {
+          if (editor.settings.style_formats_autohide) {
+            hideFormatMenuItems(editor, this.menu);
+          }
+        }
+      });
+    };
+
+    var register = function (editor) {
+      var formatMenu = createFormatMenu(editor);
+
+      registerMenuItems(editor, formatMenu);
+      registerButtons(editor, formatMenu);
+    };
+
+    return {
+      register: register
+    };
+  }
+);
+
+/**
+ * InsertButton.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
+
+define(
+  'tinymce.ui.editorui.InsertButton',
+  [
+    'ephox.katamari.api.Arr',
+    'tinymce.core.util.Tools'
+  ],
+  function (Arr, Tools) {
+    var createCustomMenuItems = function (editor, names) {
+      var items, nameList;
+
+      if (typeof names === 'string') {
+        nameList = names.split(' ');
+      } else if (Tools.isArray(names)) {
+        return Arr.flatten(Tools.map(names, function (names) {
+          return createCustomMenuItems(editor, names);
+        }));
+      }
+
+      items = Tools.grep(nameList, function (name) {
+        return name === '|' || name in editor.menuItems;
+      });
+
+      return Tools.map(items, function (name) {
+        return name === '|' ? { text: '-' } : editor.menuItems[name];
+      });
+    };
+
+    var isSeparator = function (menuItem) {
+      return menuItem && menuItem.text === '-';
+    };
+
+    var trimMenuItems = function (menuItems) {
+      var menuItems2 = Arr.filter(menuItems, function (menuItem, i, menuItems) {
+        return !isSeparator(menuItem) || !isSeparator(menuItems[i - 1]);
+      });
+
+      return Arr.filter(menuItems2, function (menuItem, i, menuItems) {
+        return !isSeparator(menuItem) || i > 0 && i < menuItems.length - 1;
+      });
+    };
+
+    var createContextMenuItems = function (editor, context) {
+      var outputMenuItems = [{ text: '-' }];
+      var menuItems = Tools.grep(editor.menuItems, function (menuItem) {
+        return menuItem.context === context;
+      });
+
+      Tools.each(menuItems, function (menuItem) {
+        if (menuItem.separator === 'before') {
+          outputMenuItems.push({ text: '|' });
+        }
+
+        if (menuItem.prependToContext) {
+          outputMenuItems.unshift(menuItem);
+        } else {
+          outputMenuItems.push(menuItem);
+        }
+
+        if (menuItem.separator === 'after') {
+          outputMenuItems.push({ text: '|' });
+        }
+      });
+
+      return outputMenuItems;
+    };
+
+    var createInsertMenu = function (editor) {
+      var insertButtonItems = editor.settings.insert_button_items;
+
+      if (insertButtonItems) {
+        return trimMenuItems(createCustomMenuItems(editor, insertButtonItems));
+      } else {
+        return trimMenuItems(createContextMenuItems(editor, 'insert'));
+      }
+    };
+
     var registerButtons = function (editor) {
+      editor.addButton('insert', {
+        type: 'menubutton',
+        icon: 'insert',
+        menu: [],
+        oncreatemenu: function () {
+          this.menu.add(createInsertMenu(editor));
+          this.menu.renderNew();
+        }
+      });
+    };
+
+    var register = function (editor) {
+      registerButtons(editor);
+    };
+
+    return {
+      register: register
+    };
+  }
+);
+
+/**
+ * SimpleControls.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
+
+define(
+  'tinymce.ui.editorui.SimpleControls',
+  [
+    'tinymce.core.util.Tools',
+    'tinymce.ui.editorui.FormatUtils'
+  ],
+  function (Tools, FormatUtils) {
+    var registerFormatButtons = function (editor) {
       Tools.each({
         bold: 'Bold',
         italic: 'Italic',
@@ -14231,11 +14891,47 @@ define(
           onclick: FormatUtils.toggleFormat(editor, name)
         });
       });
+    };
 
-      editor.addButton('removeformat', {
-        title: 'Clear formatting',
-        cmd: 'RemoveFormat'
+    var registerCommandButtons = function (editor) {
+      Tools.each({
+        outdent: ['Decrease indent', 'Outdent'],
+        indent: ['Increase indent', 'Indent'],
+        cut: ['Cut', 'Cut'],
+        copy: ['Copy', 'Copy'],
+        paste: ['Paste', 'Paste'],
+        help: ['Help', 'mceHelp'],
+        selectall: ['Select all', 'SelectAll'],
+        visualaid: ['Visual aids', 'mceToggleVisualAid'],
+        newdocument: ['New document', 'mceNewDocument'],
+        removeformat: ['Clear formatting', 'RemoveFormat'],
+        remove: ['Remove', 'Delete']
+      }, function (item, name) {
+        editor.addButton(name, {
+          tooltip: item[0],
+          cmd: item[1]
+        });
       });
+    };
+
+    var registerCommandToggleButtons = function (editor) {
+      Tools.each({
+        blockquote: ['Blockquote', 'mceBlockQuote'],
+        subscript: ['Subscript', 'Subscript'],
+        superscript: ['Superscript', 'Superscript']
+      }, function (item, name) {
+        editor.addButton(name, {
+          tooltip: item[0],
+          cmd: item[1],
+          onPostRender: FormatUtils.postRenderFormat(editor, name)
+        });
+      });
+    };
+
+    var registerButtons = function (editor) {
+      registerFormatButtons(editor);
+      registerCommandButtons(editor);
+      registerCommandToggleButtons(editor);
     };
 
     var registerMenuItems = function (editor) {
@@ -14246,7 +14942,12 @@ define(
         strikethrough: ['Strikethrough', 'Strikethrough'],
         subscript: ['Subscript', 'Subscript'],
         superscript: ['Superscript', 'Superscript'],
-        removeformat: ['Clear formatting', 'RemoveFormat']
+        removeformat: ['Clear formatting', 'RemoveFormat'],
+        newdocument: ['New document', 'mceNewDocument'],
+        cut: ['Cut', 'Cut', 'Meta+X'],
+        copy: ['Copy', 'Copy', 'Meta+C'],
+        paste: ['Paste', 'Paste', 'Meta+V'],
+        selectall: ['Select all', 'SelectAll', 'Meta+A']
       }, function (item, name) {
         editor.addMenuItem(name, {
           text: item[0],
@@ -14275,7 +14976,7 @@ define(
 );
 
 /**
- * FontInfo.js
+ * UndoRedo.js
  *
  * Released under LGPL License.
  * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
@@ -14284,67 +14985,112 @@ define(
  * Contributing: http://www.tinymce.com/contributing
  */
 
-/**
- * Internal class for computing font size for elements.
- *
- * @private
- * @class tinymce.fmt.FontInfo
- */
 define(
-  'tinymce.ui.fmt.FontInfo',
+  'tinymce.ui.editorui.UndoRedo',
   [
-    'ephox.katamari.api.Fun',
-    'ephox.katamari.api.Option',
-    'ephox.sugar.api.node.Element',
-    'ephox.sugar.api.node.Node',
-    'tinymce.core.dom.DOMUtils'
   ],
-  function (Fun, Option, Element, Node, DOMUtils) {
-    var getSpecifiedFontProp = function (propName, rootElm, elm) {
-      while (elm !== rootElm) {
-        if (elm.style[propName]) {
-          var foundStyle = elm.style[propName];
-          return foundStyle !== '' ? Option.some(foundStyle) : Option.none();
-        }
-        elm = elm.parentNode;
-      }
-      return Option.none();
-    };
+  function () {
+    var toggleUndoRedoState = function (editor, type) {
+      return function () {
+        var self = this;
 
-    var toPt = function (fontSize) {
-      if (/[0-9.]+px$/.test(fontSize)) {
-        return Math.round(parseInt(fontSize, 10) * 72 / 96) + 'pt';
-      }
+        var checkState = function () {
+          var typeFn = type === 'redo' ? 'hasRedo' : 'hasUndo';
+          return editor.undoManager ? editor.undoManager[typeFn]() : false;
+        };
 
-      return fontSize;
-    };
-
-    var normalizeFontFamily = function (fontFamily) {
-      // 'Font name', Font -> Font name,Font
-      return fontFamily.replace(/[\'\"]/g, '').replace(/,\s+/g, ',');
-    };
-
-    var getComputedFontProp = function (propName, elm) {
-      return Option.from(DOMUtils.DOM.getStyle(elm, propName, true));
-    };
-
-    var getFontProp = function (propName) {
-      return function (rootElm, elm) {
-        return Option.from(elm)
-          .map(Element.fromDom)
-          .filter(Node.isElement)
-          .bind(function (element) {
-            return getSpecifiedFontProp(propName, rootElm, element.dom())
-              .or(getComputedFontProp(propName, element.dom()));
-          })
-          .getOr('');
+        self.disabled(!checkState());
+        editor.on('Undo Redo AddUndo TypingUndo ClearUndos SwitchMode', function () {
+          self.disabled(editor.readonly || !checkState());
+        });
       };
     };
 
+    var registerMenuItems = function (editor) {
+      editor.addMenuItem('undo', {
+        text: 'Undo',
+        icon: 'undo',
+        shortcut: 'Meta+Z',
+        onPostRender: toggleUndoRedoState(editor, 'undo'),
+        cmd: 'undo'
+      });
+
+      editor.addMenuItem('redo', {
+        text: 'Redo',
+        icon: 'redo',
+        shortcut: 'Meta+Y',
+        onPostRender: toggleUndoRedoState(editor, 'redo'),
+        cmd: 'redo'
+      });
+    };
+
+    var registerButtons = function (editor) {
+      editor.addButton('undo', {
+        tooltip: 'Undo',
+        onPostRender: toggleUndoRedoState(editor, 'undo'),
+        cmd: 'undo'
+      });
+
+      editor.addButton('redo', {
+        tooltip: 'Redo',
+        onPostRender: toggleUndoRedoState(editor, 'redo'),
+        cmd: 'redo'
+      });
+    };
+
+    var register = function (editor) {
+      registerMenuItems(editor);
+      registerButtons(editor);
+    };
+
     return {
-      getFontSize: getFontProp('fontSize'),
-      getFontFamily: Fun.compose(normalizeFontFamily, getFontProp('fontFamily')),
-      toPt: toPt
+      register: register
+    };
+  }
+);
+
+/**
+ * VisualAid.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
+
+define(
+  'tinymce.ui.editorui.VisualAid',
+  [
+  ],
+  function () {
+    var toggleVisualAidState = function (editor) {
+      return function () {
+        var self = this;
+
+        editor.on('VisualAid', function (e) {
+          self.active(e.hasVisual);
+        });
+
+        self.active(editor.hasVisual);
+      };
+    };
+
+    var registerMenuItems = function (editor) {
+      editor.addMenuItem('visualaid', {
+        text: 'Visual aids',
+        selectable: true,
+        onPostRender: toggleVisualAidState(editor),
+        cmd: 'mceToggleVisualAid'
+      });
+    };
+
+    var register = function (editor) {
+      registerMenuItems(editor);
+    };
+
+    return {
+      register: register
     };
   }
 );
@@ -14359,657 +15105,75 @@ define(
  * Contributing: http://www.tinymce.com/contributing
  */
 
-/**
- * Internal class containing all TinyMCE specific control types such as
- * format listboxes, fontlist boxes, toolbar buttons etc.
- *
- * @class tinymce.ui.FormatControls
- */
 define(
   'tinymce.ui.FormatControls',
   [
-    'ephox.katamari.api.Arr',
     'ephox.katamari.api.Fun',
     'ephox.sugar.api.node.Element',
     'ephox.sugar.api.search.SelectorFind',
     'global!document',
-    'tinymce.core.dom.DOMUtils',
     'tinymce.core.EditorManager',
     'tinymce.core.Env',
-    'tinymce.core.util.Tools',
     'tinymce.ui.Control',
-    'tinymce.ui.editorui.Align',
-    'tinymce.ui.editorui.FormatSelect',
-    'tinymce.ui.editorui.SimpleFormats',
     'tinymce.ui.FloatPanel',
-    'tinymce.ui.fmt.FontInfo',
-    'tinymce.ui.Widget'
+    'tinymce.ui.Widget',
+    'tinymce.ui.editorui.Align',
+    'tinymce.ui.editorui.FontSelect',
+    'tinymce.ui.editorui.FontSizeSelect',
+    'tinymce.ui.editorui.FormatSelect',
+    'tinymce.ui.editorui.Formats',
+    'tinymce.ui.editorui.InsertButton',
+    'tinymce.ui.editorui.SimpleControls',
+    'tinymce.ui.editorui.UndoRedo',
+    'tinymce.ui.editorui.VisualAid'
   ],
-  function (Arr, Fun, Element, SelectorFind, document, DOMUtils, EditorManager, Env, Tools, Control, Align, FormatSelect, SimpleFormats, FloatPanel, FontInfo, Widget) {
-    var each = Tools.each;
+  function (
+    Fun, Element, SelectorFind, document, EditorManager, Env, Control, FloatPanel, Widget, Align, FontSelect, FontSizeSelect, FormatSelect, Formats, InsertButton,
+    SimpleControls, UndoRedo, VisualAid
+  ) {
+    var setupEnvironment = function () {
+      Widget.tooltips = !Env.iOS;
 
-    var flatten = function (ar) {
-      return Arr.foldl(ar, function (result, item) {
-        return result.concat(item);
-      }, []);
+      Control.translate = function (text) {
+        return EditorManager.translate(text);
+      };
     };
 
-    Control.translate = function (text) {
-      return EditorManager.translate(text);
-    };
-
-    Widget.tooltips = !Env.iOS;
-
-    function setupContainer(editor) {
+    var setupUiContainer = function (editor) {
       if (editor.settings.ui_container) {
         Env.container = SelectorFind.descendant(Element.fromDom(document.body), editor.settings.ui_container).fold(Fun.constant(null), function (elm) {
           return elm.dom();
         });
       }
-    }
+    };
 
-    function setupRtlMode(editor) {
+    var setupRtlMode = function (editor) {
       if (editor.rtl) {
         Control.rtl = true;
       }
-    }
+    };
 
-    function registerControls(editor) {
-      var formatMenu;
-
-      function createFontNameListBoxChangeHandler(items) {
-        return function () {
-          var self = this;
-
-          var getFirstFont = function (fontFamily) {
-            return fontFamily ? fontFamily.split(',')[0] : '';
-          };
-
-          editor.on('init nodeChange', function (e) {
-            var fontFamily, value = null;
-
-            fontFamily = FontInfo.getFontFamily(editor.getBody(), e.element);
-
-            each(items, function (item) {
-              if (item.value.toLowerCase() === fontFamily.toLowerCase()) {
-                value = item.value;
-              }
-            });
-
-            each(items, function (item) {
-              if (!value && getFirstFont(item.value).toLowerCase() === getFirstFont(fontFamily).toLowerCase()) {
-                value = item.value;
-              }
-            });
-
-            self.value(value);
-
-            if (!value && fontFamily) {
-              self.text(getFirstFont(fontFamily));
-            }
-          });
-        };
-      }
-
-      function createFontSizeListBoxChangeHandler(items) {
-        return function () {
-          var self = this;
-
-          editor.on('init nodeChange', function (e) {
-            var px, pt, value = null;
-
-            px = FontInfo.getFontSize(editor.getBody(), e.element);
-            pt = FontInfo.toPt(px);
-
-            each(items, function (item) {
-              if (item.value === px) {
-                value = px;
-              } else if (item.value === pt) {
-                value = pt;
-              }
-            });
-
-            self.value(value);
-
-            if (!value) {
-              self.text(pt);
-            }
-          });
-        };
-      }
-
-      function createFormats(formats) {
-        formats = formats.replace(/;$/, '').split(';');
-
-        var i = formats.length;
-        while (i--) {
-          formats[i] = formats[i].split('=');
-        }
-
-        return formats;
-      }
-
-      function createFormatMenu() {
-        var count = 0, newFormats = [];
-
-        var defaultStyleFormats = [
-          {
-            title: 'Headings', items: [
-              { title: 'Heading 1', format: 'h1' },
-              { title: 'Heading 2', format: 'h2' },
-              { title: 'Heading 3', format: 'h3' },
-              { title: 'Heading 4', format: 'h4' },
-              { title: 'Heading 5', format: 'h5' },
-              { title: 'Heading 6', format: 'h6' }
-            ]
-          },
-
-          {
-            title: 'Inline', items: [
-              { title: 'Bold', icon: 'bold', format: 'bold' },
-              { title: 'Italic', icon: 'italic', format: 'italic' },
-              { title: 'Underline', icon: 'underline', format: 'underline' },
-              { title: 'Strikethrough', icon: 'strikethrough', format: 'strikethrough' },
-              { title: 'Superscript', icon: 'superscript', format: 'superscript' },
-              { title: 'Subscript', icon: 'subscript', format: 'subscript' },
-              { title: 'Code', icon: 'code', format: 'code' }
-            ]
-          },
-
-          {
-            title: 'Blocks', items: [
-              { title: 'Paragraph', format: 'p' },
-              { title: 'Blockquote', format: 'blockquote' },
-              { title: 'Div', format: 'div' },
-              { title: 'Pre', format: 'pre' }
-            ]
-          },
-
-          {
-            title: 'Alignment', items: [
-              { title: 'Left', icon: 'alignleft', format: 'alignleft' },
-              { title: 'Center', icon: 'aligncenter', format: 'aligncenter' },
-              { title: 'Right', icon: 'alignright', format: 'alignright' },
-              { title: 'Justify', icon: 'alignjustify', format: 'alignjustify' }
-            ]
-          }
-        ];
-
-        function createMenu(formats) {
-          var menu = [];
-
-          if (!formats) {
-            return;
-          }
-
-          each(formats, function (format) {
-            var menuItem = {
-              text: format.title,
-              icon: format.icon
-            };
-
-            if (format.items) {
-              menuItem.menu = createMenu(format.items);
-            } else {
-              var formatName = format.format || "custom" + count++;
-
-              if (!format.format) {
-                format.name = formatName;
-                newFormats.push(format);
-              }
-
-              menuItem.format = formatName;
-              menuItem.cmd = format.cmd;
-            }
-
-            menu.push(menuItem);
-          });
-
-          return menu;
-        }
-
-        function createStylesMenu() {
-          var menu;
-
-          if (editor.settings.style_formats_merge) {
-            if (editor.settings.style_formats) {
-              menu = createMenu(defaultStyleFormats.concat(editor.settings.style_formats));
-            } else {
-              menu = createMenu(defaultStyleFormats);
-            }
-          } else {
-            menu = createMenu(editor.settings.style_formats || defaultStyleFormats);
-          }
-
-          return menu;
-        }
-
-        editor.on('init', function () {
-          each(newFormats, function (format) {
-            editor.formatter.register(format.name, format);
-          });
-        });
-
-        return {
-          type: 'menu',
-          items: createStylesMenu(),
-          onPostRender: function (e) {
-            editor.fire('renderFormatsMenu', { control: e.control });
-          },
-          itemDefaults: {
-            preview: true,
-
-            textStyle: function () {
-              if (this.settings.format) {
-                return editor.formatter.getCssText(this.settings.format);
-              }
-            },
-
-            onPostRender: function () {
-              var self = this;
-
-              self.parent().on('show', function () {
-                var formatName, command;
-
-                formatName = self.settings.format;
-                if (formatName) {
-                  self.disabled(!editor.formatter.canApply(formatName));
-                  self.active(editor.formatter.match(formatName));
-                }
-
-                command = self.settings.cmd;
-                if (command) {
-                  self.active(editor.queryCommandState(command));
-                }
-              });
-            },
-
-            onclick: function () {
-              if (this.settings.format) {
-                toggleFormat(this.settings.format);
-              }
-
-              if (this.settings.cmd) {
-                editor.execCommand(this.settings.cmd);
-              }
-            }
-          }
-        };
-      }
-
-      formatMenu = createFormatMenu();
-
-      function initOnPostRender(name) {
-        return function () {
-          var self = this;
-
-          // TODO: Fix this
-          if (editor.formatter) {
-            editor.formatter.formatChanged(name, function (state) {
-              self.active(state);
-            });
-          } else {
-            editor.on('init', function () {
-              editor.formatter.formatChanged(name, function (state) {
-                self.active(state);
-              });
-            });
-          }
-        };
-      }
-
-      // Simple command controls <control>:[<UI text>,<Command>]
-      each({
-        outdent: ['Decrease indent', 'Outdent'],
-        indent: ['Increase indent', 'Indent'],
-        cut: ['Cut', 'Cut'],
-        copy: ['Copy', 'Copy'],
-        paste: ['Paste', 'Paste'],
-        help: ['Help', 'mceHelp'],
-        selectall: ['Select all', 'SelectAll'],
-        visualaid: ['Visual aids', 'mceToggleVisualAid'],
-        newdocument: ['New document', 'mceNewDocument']
-      }, function (item, name) {
-        editor.addButton(name, {
-          tooltip: item[0],
-          cmd: item[1]
-        });
-      });
-
-      // Simple command controls with format state
-      each({
-        blockquote: ['Blockquote', 'mceBlockQuote'],
-        subscript: ['Subscript', 'Subscript'],
-        superscript: ['Superscript', 'Superscript']
-      }, function (item, name) {
-        editor.addButton(name, {
-          tooltip: item[0],
-          cmd: item[1],
-          onPostRender: initOnPostRender(name)
-        });
-      });
-
-      function toggleUndoRedoState(type) {
-        return function () {
-          var self = this;
-
-          function checkState() {
-            var typeFn = type == 'redo' ? 'hasRedo' : 'hasUndo';
-            return editor.undoManager ? editor.undoManager[typeFn]() : false;
-          }
-
-          self.disabled(!checkState());
-          editor.on('Undo Redo AddUndo TypingUndo ClearUndos SwitchMode', function () {
-            self.disabled(editor.readonly || !checkState());
-          });
-        };
-      }
-
-      function toggleVisualAidState() {
-        var self = this;
-
-        editor.on('VisualAid', function (e) {
-          self.active(e.hasVisual);
-        });
-
-        self.active(editor.hasVisual);
-      }
-
-      var trimMenuItems = function (menuItems) {
-        var outputMenuItems = menuItems;
-
-        if (outputMenuItems.length > 0 && outputMenuItems[0].text === '-') {
-          outputMenuItems = outputMenuItems.slice(1);
-        }
-
-        if (outputMenuItems.length > 0 && outputMenuItems[outputMenuItems.length - 1].text === '-') {
-          outputMenuItems = outputMenuItems.slice(0, outputMenuItems.length - 1);
-        }
-
-        return outputMenuItems;
-      };
-
-      var createCustomMenuItems = function (names) {
-        var items, nameList;
-
-        if (typeof names === 'string') {
-          nameList = names.split(' ');
-        } else if (Tools.isArray(names)) {
-          return flatten(Tools.map(names, createCustomMenuItems));
-        }
-
-        items = Tools.grep(nameList, function (name) {
-          return name === '|' || name in editor.menuItems;
-        });
-
-        return Tools.map(items, function (name) {
-          return name === '|' ? { text: '-' } : editor.menuItems[name];
-        });
-      };
-
-      var createContextMenuItems = function (context) {
-        var outputMenuItems = [{ text: '-' }];
-        var menuItems = Tools.grep(editor.menuItems, function (menuItem) {
-          return menuItem.context === context;
-        });
-
-        Tools.each(menuItems, function (menuItem) {
-          if (menuItem.separator == 'before') {
-            outputMenuItems.push({ text: '|' });
-          }
-
-          if (menuItem.prependToContext) {
-            outputMenuItems.unshift(menuItem);
-          } else {
-            outputMenuItems.push(menuItem);
-          }
-
-          if (menuItem.separator == 'after') {
-            outputMenuItems.push({ text: '|' });
-          }
-        });
-
-        return outputMenuItems;
-      };
-
-      var createInsertMenu = function (editorSettings) {
-        if (editorSettings.insert_button_items) {
-          return trimMenuItems(createCustomMenuItems(editorSettings.insert_button_items));
-        } else {
-          return trimMenuItems(createContextMenuItems('insert'));
-        }
-      };
-
-      editor.addButton('undo', {
-        tooltip: 'Undo',
-        onPostRender: toggleUndoRedoState('undo'),
-        cmd: 'undo'
-      });
-
-      editor.addButton('redo', {
-        tooltip: 'Redo',
-        onPostRender: toggleUndoRedoState('redo'),
-        cmd: 'redo'
-      });
-
-      editor.addMenuItem('newdocument', {
-        text: 'New document',
-        icon: 'newdocument',
-        cmd: 'mceNewDocument'
-      });
-
-      editor.addMenuItem('undo', {
-        text: 'Undo',
-        icon: 'undo',
-        shortcut: 'Meta+Z',
-        onPostRender: toggleUndoRedoState('undo'),
-        cmd: 'undo'
-      });
-
-      editor.addMenuItem('redo', {
-        text: 'Redo',
-        icon: 'redo',
-        shortcut: 'Meta+Y',
-        onPostRender: toggleUndoRedoState('redo'),
-        cmd: 'redo'
-      });
-
-      editor.addMenuItem('visualaid', {
-        text: 'Visual aids',
-        selectable: true,
-        onPostRender: toggleVisualAidState,
-        cmd: 'mceToggleVisualAid'
-      });
-
-      editor.addButton('remove', {
-        tooltip: 'Remove',
-        icon: 'remove',
-        cmd: 'Delete'
-      });
-
-      editor.addButton('insert', {
-        type: 'menubutton',
-        icon: 'insert',
-        menu: [],
-        oncreatemenu: function () {
-          this.menu.add(createInsertMenu(editor.settings));
-          this.menu.renderNew();
-        }
-      });
-
-      each({
-        cut: ['Cut', 'Cut', 'Meta+X'],
-        copy: ['Copy', 'Copy', 'Meta+C'],
-        paste: ['Paste', 'Paste', 'Meta+V'],
-        selectall: ['Select all', 'SelectAll', 'Meta+A']
-      }, function (item, name) {
-        editor.addMenuItem(name, {
-          text: item[0],
-          icon: name,
-          shortcut: item[2],
-          cmd: item[1]
-        });
-      });
-
+    var setupHideFloatPanels = function (editor) {
       editor.on('mousedown', function () {
         FloatPanel.hideAll();
       });
-
-      function toggleFormat(fmt) {
-        if (fmt.control) {
-          fmt = fmt.control.value();
-        }
-
-        if (fmt) {
-          editor.execCommand('mceToggleFormat', false, fmt);
-        }
-      }
-
-      function hideMenuObjects(menu) {
-        var count = menu.length;
-
-        Tools.each(menu, function (item) {
-          if (item.menu) {
-            item.hidden = hideMenuObjects(item.menu) === 0;
-          }
-
-          var formatName = item.format;
-          if (formatName) {
-            item.hidden = !editor.formatter.canApply(formatName);
-          }
-
-          if (item.hidden) {
-            count--;
-          }
-        });
-
-        return count;
-      }
-
-      function hideFormatMenuItems(menu) {
-        var count = menu.items().length;
-
-        menu.items().each(function (item) {
-          if (item.menu) {
-            item.visible(hideFormatMenuItems(item.menu) > 0);
-          }
-
-          if (!item.menu && item.settings.menu) {
-            item.visible(hideMenuObjects(item.settings.menu) > 0);
-          }
-
-          var formatName = item.settings.format;
-          if (formatName) {
-            item.visible(editor.formatter.canApply(formatName));
-          }
-
-          if (!item.visible()) {
-            count--;
-          }
-        });
-
-        return count;
-      }
-
-      editor.addButton('styleselect', {
-        type: 'menubutton',
-        text: 'Formats',
-        menu: formatMenu,
-        onShowMenu: function () {
-          if (editor.settings.style_formats_autohide) {
-            hideFormatMenuItems(this.menu);
-          }
-        }
-      });
-
-      editor.addButton('fontselect', function () {
-        var defaultFontsFormats =
-          'Andale Mono=andale mono,monospace;' +
-          'Arial=arial,helvetica,sans-serif;' +
-          'Arial Black=arial black,sans-serif;' +
-          'Book Antiqua=book antiqua,palatino,serif;' +
-          'Comic Sans MS=comic sans ms,sans-serif;' +
-          'Courier New=courier new,courier,monospace;' +
-          'Georgia=georgia,palatino,serif;' +
-          'Helvetica=helvetica,arial,sans-serif;' +
-          'Impact=impact,sans-serif;' +
-          'Symbol=symbol;' +
-          'Tahoma=tahoma,arial,helvetica,sans-serif;' +
-          'Terminal=terminal,monaco,monospace;' +
-          'Times New Roman=times new roman,times,serif;' +
-          'Trebuchet MS=trebuchet ms,geneva,sans-serif;' +
-          'Verdana=verdana,geneva,sans-serif;' +
-          'Webdings=webdings;' +
-          'Wingdings=wingdings,zapf dingbats';
-
-        var items = [], fonts = createFormats(editor.settings.font_formats || defaultFontsFormats);
-
-        each(fonts, function (font) {
-          items.push({
-            text: { raw: font[0] },
-            value: font[1],
-            textStyle: font[1].indexOf('dings') == -1 ? 'font-family:' + font[1] : ''
-          });
-        });
-
-        return {
-          type: 'listbox',
-          text: 'Font Family',
-          tooltip: 'Font Family',
-          values: items,
-          fixedWidth: true,
-          onPostRender: createFontNameListBoxChangeHandler(items),
-          onselect: function (e) {
-            if (e.control.settings.value) {
-              editor.execCommand('FontName', false, e.control.settings.value);
-            }
-          }
-        };
-      });
-
-      editor.addButton('fontsizeselect', function () {
-        var items = [], defaultFontsizeFormats = '8pt 10pt 12pt 14pt 18pt 24pt 36pt';
-        var fontsizeFormats = editor.settings.fontsize_formats || defaultFontsizeFormats;
-
-        each(fontsizeFormats.split(' '), function (item) {
-          var text = item, value = item;
-          // Allow text=value font sizes.
-          var values = item.split('=');
-          if (values.length > 1) {
-            text = values[0];
-            value = values[1];
-          }
-          items.push({ text: text, value: value });
-        });
-
-        return {
-          type: 'listbox',
-          text: 'Font Sizes',
-          tooltip: 'Font Sizes',
-          values: items,
-          fixedWidth: true,
-          onPostRender: createFontSizeListBoxChangeHandler(items),
-          onclick: function (e) {
-            if (e.control.settings.value) {
-              editor.execCommand('FontSize', false, e.control.settings.value);
-            }
-          }
-        };
-      });
-
-      editor.addMenuItem('formats', {
-        text: 'Formats',
-        menu: formatMenu
-      });
-    }
+    };
 
     var setup = function (editor) {
       setupRtlMode(editor);
-      registerControls(editor);
-      setupContainer(editor);
+      setupHideFloatPanels(editor);
+      setupUiContainer(editor);
+      setupEnvironment(editor);
+
       FormatSelect.register(editor);
       Align.register(editor);
-      SimpleFormats.register(editor);
+      SimpleControls.register(editor);
+      UndoRedo.register(editor);
+      FontSizeSelect.register(editor);
+      FontSelect.register(editor);
+      Formats.register(editor);
+      VisualAid.register(editor);
+      InsertButton.register(editor);
     };
 
     return {
@@ -15999,6 +16163,19 @@ define(
   function (Widget, Factory, Env, Delay) {
     "use strict";
 
+    var toggleTextStyle = function (ctrl, state) {
+      var textStyle = ctrl._textStyle;
+      if (textStyle) {
+        var textElm = ctrl.getEl('text');
+        textElm.setAttribute('style', textStyle);
+
+        if (state) {
+          textElm.style.color = '';
+          textElm.style.backgroundColor = '';
+        }
+      }
+    };
+
     return Widget.extend({
       Defaults: {
         border: 0,
@@ -16269,7 +16446,7 @@ define(
         var self = this, settings = self.settings;
 
         var textStyle = settings.textStyle;
-        if (typeof textStyle == "function") {
+        if (typeof textStyle === "function") {
           textStyle = textStyle.call(this);
         }
 
@@ -16277,6 +16454,7 @@ define(
           var textElm = self.getEl('text');
           if (textElm) {
             textElm.setAttribute('style', textStyle);
+            self._textStyle = textStyle;
           }
         }
 
@@ -16317,6 +16495,8 @@ define(
       },
 
       active: function (state) {
+        toggleTextStyle(this, state);
+
         if (typeof state != "undefined") {
           this.aria('checked', state);
         }

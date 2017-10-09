@@ -185,8 +185,7 @@ define(
 
     var getTocHeader = function (editor) {
       var tagName = editor.getParam('toc_header', 'h2');
-      var isValid = tagName ? editor.schema.isValidChild('div', tagName) : false;
-      return isValid ? tagName : 'h2';
+      return /^h[1-6]$/.test(tagName) ? tagName : 'h2';
     };
 
     var getTocDepth = function (editor) {
@@ -485,8 +484,6 @@ define(
     var toggleState = function (editor) {
       return function (e) {
         var ctrl = e.control;
-
-        ctrl.disabled(editor.readonly || !Toc.hasHeaders(editor));
 
         editor.on('LoadContent SetContent change', function () {
           ctrl.disabled(editor.readonly || !Toc.hasHeaders(editor));

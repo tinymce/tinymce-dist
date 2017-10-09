@@ -81,7 +81,7 @@ var defineGlobal = function (id, ref) {
   define(id, [], function () { return ref; });
 };
 /*jsc
-["tinymce.plugins.spellchecker.Plugin","ephox.katamari.api.Cell","tinymce.core.PluginManager","tinymce.plugins.spellchecker.api.Api","tinymce.plugins.spellchecker.api.Commands","tinymce.plugins.spellchecker.api.Settings","tinymce.plugins.spellchecker.core.DetectProPlugin","tinymce.plugins.spellchecker.ui.Buttons","tinymce.plugins.spellchecker.ui.SuggestionsMenu","global!tinymce.util.Tools.resolve","tinymce.plugins.spellchecker.core.Actions","global!window","tinymce.core.util.Tools","global!document","tinymce.core.dom.DOMUtils","tinymce.core.ui.Factory","tinymce.core.util.URI","tinymce.core.util.XHR","tinymce.plugins.spellchecker.api.Events","tinymce.plugins.spellchecker.core.DomTextMatcher"]
+["tinymce.plugins.spellchecker.Plugin","ephox.katamari.api.Cell","tinymce.core.PluginManager","tinymce.plugins.spellchecker.alien.DetectProPlugin","tinymce.plugins.spellchecker.api.Api","tinymce.plugins.spellchecker.api.Commands","tinymce.plugins.spellchecker.api.Settings","tinymce.plugins.spellchecker.ui.Buttons","tinymce.plugins.spellchecker.ui.SuggestionsMenu","global!tinymce.util.Tools.resolve","global!window","tinymce.plugins.spellchecker.core.Actions","tinymce.core.util.Tools","global!document","tinymce.core.dom.DOMUtils","tinymce.core.ui.Factory","tinymce.core.util.URI","tinymce.core.util.XHR","tinymce.plugins.spellchecker.api.Events","tinymce.plugins.spellchecker.core.DomTextMatcher"]
 jsc*/
 define(
   'ephox.katamari.api.Cell',
@@ -134,6 +134,46 @@ define(
   ],
   function (resolve) {
     return resolve('tinymce.PluginManager');
+  }
+);
+
+defineGlobal("global!window", window);
+/**
+ * DetectProPlugin.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
+
+define(
+  'tinymce.plugins.spellchecker.alien.DetectProPlugin',
+  [
+    'global!window',
+    'tinymce.core.PluginManager'
+  ],
+  function (window, PluginManager) {
+    var hasProPlugin = function (editor) {
+      // draw back if power version is requested and registered
+      if (/(^|[ ,])tinymcespellchecker([, ]|$)/.test(editor.settings.plugins) && PluginManager.get('tinymcespellchecker')) {
+        /*eslint no-console:0 */
+        if (typeof window.console !== "undefined" && window.console.log) {
+          window.console.log(
+            "Spell Checker Pro is incompatible with Spell Checker plugin! " +
+            "Remove 'spellchecker' from the 'plugins' option."
+          );
+        }
+        return true;
+      } else {
+        return false;
+      }
+    };
+
+    return {
+      hasProPlugin: hasProPlugin
+    };
   }
 );
 
@@ -1064,46 +1104,6 @@ define(
     };
   }
 );
-defineGlobal("global!window", window);
-/**
- * DetectProPlugin.js
- *
- * Released under LGPL License.
- * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
- *
- * License: http://www.tinymce.com/license
- * Contributing: http://www.tinymce.com/contributing
- */
-
-define(
-  'tinymce.plugins.spellchecker.core.DetectProPlugin',
-  [
-    'global!window',
-    'tinymce.core.PluginManager'
-  ],
-  function (window, PluginManager) {
-    var hasProPlugin = function (editor) {
-      // draw back if power version is requested and registered
-      if (/(^|[ ,])tinymcespellchecker([, ]|$)/.test(editor.settings.plugins) && PluginManager.get('tinymcespellchecker')) {
-        /*eslint no-console:0 */
-        if (typeof window.console !== "undefined" && window.console.log) {
-          window.console.log(
-            "Spell Checker Pro is incompatible with Spell Checker plugin! " +
-            "Remove 'spellchecker' from the 'plugins' option."
-          );
-        }
-        return true;
-      } else {
-        return false;
-      }
-    };
-
-    return {
-      hasProPlugin: hasProPlugin
-    };
-  }
-);
-
 /**
  * Buttons.js
  *
@@ -1389,14 +1389,14 @@ define(
   [
     'ephox.katamari.api.Cell',
     'tinymce.core.PluginManager',
+    'tinymce.plugins.spellchecker.alien.DetectProPlugin',
     'tinymce.plugins.spellchecker.api.Api',
     'tinymce.plugins.spellchecker.api.Commands',
     'tinymce.plugins.spellchecker.api.Settings',
-    'tinymce.plugins.spellchecker.core.DetectProPlugin',
     'tinymce.plugins.spellchecker.ui.Buttons',
     'tinymce.plugins.spellchecker.ui.SuggestionsMenu'
   ],
-  function (Cell, PluginManager, Api, Commands, Settings, DetectProPlugin, Buttons, SuggestionsMenu) {
+  function (Cell, PluginManager, DetectProPlugin, Api, Commands, Settings, Buttons, SuggestionsMenu) {
     PluginManager.add('spellchecker', function (editor, pluginUrl) {
       var startedState = Cell(false);
       var currentLanguageState = Cell(Settings.getLanguage(editor));
