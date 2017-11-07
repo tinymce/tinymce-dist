@@ -1,7 +1,8 @@
 {
 	"name": "tinymce",
-	"version": "4.7.1",
+	"version": "4.7.2",
 	"description": "Web based JavaScript HTML WYSIWYG editor control.",
+	"author": "Ephox Corporation",
 	"main": "tinymce.js",
 	"license": "LGPL-2.1",
 	"keywords": [
@@ -13,6 +14,6 @@
 		"html"
 	],
 	"bugs": {
-		"url": "http://www.tinymce.com/develop/bugtracker.php"
+		"url": "https://github.com/tinymce/tinymce/issues"
 	}
 }
