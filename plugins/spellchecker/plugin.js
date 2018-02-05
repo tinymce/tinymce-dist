@@ -666,6 +666,9 @@ var spellchecker = (function () {
         }
       });
     });
+    if (suggestions.length==0) {
+        items.push({text:'(No suggestions)',disabled:true});
+    }
     items.push({ text: '-' });
     var hasDictionarySupport = lastSuggestionsState.get().hasDictionarySupport;
     if (hasDictionarySupport) {
