@@ -25,7 +25,7 @@ var visualblocks = (function () {
   var fireVisualBlocks = function (editor, state) {
     editor.fire('VisualBlocks', { state: state });
   };
-  var $_9u3n18qtjd08mfh4 = { fireVisualBlocks: fireVisualBlocks };
+  var $_17d4p4r6jducwtu0 = { fireVisualBlocks: fireVisualBlocks };
 
   var isEnabledByDefault = function (editor) {
     return editor.getParam('visualblocks_default_state', false);
@@ -33,7 +33,7 @@ var visualblocks = (function () {
   var getContentCss = function (editor) {
     return editor.settings.visualblocks_content_css;
   };
-  var $_eo79a8qujd08mfha = {
+  var $_6urbcer7jducwtu1 = {
     isEnabledByDefault: isEnabledByDefault,
     getContentCss: getContentCss
   };
@@ -57,24 +57,24 @@ var visualblocks = (function () {
       doc.getElementsByTagName('head')[0].appendChild(linkElm);
     }
   };
-  var $_41bvurqvjd08mfhc = { load: load };
+  var $_f70r1dr8jducwtu2 = { load: load };
 
   var toggleVisualBlocks = function (editor, pluginUrl, enabledState) {
     var dom = editor.dom;
-    var contentCss = $_eo79a8qujd08mfha.getContentCss(editor);
-    $_41bvurqvjd08mfhc.load(editor.getDoc(), contentCss ? contentCss : pluginUrl + '/css/visualblocks.css');
+    var contentCss = $_6urbcer7jducwtu1.getContentCss(editor);
+    $_f70r1dr8jducwtu2.load(editor.getDoc(), contentCss ? contentCss : pluginUrl + '/css/visualblocks.css');
     dom.toggleClass(editor.getBody(), 'mce-visualblocks');
     enabledState.set(!enabledState.get());
-    $_9u3n18qtjd08mfh4.fireVisualBlocks(editor, enabledState.get());
+    $_17d4p4r6jducwtu0.fireVisualBlocks(editor, enabledState.get());
   };
-  var $_1n58g6qsjd08mfh2 = { toggleVisualBlocks: toggleVisualBlocks };
+  var $_dy66ker5jducwttz = { toggleVisualBlocks: toggleVisualBlocks };
 
   var register = function (editor, pluginUrl, enabledState) {
     editor.addCommand('mceVisualBlocks', function () {
-      $_1n58g6qsjd08mfh2.toggleVisualBlocks(editor, pluginUrl, enabledState);
+      $_dy66ker5jducwttz.toggleVisualBlocks(editor, pluginUrl, enabledState);
     });
   };
-  var $_7rhs1pqrjd08mfgx = { register: register };
+  var $_fdk1q2r4jducwttx = { register: register };
 
   var setup = function (editor, pluginUrl, enabledState) {
     editor.on('PreviewFormats AfterPreviewFormats', function (e) {
@@ -83,15 +83,15 @@ var visualblocks = (function () {
       }
     });
     editor.on('init', function () {
-      if ($_eo79a8qujd08mfha.isEnabledByDefault(editor)) {
-        $_1n58g6qsjd08mfh2.toggleVisualBlocks(editor, pluginUrl, enabledState);
+      if ($_6urbcer7jducwtu1.isEnabledByDefault(editor)) {
+        $_dy66ker5jducwttz.toggleVisualBlocks(editor, pluginUrl, enabledState);
       }
     });
     editor.on('remove', function () {
       editor.dom.removeClass(editor.getBody(), 'mce-visualblocks');
     });
   };
-  var $_1wotzvqyjd08mfhf = { setup: setup };
+  var $_eq34iprbjducwtu4 = { setup: setup };
 
   var toggleActiveState = function (editor, enabledState) {
     return function (e) {
@@ -118,13 +118,13 @@ var visualblocks = (function () {
       prependToContext: true
     });
   };
-  var $_bpg57xqzjd08mfhg = { register: register$1 };
+  var $_4ck83grcjducwtu6 = { register: register$1 };
 
   PluginManager.add('visualblocks', function (editor, pluginUrl) {
     var enabledState = Cell(false);
-    $_7rhs1pqrjd08mfgx.register(editor, pluginUrl, enabledState);
-    $_bpg57xqzjd08mfhg.register(editor, enabledState);
-    $_1wotzvqyjd08mfhf.setup(editor, pluginUrl, enabledState);
+    $_fdk1q2r4jducwttx.register(editor, pluginUrl, enabledState);
+    $_4ck83grcjducwtu6.register(editor, enabledState);
+    $_eq34iprbjducwtu4.setup(editor, pluginUrl, enabledState);
   });
   function Plugin () {
   }
@@ -132,4 +132,4 @@ var visualblocks = (function () {
   return Plugin;
 
 }());
-})()
+})();

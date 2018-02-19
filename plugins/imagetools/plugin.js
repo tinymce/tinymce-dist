@@ -53,7 +53,7 @@ var imagetools = (function () {
     canvas.height = height;
     return canvas;
   }
-  var $_ff7gkwcgjd08mcs0 = {
+  var $_b135f4cpjducwr3j = {
     create: create,
     clone: clone,
     resize: resize,
@@ -67,7 +67,7 @@ var imagetools = (function () {
   function getHeight(image) {
     return image.naturalHeight || image.height;
   }
-  var $_dlc4vachjd08mcs3 = {
+  var $_a2i3c1cqjducwr3l = {
     getWidth: getWidth,
     getHeight: getHeight
   };
@@ -288,7 +288,7 @@ var imagetools = (function () {
   };
   var never = constant(false);
   var always = constant(true);
-  var $_b2v6wackjd08mcsc = {
+  var $_7e8sfvctjducwr3z = {
     noop: noop,
     noarg: noarg,
     compose: compose,
@@ -304,8 +304,8 @@ var imagetools = (function () {
     always: always
   };
 
-  var never$1 = $_b2v6wackjd08mcsc.never;
-  var always$1 = $_b2v6wackjd08mcsc.always;
+  var never$1 = $_7e8sfvctjducwr3z.never;
+  var always$1 = $_7e8sfvctjducwr3z.always;
   var none = function () {
     return NONE;
   };
@@ -348,7 +348,7 @@ var imagetools = (function () {
       toArray: function () {
         return [];
       },
-      toString: $_b2v6wackjd08mcsc.constant('none()')
+      toString: $_7e8sfvctjducwr3z.constant('none()')
     };
     if (Object.freeze)
       Object.freeze(me);
@@ -417,7 +417,7 @@ var imagetools = (function () {
   var from = function (value) {
     return value === null || value === undefined ? NONE : some(value);
   };
-  var $_7ah24ocjjd08mcs9 = {
+  var Option = {
     some: some,
     none: none,
     from: from
@@ -450,7 +450,7 @@ var imagetools = (function () {
     var parts = name.split('.');
     return forge(parts, target);
   };
-  var $_aapy3ocnjd08mcsh = {
+  var $_4guhq9cwjducwr45 = {
     path: path,
     resolve: resolve,
     forge: forge,
@@ -458,7 +458,7 @@ var imagetools = (function () {
   };
 
   var unsafe = function (name, scope) {
-    return $_aapy3ocnjd08mcsh.resolve(name, scope);
+    return $_4guhq9cwjducwr45.resolve(name, scope);
   };
   var getOrDie = function (name, scope) {
     var actual = unsafe(name, scope);
@@ -466,32 +466,32 @@ var imagetools = (function () {
       throw name + ' not available on this browser';
     return actual;
   };
-  var $_2wyswxcmjd08mcsf = { getOrDie: getOrDie };
+  var $_4dfafycvjducwr42 = { getOrDie: getOrDie };
 
   function Blob (parts, properties) {
-    var f = $_2wyswxcmjd08mcsf.getOrDie('Blob');
+    var f = $_4dfafycvjducwr42.getOrDie('Blob');
     return new f(parts, properties);
   }
 
   function FileReader () {
-    var f = $_2wyswxcmjd08mcsf.getOrDie('FileReader');
+    var f = $_4dfafycvjducwr42.getOrDie('FileReader');
     return new f();
   }
 
   function Uint8Array (arr) {
-    var f = $_2wyswxcmjd08mcsf.getOrDie('Uint8Array');
+    var f = $_4dfafycvjducwr42.getOrDie('Uint8Array');
     return new f(arr);
   }
 
   var requestAnimationFrame = function (callback) {
-    var f = $_2wyswxcmjd08mcsf.getOrDie('requestAnimationFrame');
+    var f = $_4dfafycvjducwr42.getOrDie('requestAnimationFrame');
     f(callback);
   };
   var atob = function (base64) {
-    var f = $_2wyswxcmjd08mcsf.getOrDie('atob');
+    var f = $_4dfafycvjducwr42.getOrDie('atob');
     return f(base64);
   };
-  var $_dpi6qvcrjd08mcsn = {
+  var $_f4hs87d0jducwr49 = {
     atob: atob,
     requestAnimationFrame: requestAnimationFrame
   };
@@ -575,11 +575,11 @@ var imagetools = (function () {
     var data = uri.split(',');
     var matches = /data:([^;]+)/.exec(data[0]);
     if (!matches)
-      return $_7ah24ocjjd08mcs9.none();
+      return Option.none();
     var mimetype = matches[1];
     var base64 = data[1];
     var sliceSize = 1024;
-    var byteCharacters = $_dpi6qvcrjd08mcsn.atob(base64);
+    var byteCharacters = $_f4hs87d0jducwr49.atob(base64);
     var bytesLength = byteCharacters.length;
     var slicesCount = Math.ceil(bytesLength / sliceSize);
     var byteArrays = new Array(slicesCount);
@@ -592,7 +592,7 @@ var imagetools = (function () {
       }
       byteArrays[sliceIndex] = Uint8Array(bytes);
     }
-    return $_7ah24ocjjd08mcs9.some(Blob(byteArrays, { type: mimetype }));
+    return Option.some(Blob(byteArrays, { type: mimetype }));
   }
   function dataUriToBlob(uri) {
     return new Promise(function (resolve, reject) {
@@ -632,8 +632,8 @@ var imagetools = (function () {
     return blobToImage(blob).then(function (image) {
       revokeImageUrl(image);
       var context, canvas;
-      canvas = $_ff7gkwcgjd08mcs0.create($_dlc4vachjd08mcs3.getWidth(image), $_dlc4vachjd08mcs3.getHeight(image));
-      context = $_ff7gkwcgjd08mcs0.get2dContext(canvas);
+      canvas = $_b135f4cpjducwr3j.create($_a2i3c1cqjducwr3l.getWidth(image), $_a2i3c1cqjducwr3l.getHeight(image));
+      context = $_b135f4cpjducwr3j.get2dContext(canvas);
       context.drawImage(image, 0, 0);
       return canvas;
     });
@@ -655,7 +655,7 @@ var imagetools = (function () {
   function revokeImageUrl(image) {
     URL.revokeObjectURL(image.src);
   }
-  var $_bjnwsucfjd08mcrl = {
+  var $_gbsncwcojducwr30 = {
     blobToImage: blobToImage,
     imageToBlob: imageToBlob,
     blobToDataUri: blobToDataUri,
@@ -668,24 +668,24 @@ var imagetools = (function () {
   };
 
   var blobToImage$1 = function (image) {
-    return $_bjnwsucfjd08mcrl.blobToImage(image);
+    return $_gbsncwcojducwr30.blobToImage(image);
   };
   var imageToBlob$1 = function (blob) {
-    return $_bjnwsucfjd08mcrl.imageToBlob(blob);
+    return $_gbsncwcojducwr30.imageToBlob(blob);
   };
   var blobToDataUri$1 = function (blob) {
-    return $_bjnwsucfjd08mcrl.blobToDataUri(blob);
+    return $_gbsncwcojducwr30.blobToDataUri(blob);
   };
   var blobToBase64$1 = function (blob) {
-    return $_bjnwsucfjd08mcrl.blobToBase64(blob);
+    return $_gbsncwcojducwr30.blobToBase64(blob);
   };
   var dataUriToBlobSync$1 = function (uri) {
-    return $_bjnwsucfjd08mcrl.dataUriToBlobSync(uri);
+    return $_gbsncwcojducwr30.dataUriToBlobSync(uri);
   };
   var uriToBlob$1 = function (uri) {
-    return $_7ah24ocjjd08mcs9.from($_bjnwsucfjd08mcrl.uriToBlob(uri));
+    return Option.from($_gbsncwcojducwr30.uriToBlob(uri));
   };
-  var $_8wv43ycejd08mcrh = {
+  var $_qw14zcnjducwr2u = {
     blobToImage: blobToImage$1,
     imageToBlob: imageToBlob$1,
     blobToDataUri: blobToDataUri$1,
@@ -696,7 +696,7 @@ var imagetools = (function () {
 
   function create$1(getCanvas, blob, uri) {
     var initialType = blob.type;
-    var getType = $_b2v6wackjd08mcsc.constant(initialType);
+    var getType = $_7e8sfvctjducwr3z.constant(initialType);
     function toBlob() {
       return Promise.resolve(blob);
     }
@@ -708,12 +708,12 @@ var imagetools = (function () {
     }
     function toAdjustedBlob(type, quality) {
       return getCanvas.then(function (canvas) {
-        return $_bjnwsucfjd08mcrl.canvasToBlob(canvas, type, quality);
+        return $_gbsncwcojducwr30.canvasToBlob(canvas, type, quality);
       });
     }
     function toAdjustedDataURL(type, quality) {
       return getCanvas.then(function (canvas) {
-        return $_bjnwsucfjd08mcrl.canvasToDataURL(canvas, type, quality);
+        return $_gbsncwcojducwr30.canvasToDataURL(canvas, type, quality);
       });
     }
     function toAdjustedBase64(type, quality) {
@@ -722,7 +722,7 @@ var imagetools = (function () {
       });
     }
     function toCanvas() {
-      return getCanvas.then($_ff7gkwcgjd08mcs0.clone);
+      return getCanvas.then($_b135f4cpjducwr3j.clone);
     }
     return {
       getType: getType,
@@ -736,24 +736,24 @@ var imagetools = (function () {
     };
   }
   function fromBlob(blob) {
-    return $_bjnwsucfjd08mcrl.blobToDataUri(blob).then(function (uri) {
-      return create$1($_bjnwsucfjd08mcrl.blobToCanvas(blob), blob, uri);
+    return $_gbsncwcojducwr30.blobToDataUri(blob).then(function (uri) {
+      return create$1($_gbsncwcojducwr30.blobToCanvas(blob), blob, uri);
     });
   }
   function fromCanvas(canvas, type) {
-    return $_bjnwsucfjd08mcrl.canvasToBlob(canvas, type).then(function (blob) {
+    return $_gbsncwcojducwr30.canvasToBlob(canvas, type).then(function (blob) {
       return create$1(Promise.resolve(canvas), blob, canvas.toDataURL());
     });
   }
   function fromImage(image) {
-    return $_bjnwsucfjd08mcrl.imageToBlob(image).then(function (blob) {
+    return $_gbsncwcojducwr30.imageToBlob(image).then(function (blob) {
       return fromBlob(blob);
     });
   }
   var fromBlobAndUrlSync = function (blob, url) {
-    return create$1($_bjnwsucfjd08mcrl.blobToCanvas(blob), blob, url);
+    return create$1($_gbsncwcojducwr30.blobToCanvas(blob), blob, url);
   };
-  var $_8ajqxccujd08mcsx = {
+  var $_7um52id3jducwr4o = {
     fromBlob: fromBlob,
     fromCanvas: fromCanvas,
     fromImage: fromImage,
@@ -1164,7 +1164,7 @@ var imagetools = (function () {
       1
     ], value));
   }
-  var $_a9kxkocvjd08mct3 = {
+  var $_91gydid4jducwr4w = {
     identity: identity$1,
     adjust: adjust,
     multiply: multiply,
@@ -1183,7 +1183,7 @@ var imagetools = (function () {
     });
   }
   function applyColorFilter(canvas, type, matrix) {
-    var context = $_ff7gkwcgjd08mcs0.get2dContext(canvas);
+    var context = $_b135f4cpjducwr3j.get2dContext(canvas);
     var pixels;
     function applyMatrix(pixels, m) {
       var d = pixels.data, r, g, b, a, i, m0 = m[0], m1 = m[1], m2 = m[2], m3 = m[3], m4 = m[4], m5 = m[5], m6 = m[6], m7 = m[7], m8 = m[8], m9 = m[9], m10 = m[10], m11 = m[11], m12 = m[12], m13 = m[13], m14 = m[14], m15 = m[15], m16 = m[16], m17 = m[17], m18 = m[18], m19 = m[19];
@@ -1201,7 +1201,7 @@ var imagetools = (function () {
     }
     pixels = applyMatrix(context.getImageData(0, 0, canvas.width, canvas.height), matrix);
     context.putImageData(pixels, 0, 0);
-    return $_8ajqxccujd08mcsx.fromCanvas(canvas, type);
+    return $_7um52id3jducwr4o.fromCanvas(canvas, type);
   }
   function convoluteFilter(ir, matrix) {
     return ir.toCanvas().then(function (canvas) {
@@ -1209,7 +1209,7 @@ var imagetools = (function () {
     });
   }
   function applyConvoluteFilter(canvas, type, matrix) {
-    var context = $_ff7gkwcgjd08mcs0.get2dContext(canvas);
+    var context = $_b135f4cpjducwr3j.get2dContext(canvas);
     var pixelsIn, pixelsOut;
     function applyMatrix(pixelsIn, pixelsOut, matrix) {
       var rgba, drgba, side, halfSide, x, y, r, g, b, cx, cy, scx, scy, offset, wt, w, h;
@@ -1253,11 +1253,11 @@ var imagetools = (function () {
     pixelsOut = context.getImageData(0, 0, canvas.width, canvas.height);
     pixelsOut = applyMatrix(pixelsIn, pixelsOut, matrix);
     context.putImageData(pixelsOut, 0, 0);
-    return $_8ajqxccujd08mcsx.fromCanvas(canvas, type);
+    return $_7um52id3jducwr4o.fromCanvas(canvas, type);
   }
   function functionColorFilter(colorFn) {
     var filterImpl = function (canvas, type, value) {
-      var context = $_ff7gkwcgjd08mcs0.get2dContext(canvas);
+      var context = $_b135f4cpjducwr3j.get2dContext(canvas);
       var pixels, i, lookup = new Array(256);
       function applyLookup(pixels, lookup) {
         var d = pixels.data, i;
@@ -1273,7 +1273,7 @@ var imagetools = (function () {
       }
       pixels = applyLookup(context.getImageData(0, 0, canvas.width, canvas.height), lookup);
       context.putImageData(pixels, 0, 0);
-      return $_8ajqxccujd08mcsx.fromCanvas(canvas, type);
+      return $_7um52id3jducwr4o.fromCanvas(canvas, type);
     };
     return function (ir, value) {
       return ir.toCanvas().then(function (canvas) {
@@ -1283,7 +1283,7 @@ var imagetools = (function () {
   }
   function complexAdjustableColorFilter(matrixAdjustFn) {
     return function (ir, adjust) {
-      return colorFilter(ir, matrixAdjustFn($_a9kxkocvjd08mct3.identity(), adjust));
+      return colorFilter(ir, matrixAdjustFn($_91gydid4jducwr4w.identity(), adjust));
     };
   }
   function basicColorFilter(matrix) {
@@ -1296,7 +1296,7 @@ var imagetools = (function () {
       return convoluteFilter(ir, kernel);
     };
   }
-  var $_b0c2xctjd08mcss = {
+  var $_1hbhv1d2jducwr4g = {
     invert: basicColorFilter([
       -1,
       0,
@@ -1319,14 +1319,14 @@ var imagetools = (function () {
       1,
       0
     ]),
-    brightness: complexAdjustableColorFilter($_a9kxkocvjd08mct3.adjustBrightness),
-    hue: complexAdjustableColorFilter($_a9kxkocvjd08mct3.adjustHue),
-    saturate: complexAdjustableColorFilter($_a9kxkocvjd08mct3.adjustSaturation),
-    contrast: complexAdjustableColorFilter($_a9kxkocvjd08mct3.adjustContrast),
-    grayscale: complexAdjustableColorFilter($_a9kxkocvjd08mct3.adjustGrayscale),
-    sepia: complexAdjustableColorFilter($_a9kxkocvjd08mct3.adjustSepia),
+    brightness: complexAdjustableColorFilter($_91gydid4jducwr4w.adjustBrightness),
+    hue: complexAdjustableColorFilter($_91gydid4jducwr4w.adjustHue),
+    saturate: complexAdjustableColorFilter($_91gydid4jducwr4w.adjustSaturation),
+    contrast: complexAdjustableColorFilter($_91gydid4jducwr4w.adjustContrast),
+    grayscale: complexAdjustableColorFilter($_91gydid4jducwr4w.adjustGrayscale),
+    sepia: complexAdjustableColorFilter($_91gydid4jducwr4w.adjustSepia),
     colorize: function (ir, adjustR, adjustG, adjustB) {
-      return colorFilter(ir, $_a9kxkocvjd08mct3.adjustColors($_a9kxkocvjd08mct3.identity(), adjustR, adjustG, adjustB));
+      return colorFilter(ir, $_91gydid4jducwr4w.adjustColors($_91gydid4jducwr4w.identity(), adjustR, adjustG, adjustB));
     },
     sharpen: basicConvolutionFilter([
       0,
@@ -1361,8 +1361,8 @@ var imagetools = (function () {
   };
 
   function scale(image, dW, dH) {
-    var sW = $_dlc4vachjd08mcs3.getWidth(image);
-    var sH = $_dlc4vachjd08mcs3.getHeight(image);
+    var sW = $_a2i3c1cqjducwr3l.getWidth(image);
+    var sH = $_a2i3c1cqjducwr3l.getHeight(image);
     var wRatio = dW / sW;
     var hRatio = dH / sH;
     var scaleCapped = false;
@@ -1381,17 +1381,17 @@ var imagetools = (function () {
   }
   function _scale(image, wRatio, hRatio) {
     return new Promise(function (resolve) {
-      var sW = $_dlc4vachjd08mcs3.getWidth(image);
-      var sH = $_dlc4vachjd08mcs3.getHeight(image);
+      var sW = $_a2i3c1cqjducwr3l.getWidth(image);
+      var sH = $_a2i3c1cqjducwr3l.getHeight(image);
       var dW = Math.floor(sW * wRatio);
       var dH = Math.floor(sH * hRatio);
-      var canvas = $_ff7gkwcgjd08mcs0.create(dW, dH);
-      var context = $_ff7gkwcgjd08mcs0.get2dContext(canvas);
+      var canvas = $_b135f4cpjducwr3j.create(dW, dH);
+      var context = $_b135f4cpjducwr3j.get2dContext(canvas);
       context.drawImage(image, 0, 0, sW, sH, 0, 0, dW, dH);
       resolve(canvas);
     });
   }
-  var $_5k8acncxjd08mctc = { scale: scale };
+  var $_9tgx6td6jducwr59 = { scale: scale };
 
   function rotate(ir, angle) {
     return ir.toCanvas().then(function (canvas) {
@@ -1399,12 +1399,12 @@ var imagetools = (function () {
     });
   }
   function applyRotate(image, type, angle) {
-    var canvas = $_ff7gkwcgjd08mcs0.create(image.width, image.height);
-    var context = $_ff7gkwcgjd08mcs0.get2dContext(canvas);
+    var canvas = $_b135f4cpjducwr3j.create(image.width, image.height);
+    var context = $_b135f4cpjducwr3j.get2dContext(canvas);
     var translateX = 0, translateY = 0;
     angle = angle < 0 ? 360 + angle : angle;
     if (angle == 90 || angle == 270) {
-      $_ff7gkwcgjd08mcs0.resize(canvas, canvas.height, canvas.width);
+      $_b135f4cpjducwr3j.resize(canvas, canvas.height, canvas.width);
     }
     if (angle == 90 || angle == 180) {
       translateX = canvas.width;
@@ -1415,7 +1415,7 @@ var imagetools = (function () {
     context.translate(translateX, translateY);
     context.rotate(angle * Math.PI / 180);
     context.drawImage(image, 0, 0);
-    return $_8ajqxccujd08mcsx.fromCanvas(canvas, type);
+    return $_7um52id3jducwr4o.fromCanvas(canvas, type);
   }
   function flip(ir, axis) {
     return ir.toCanvas().then(function (canvas) {
@@ -1423,8 +1423,8 @@ var imagetools = (function () {
     });
   }
   function applyFlip(image, type, axis) {
-    var canvas = $_ff7gkwcgjd08mcs0.create(image.width, image.height);
-    var context = $_ff7gkwcgjd08mcs0.get2dContext(canvas);
+    var canvas = $_b135f4cpjducwr3j.create(image.width, image.height);
+    var context = $_b135f4cpjducwr3j.get2dContext(canvas);
     if (axis == 'v') {
       context.scale(1, -1);
       context.drawImage(image, 0, -canvas.height);
@@ -1432,7 +1432,7 @@ var imagetools = (function () {
       context.scale(-1, 1);
       context.drawImage(image, -canvas.width, 0);
     }
-    return $_8ajqxccujd08mcsx.fromCanvas(canvas, type);
+    return $_7um52id3jducwr4o.fromCanvas(canvas, type);
   }
   function crop(ir, x, y, w, h) {
     return ir.toCanvas().then(function (canvas) {
@@ -1440,19 +1440,19 @@ var imagetools = (function () {
     });
   }
   function applyCrop(image, type, x, y, w, h) {
-    var canvas = $_ff7gkwcgjd08mcs0.create(w, h);
-    var context = $_ff7gkwcgjd08mcs0.get2dContext(canvas);
+    var canvas = $_b135f4cpjducwr3j.create(w, h);
+    var context = $_b135f4cpjducwr3j.get2dContext(canvas);
     context.drawImage(image, -x, -y);
-    return $_8ajqxccujd08mcsx.fromCanvas(canvas, type);
+    return $_7um52id3jducwr4o.fromCanvas(canvas, type);
   }
   function resize$1(ir, w, h) {
     return ir.toCanvas().then(function (canvas) {
-      return $_5k8acncxjd08mctc.scale(canvas, w, h).then(function (newCanvas) {
-        return $_8ajqxccujd08mcsx.fromCanvas(newCanvas, ir.getType());
+      return $_9tgx6td6jducwr59.scale(canvas, w, h).then(function (newCanvas) {
+        return $_7um52id3jducwr4o.fromCanvas(newCanvas, ir.getType());
       });
     });
   }
-  var $_709g93cwjd08mct9 = {
+  var $_4bf0crd5jducwr54 = {
     rotate: rotate,
     flip: flip,
     crop: crop,
@@ -1460,54 +1460,54 @@ var imagetools = (function () {
   };
 
   var invert = function (ir) {
-    return $_b0c2xctjd08mcss.invert(ir);
+    return $_1hbhv1d2jducwr4g.invert(ir);
   };
   var sharpen = function (ir) {
-    return $_b0c2xctjd08mcss.sharpen(ir);
+    return $_1hbhv1d2jducwr4g.sharpen(ir);
   };
   var emboss = function (ir) {
-    return $_b0c2xctjd08mcss.emboss(ir);
+    return $_1hbhv1d2jducwr4g.emboss(ir);
   };
   var gamma = function (ir, value) {
-    return $_b0c2xctjd08mcss.gamma(ir, value);
+    return $_1hbhv1d2jducwr4g.gamma(ir, value);
   };
   var exposure = function (ir, value) {
-    return $_b0c2xctjd08mcss.exposure(ir, value);
+    return $_1hbhv1d2jducwr4g.exposure(ir, value);
   };
   var colorize = function (ir, adjustR, adjustG, adjustB) {
-    return $_b0c2xctjd08mcss.colorize(ir, adjustR, adjustG, adjustB);
+    return $_1hbhv1d2jducwr4g.colorize(ir, adjustR, adjustG, adjustB);
   };
   var brightness = function (ir, adjust) {
-    return $_b0c2xctjd08mcss.brightness(ir, adjust);
+    return $_1hbhv1d2jducwr4g.brightness(ir, adjust);
   };
   var hue = function (ir, adjust) {
-    return $_b0c2xctjd08mcss.hue(ir, adjust);
+    return $_1hbhv1d2jducwr4g.hue(ir, adjust);
   };
   var saturate = function (ir, adjust) {
-    return $_b0c2xctjd08mcss.saturate(ir, adjust);
+    return $_1hbhv1d2jducwr4g.saturate(ir, adjust);
   };
   var contrast = function (ir, adjust) {
-    return $_b0c2xctjd08mcss.contrast(ir, adjust);
+    return $_1hbhv1d2jducwr4g.contrast(ir, adjust);
   };
   var grayscale = function (ir, adjust) {
-    return $_b0c2xctjd08mcss.grayscale(ir, adjust);
+    return $_1hbhv1d2jducwr4g.grayscale(ir, adjust);
   };
   var sepia = function (ir, adjust) {
-    return $_b0c2xctjd08mcss.sepia(ir, adjust);
+    return $_1hbhv1d2jducwr4g.sepia(ir, adjust);
   };
   var flip$1 = function (ir, axis) {
-    return $_709g93cwjd08mct9.flip(ir, axis);
+    return $_4bf0crd5jducwr54.flip(ir, axis);
   };
   var crop$1 = function (ir, x, y, w, h) {
-    return $_709g93cwjd08mct9.crop(ir, x, y, w, h);
+    return $_4bf0crd5jducwr54.crop(ir, x, y, w, h);
   };
   var resize$2 = function (ir, w, h) {
-    return $_709g93cwjd08mct9.resize(ir, w, h);
+    return $_4bf0crd5jducwr54.resize(ir, w, h);
   };
   var rotate$1 = function (ir, angle) {
-    return $_709g93cwjd08mct9.rotate(ir, angle);
+    return $_4bf0crd5jducwr54.rotate(ir, angle);
   };
-  var $_c34z08csjd08mcso = {
+  var $_9tpokfd1jducwr4b = {
     invert: invert,
     sharpen: sharpen,
     emboss: emboss,
@@ -1527,13 +1527,13 @@ var imagetools = (function () {
   };
 
   var blobToImageResult = function (blob) {
-    return $_8ajqxccujd08mcsx.fromBlob(blob);
+    return $_7um52id3jducwr4o.fromBlob(blob);
   };
   var fromBlobAndUrlSync$1 = function (blob, uri) {
-    return $_8ajqxccujd08mcsx.fromBlobAndUrlSync(blob, uri);
+    return $_7um52id3jducwr4o.fromBlobAndUrlSync(blob, uri);
   };
   var imageToImageResult = function (image) {
-    return $_8ajqxccujd08mcsx.fromImage(image);
+    return $_7um52id3jducwr4o.fromImage(image);
   };
   var imageResultToBlob = function (ir, type, quality) {
     if (type === undefined && quality === undefined) {
@@ -1548,7 +1548,7 @@ var imagetools = (function () {
   var imageResultToDataURL = function (ir) {
     return ir.toDataURL();
   };
-  var $_1wkopvcyjd08mcte = {
+  var $_a2nzwvd7jducwr5a = {
     blobToImageResult: blobToImageResult,
     fromBlobAndUrlSync: fromBlobAndUrlSync$1,
     imageToImageResult: imageToImageResult,
@@ -1558,7 +1558,7 @@ var imagetools = (function () {
   };
 
   var url = function () {
-    return $_2wyswxcmjd08mcsf.getOrDie('URL');
+    return $_4dfafycvjducwr42.getOrDie('URL');
   };
   var createObjectURL = function (blob) {
     return url().createObjectURL(blob);
@@ -1566,7 +1566,7 @@ var imagetools = (function () {
   var revokeObjectURL = function (u) {
     url().revokeObjectURL(u);
   };
-  var $_3i2p7sczjd08mctf = {
+  var $_8h1aqxd8jducwr5c = {
     createObjectURL: createObjectURL,
     revokeObjectURL: revokeObjectURL
   };
@@ -1583,457 +1583,10 @@ var imagetools = (function () {
   var getProxyUrl = function (editor) {
     return editor.getParam('imagetools_proxy');
   };
-  var $_g17dn9d3jd08mcto = {
+  var $_dw9k5sdcjducwr5d = {
     getToolbarItems: getToolbarItems,
     getProxyUrl: getProxyUrl
   };
-
-  function getImageSize(img) {
-    var width, height;
-    function isPxValue(value) {
-      return /^[0-9\.]+px$/.test(value);
-    }
-    width = img.style.width;
-    height = img.style.height;
-    if (width || height) {
-      if (isPxValue(width) && isPxValue(height)) {
-        return {
-          w: parseInt(width, 10),
-          h: parseInt(height, 10)
-        };
-      }
-      return null;
-    }
-    width = img.width;
-    height = img.height;
-    if (width && height) {
-      return {
-        w: parseInt(width, 10),
-        h: parseInt(height, 10)
-      };
-    }
-    return null;
-  }
-  function setImageSize(img, size) {
-    var width, height;
-    if (size) {
-      width = img.style.width;
-      height = img.style.height;
-      if (width || height) {
-        img.style.width = size.w + 'px';
-        img.style.height = size.h + 'px';
-        img.removeAttribute('data-mce-style');
-      }
-      width = img.width;
-      height = img.height;
-      if (width || height) {
-        img.setAttribute('width', size.w);
-        img.setAttribute('height', size.h);
-      }
-    }
-  }
-  function getNaturalImageSize(img) {
-    return {
-      w: img.naturalWidth,
-      h: img.naturalHeight
-    };
-  }
-  var $_8imxajd4jd08mctp = {
-    getImageSize: getImageSize,
-    setImageSize: setImageSize,
-    getNaturalImageSize: getNaturalImageSize
-  };
-
-  var rawIndexOf = function () {
-    var pIndexOf = Array.prototype.indexOf;
-    var fastIndex = function (xs, x) {
-      return pIndexOf.call(xs, x);
-    };
-    var slowIndex = function (xs, x) {
-      return slowIndexOf(xs, x);
-    };
-    return pIndexOf === undefined ? slowIndex : fastIndex;
-  }();
-  var indexOf = function (xs, x) {
-    var r = rawIndexOf(xs, x);
-    return r === -1 ? $_7ah24ocjjd08mcs9.none() : $_7ah24ocjjd08mcs9.some(r);
-  };
-  var contains = function (xs, x) {
-    return rawIndexOf(xs, x) > -1;
-  };
-  var exists = function (xs, pred) {
-    return findIndex(xs, pred).isSome();
-  };
-  var range = function (num, f) {
-    var r = [];
-    for (var i = 0; i < num; i++) {
-      r.push(f(i));
-    }
-    return r;
-  };
-  var chunk = function (array, size) {
-    var r = [];
-    for (var i = 0; i < array.length; i += size) {
-      var s = array.slice(i, i + size);
-      r.push(s);
-    }
-    return r;
-  };
-  var map = function (xs, f) {
-    var len = xs.length;
-    var r = new Array(len);
-    for (var i = 0; i < len; i++) {
-      var x = xs[i];
-      r[i] = f(x, i, xs);
-    }
-    return r;
-  };
-  var each = function (xs, f) {
-    for (var i = 0, len = xs.length; i < len; i++) {
-      var x = xs[i];
-      f(x, i, xs);
-    }
-  };
-  var eachr = function (xs, f) {
-    for (var i = xs.length - 1; i >= 0; i--) {
-      var x = xs[i];
-      f(x, i, xs);
-    }
-  };
-  var partition = function (xs, pred) {
-    var pass = [];
-    var fail = [];
-    for (var i = 0, len = xs.length; i < len; i++) {
-      var x = xs[i];
-      var arr = pred(x, i, xs) ? pass : fail;
-      arr.push(x);
-    }
-    return {
-      pass: pass,
-      fail: fail
-    };
-  };
-  var filter = function (xs, pred) {
-    var r = [];
-    for (var i = 0, len = xs.length; i < len; i++) {
-      var x = xs[i];
-      if (pred(x, i, xs)) {
-        r.push(x);
-      }
-    }
-    return r;
-  };
-  var groupBy = function (xs, f) {
-    if (xs.length === 0) {
-      return [];
-    } else {
-      var wasType = f(xs[0]);
-      var r = [];
-      var group = [];
-      for (var i = 0, len = xs.length; i < len; i++) {
-        var x = xs[i];
-        var type = f(x);
-        if (type !== wasType) {
-          r.push(group);
-          group = [];
-        }
-        wasType = type;
-        group.push(x);
-      }
-      if (group.length !== 0) {
-        r.push(group);
-      }
-      return r;
-    }
-  };
-  var foldr = function (xs, f, acc) {
-    eachr(xs, function (x) {
-      acc = f(acc, x);
-    });
-    return acc;
-  };
-  var foldl = function (xs, f, acc) {
-    each(xs, function (x) {
-      acc = f(acc, x);
-    });
-    return acc;
-  };
-  var find = function (xs, pred) {
-    for (var i = 0, len = xs.length; i < len; i++) {
-      var x = xs[i];
-      if (pred(x, i, xs)) {
-        return $_7ah24ocjjd08mcs9.some(x);
-      }
-    }
-    return $_7ah24ocjjd08mcs9.none();
-  };
-  var findIndex = function (xs, pred) {
-    for (var i = 0, len = xs.length; i < len; i++) {
-      var x = xs[i];
-      if (pred(x, i, xs)) {
-        return $_7ah24ocjjd08mcs9.some(i);
-      }
-    }
-    return $_7ah24ocjjd08mcs9.none();
-  };
-  var slowIndexOf = function (xs, x) {
-    for (var i = 0, len = xs.length; i < len; ++i) {
-      if (xs[i] === x) {
-        return i;
-      }
-    }
-    return -1;
-  };
-  var push = Array.prototype.push;
-  var flatten = function (xs) {
-    var r = [];
-    for (var i = 0, len = xs.length; i < len; ++i) {
-      if (!Array.prototype.isPrototypeOf(xs[i]))
-        throw new Error('Arr.flatten item ' + i + ' was not an array, input: ' + xs);
-      push.apply(r, xs[i]);
-    }
-    return r;
-  };
-  var bind = function (xs, f) {
-    var output = map(xs, f);
-    return flatten(output);
-  };
-  var forall = function (xs, pred) {
-    for (var i = 0, len = xs.length; i < len; ++i) {
-      var x = xs[i];
-      if (pred(x, i, xs) !== true) {
-        return false;
-      }
-    }
-    return true;
-  };
-  var equal = function (a1, a2) {
-    return a1.length === a2.length && forall(a1, function (x, i) {
-      return x === a2[i];
-    });
-  };
-  var slice = Array.prototype.slice;
-  var reverse = function (xs) {
-    var r = slice.call(xs, 0);
-    r.reverse();
-    return r;
-  };
-  var difference = function (a1, a2) {
-    return filter(a1, function (x) {
-      return !contains(a2, x);
-    });
-  };
-  var mapToObject = function (xs, f) {
-    var r = {};
-    for (var i = 0, len = xs.length; i < len; i++) {
-      var x = xs[i];
-      r[String(x)] = f(x, i);
-    }
-    return r;
-  };
-  var pure = function (x) {
-    return [x];
-  };
-  var sort = function (xs, comparator) {
-    var copy = slice.call(xs, 0);
-    copy.sort(comparator);
-    return copy;
-  };
-  var head = function (xs) {
-    return xs.length === 0 ? $_7ah24ocjjd08mcs9.none() : $_7ah24ocjjd08mcs9.some(xs[0]);
-  };
-  var last = function (xs) {
-    return xs.length === 0 ? $_7ah24ocjjd08mcs9.none() : $_7ah24ocjjd08mcs9.some(xs[xs.length - 1]);
-  };
-  var $_dbu383d7jd08mctx = {
-    map: map,
-    each: each,
-    eachr: eachr,
-    partition: partition,
-    filter: filter,
-    groupBy: groupBy,
-    indexOf: indexOf,
-    foldr: foldr,
-    foldl: foldl,
-    find: find,
-    findIndex: findIndex,
-    flatten: flatten,
-    bind: bind,
-    forall: forall,
-    exists: exists,
-    contains: contains,
-    equal: equal,
-    reverse: reverse,
-    chunk: chunk,
-    difference: difference,
-    mapToObject: mapToObject,
-    pure: pure,
-    sort: sort,
-    range: range,
-    head: head,
-    last: last
-  };
-
-  function XMLHttpRequest$1 () {
-    var f = $_2wyswxcmjd08mcsf.getOrDie('XMLHttpRequest');
-    return new f();
-  }
-
-  var isValue = function (obj) {
-    return obj !== null && obj !== undefined;
-  };
-  var traverse = function (json, path) {
-    var value;
-    value = path.reduce(function (result, key) {
-      return isValue(result) ? result[key] : undefined;
-    }, json);
-    return isValue(value) ? value : null;
-  };
-  var requestUrlAsBlob = function (url, headers) {
-    return new Promise$1(function (resolve) {
-      var xhr;
-      xhr = new XMLHttpRequest$1();
-      xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4) {
-          resolve({
-            status: xhr.status,
-            blob: this.response
-          });
-        }
-      };
-      xhr.open('GET', url, true);
-      Tools.each(headers, function (value, key) {
-        xhr.setRequestHeader(key, value);
-      });
-      xhr.responseType = 'blob';
-      xhr.send();
-    });
-  };
-  var readBlob = function (blob) {
-    return new Promise$1(function (resolve) {
-      var fr = new FileReader();
-      fr.onload = function (e) {
-        var data = e.target;
-        resolve(data.result);
-      };
-      fr.readAsText(blob);
-    });
-  };
-  var parseJson = function (text) {
-    var json;
-    try {
-      json = JSON.parse(text);
-    } catch (ex) {
-    }
-    return json;
-  };
-  var $_a8xo06d8jd08mcu5 = {
-    traverse: traverse,
-    readBlob: readBlob,
-    requestUrlAsBlob: requestUrlAsBlob,
-    parseJson: parseJson
-  };
-
-  var friendlyHttpErrors = [
-    {
-      code: 404,
-      message: 'Could not find Image Proxy'
-    },
-    {
-      code: 403,
-      message: 'Rejected request'
-    },
-    {
-      code: 0,
-      message: 'Incorrect Image Proxy URL'
-    }
-  ];
-  var friendlyServiceErrors = [
-    {
-      type: 'key_missing',
-      message: 'The request did not include an api key.'
-    },
-    {
-      type: 'key_not_found',
-      message: 'The provided api key could not be found.'
-    },
-    {
-      type: 'domain_not_trusted',
-      message: 'The api key is not valid for the request origins.'
-    }
-  ];
-  var isServiceErrorCode = function (code) {
-    return code === 400 || code === 403 || code === 500;
-  };
-  var getHttpErrorMsg = function (status) {
-    var message = $_dbu383d7jd08mctx.find(friendlyHttpErrors, function (error) {
-      return status === error.code;
-    }).fold($_b2v6wackjd08mcsc.constant('Unknown ImageProxy error'), function (error) {
-      return error.message;
-    });
-    return 'ImageProxy HTTP error: ' + message;
-  };
-  var handleHttpError = function (status) {
-    var message = getHttpErrorMsg(status);
-    return Promise$1.reject(message);
-  };
-  var getServiceErrorMsg = function (type) {
-    return $_dbu383d7jd08mctx.find(friendlyServiceErrors, function (error) {
-      return error.type === type;
-    }).fold($_b2v6wackjd08mcsc.constant('Unknown service error'), function (error) {
-      return error.message;
-    });
-  };
-  var getServiceError = function (text) {
-    var serviceError = $_a8xo06d8jd08mcu5.parseJson(text);
-    var errorType = $_a8xo06d8jd08mcu5.traverse(serviceError, [
-      'error',
-      'type'
-    ]);
-    var errorMsg = errorType ? getServiceErrorMsg(errorType) : 'Invalid JSON in service error message';
-    return 'ImageProxy Service error: ' + errorMsg;
-  };
-  var handleServiceError = function (status, blob) {
-    return $_a8xo06d8jd08mcu5.readBlob(blob).then(function (text) {
-      var serviceError = getServiceError(text);
-      return Promise$1.reject(serviceError);
-    });
-  };
-  var handleServiceErrorResponse = function (status, blob) {
-    return isServiceErrorCode(status) ? handleServiceError(status, blob) : handleHttpError(status);
-  };
-  var $_92gpfsd6jd08mctt = {
-    handleServiceErrorResponse: handleServiceErrorResponse,
-    handleHttpError: handleHttpError,
-    getHttpErrorMsg: getHttpErrorMsg,
-    getServiceErrorMsg: getServiceErrorMsg
-  };
-
-  var appendApiKey = function (url, apiKey) {
-    var separator = url.indexOf('?') === -1 ? '?' : '&';
-    if (/[?&]apiKey=/.test(url) || !apiKey) {
-      return url;
-    } else {
-      return url + separator + 'apiKey=' + encodeURIComponent(apiKey);
-    }
-  };
-  var requestServiceBlob = function (url, apiKey) {
-    return $_a8xo06d8jd08mcu5.requestUrlAsBlob(appendApiKey(url, apiKey), {
-      'Content-Type': 'application/json;charset=UTF-8',
-      'tiny-api-key': apiKey
-    }).then(function (result) {
-      return result.status < 200 || result.status >= 300 ? $_92gpfsd6jd08mctt.handleServiceErrorResponse(result.status, result.blob) : Promise$1.resolve(result.blob);
-    });
-  };
-  function requestBlob(url) {
-    return $_a8xo06d8jd08mcu5.requestUrlAsBlob(url, {}).then(function (result) {
-      return result.status < 200 || result.status >= 300 ? $_92gpfsd6jd08mctt.handleHttpError(result.status) : Promise$1.resolve(result.blob);
-    });
-  }
-  var getUrl = function (url, apiKey) {
-    return apiKey ? requestServiceBlob(url, apiKey) : requestBlob(url);
-  };
-  var $_a3pgqwd5jd08mctr = { getUrl: getUrl };
 
   var DOMUtils = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
 
@@ -2092,7 +1645,7 @@ var imagetools = (function () {
       }
     });
   };
-  var $_dmqmn6dgjd08mcuw = { loadImage: loadImage$1 };
+  var $_c5ey3ndjjducwr6b = { loadImage: loadImage$1 };
 
   var DomQuery = tinymce.util.Tools.resolve('tinymce.dom.DomQuery');
 
@@ -2390,7 +1943,7 @@ var imagetools = (function () {
       imageSrc: function (url) {
         var self = this, img = new Image();
         img.src = url;
-        $_dmqmn6dgjd08mcuw.loadImage(img).then(function () {
+        $_c5ey3ndjjducwr6b.loadImage(img).then(function () {
           var rect, $img;
           var lastRect = self.state.get('viewRect');
           $img = self.$el.find('img');
@@ -2526,17 +2079,17 @@ var imagetools = (function () {
     });
     return new ImagePanel(settings);
   };
-  var $_2fsrm6dejd08mcur = { create: create$2 };
+  var $_2gvfytdhjducwr64 = { create: create$2 };
 
   function createState(blob) {
     return {
       blob: blob,
-      url: $_3i2p7sczjd08mctf.createObjectURL(blob)
+      url: $_8h1aqxd8jducwr5c.createObjectURL(blob)
     };
   }
   function destroyState(state) {
     if (state) {
-      $_3i2p7sczjd08mctf.revokeObjectURL(state.url);
+      $_8h1aqxd8jducwr5c.revokeObjectURL(state.url);
     }
   }
   function destroyStates(states) {
@@ -2606,8 +2159,8 @@ var imagetools = (function () {
     }
     function crop() {
       var rect = imagePanel.selection();
-      $_1wkopvcyjd08mcte.blobToImageResult(currentState.blob).then(function (ir) {
-        $_c34z08csjd08mcso.crop(ir, rect.x, rect.y, rect.w, rect.h).then(imageResultToBlob).then(function (blob) {
+      $_a2nzwvd7jducwr5a.blobToImageResult(currentState.blob).then(function (ir) {
+        $_9tpokfd1jducwr4b.crop(ir, rect.x, rect.y, rect.w, rect.h).then(imageResultToBlob).then(function (blob) {
           addBlobState(blob);
           cancel();
         });
@@ -2617,7 +2170,7 @@ var imagetools = (function () {
       var args = [].slice.call(arguments, 1);
       return function () {
         var state = tempState || currentState;
-        $_1wkopvcyjd08mcte.blobToImageResult(state.blob).then(function (ir) {
+        $_a2nzwvd7jducwr5a.blobToImageResult(state.blob).then(function (ir) {
           fn.apply(this, [ir].concat(args)).then(imageResultToBlob).then(addTempState);
         });
       };
@@ -2629,7 +2182,7 @@ var imagetools = (function () {
       }
       var args = [].slice.call(arguments, 1);
       return function () {
-        $_1wkopvcyjd08mcte.blobToImageResult(currentState.blob).then(function (ir) {
+        $_a2nzwvd7jducwr5a.blobToImageResult(currentState.blob).then(function (ir) {
           fn.apply(this, [ir].concat(args)).then(imageResultToBlob).then(addBlobState);
         });
       };
@@ -2728,7 +2281,7 @@ var imagetools = (function () {
         }
       ])).hide().on('show', function () {
         disableUndoRedo();
-        $_1wkopvcyjd08mcte.blobToImageResult(currentState.blob).then(function (ir) {
+        $_a2nzwvd7jducwr5a.blobToImageResult(currentState.blob).then(function (ir) {
           return filter(ir);
         }).then(imageResultToBlob).then(function (blob) {
           var newTempState = createState(blob);
@@ -2740,7 +2293,7 @@ var imagetools = (function () {
     }
     function createVariableFilterPanel(title, filter, value, min, max) {
       function update(value) {
-        $_1wkopvcyjd08mcte.blobToImageResult(currentState.blob).then(function (ir) {
+        $_a2nzwvd7jducwr5a.blobToImageResult(currentState.blob).then(function (ir) {
           return filter(ir, value);
         }).then(imageResultToBlob).then(function (blob) {
           var newTempState = createState(blob);
@@ -2789,7 +2342,7 @@ var imagetools = (function () {
         r = win.find('#r')[0].value();
         g = win.find('#g')[0].value();
         b = win.find('#b')[0].value();
-        $_1wkopvcyjd08mcte.blobToImageResult(currentState.blob).then(function (ir) {
+        $_a2nzwvd7jducwr5a.blobToImageResult(currentState.blob).then(function (ir) {
           return filter(ir, r, g, b);
         }).then(imageResultToBlob).then(function (blob) {
           var newTempState = createState(blob);
@@ -2918,7 +2471,7 @@ var imagetools = (function () {
     ])).hide().on('submit', function (e) {
       var width = parseInt(win.find('#w').value(), 10), height = parseInt(win.find('#h').value(), 10);
       e.preventDefault();
-      action($_c34z08csjd08mcso.resize, width, height)();
+      action($_9tpokfd1jducwr4b.resize, width, height)();
       cancel();
     }).on('show', disableUndoRedo);
     flipRotatePanel = createPanel(reverseIfRtl([
@@ -2933,22 +2486,22 @@ var imagetools = (function () {
       {
         icon: 'fliph',
         tooltip: 'Flip horizontally',
-        onclick: tempAction($_c34z08csjd08mcso.flip, 'h')
+        onclick: tempAction($_9tpokfd1jducwr4b.flip, 'h')
       },
       {
         icon: 'flipv',
         tooltip: 'Flip vertically',
-        onclick: tempAction($_c34z08csjd08mcso.flip, 'v')
+        onclick: tempAction($_9tpokfd1jducwr4b.flip, 'v')
       },
       {
         icon: 'rotateleft',
         tooltip: 'Rotate counterclockwise',
-        onclick: tempAction($_c34z08csjd08mcso.rotate, -90)
+        onclick: tempAction($_9tpokfd1jducwr4b.rotate, -90)
       },
       {
         icon: 'rotateright',
         tooltip: 'Rotate clockwise',
-        onclick: tempAction($_c34z08csjd08mcso.rotate, 90)
+        onclick: tempAction($_9tpokfd1jducwr4b.rotate, 90)
       },
       {
         type: 'spacer',
@@ -2960,18 +2513,18 @@ var imagetools = (function () {
         onclick: applyTempState
       }
     ])).hide().on('show', disableUndoRedo);
-    invertPanel = createFilterPanel('Invert', $_c34z08csjd08mcso.invert);
-    sharpenPanel = createFilterPanel('Sharpen', $_c34z08csjd08mcso.sharpen);
-    embossPanel = createFilterPanel('Emboss', $_c34z08csjd08mcso.emboss);
-    brightnessPanel = createVariableFilterPanel('Brightness', $_c34z08csjd08mcso.brightness, 0, -1, 1);
-    huePanel = createVariableFilterPanel('Hue', $_c34z08csjd08mcso.hue, 180, 0, 360);
-    saturatePanel = createVariableFilterPanel('Saturate', $_c34z08csjd08mcso.saturate, 0, -1, 1);
-    contrastPanel = createVariableFilterPanel('Contrast', $_c34z08csjd08mcso.contrast, 0, -1, 1);
-    grayscalePanel = createVariableFilterPanel('Grayscale', $_c34z08csjd08mcso.grayscale, 0, 0, 1);
-    sepiaPanel = createVariableFilterPanel('Sepia', $_c34z08csjd08mcso.sepia, 0, 0, 1);
-    colorizePanel = createRgbFilterPanel('Colorize', $_c34z08csjd08mcso.colorize);
-    gammaPanel = createVariableFilterPanel('Gamma', $_c34z08csjd08mcso.gamma, 0, -1, 1);
-    exposurePanel = createVariableFilterPanel('Exposure', $_c34z08csjd08mcso.exposure, 1, 0, 2);
+    invertPanel = createFilterPanel('Invert', $_9tpokfd1jducwr4b.invert);
+    sharpenPanel = createFilterPanel('Sharpen', $_9tpokfd1jducwr4b.sharpen);
+    embossPanel = createFilterPanel('Emboss', $_9tpokfd1jducwr4b.emboss);
+    brightnessPanel = createVariableFilterPanel('Brightness', $_9tpokfd1jducwr4b.brightness, 0, -1, 1);
+    huePanel = createVariableFilterPanel('Hue', $_9tpokfd1jducwr4b.hue, 180, 0, 360);
+    saturatePanel = createVariableFilterPanel('Saturate', $_9tpokfd1jducwr4b.saturate, 0, -1, 1);
+    contrastPanel = createVariableFilterPanel('Contrast', $_9tpokfd1jducwr4b.contrast, 0, -1, 1);
+    grayscalePanel = createVariableFilterPanel('Grayscale', $_9tpokfd1jducwr4b.grayscale, 0, 0, 1);
+    sepiaPanel = createVariableFilterPanel('Sepia', $_9tpokfd1jducwr4b.sepia, 0, 0, 1);
+    colorizePanel = createRgbFilterPanel('Colorize', $_9tpokfd1jducwr4b.colorize);
+    gammaPanel = createVariableFilterPanel('Gamma', $_9tpokfd1jducwr4b.gamma, 0, -1, 1);
+    exposurePanel = createVariableFilterPanel('Exposure', $_9tpokfd1jducwr4b.exposure, 1, 0, 2);
     filtersPanel = createPanel(reverseIfRtl([
       {
         text: 'Back',
@@ -3058,7 +2611,7 @@ var imagetools = (function () {
         onclick: switchPanel(invertPanel)
       }
     ]));
-    imagePanel = $_2fsrm6dejd08mcur.create({
+    imagePanel = $_2gvfytdhjducwr64.create({
       flex: 1,
       imageSrc: currentState.url
     });
@@ -3174,7 +2727,454 @@ var imagetools = (function () {
       });
     });
   }
-  var $_foawebdajd08mcuc = { edit: edit };
+  var $_8wsujuddjducwr5g = { edit: edit };
+
+  function getImageSize(img) {
+    var width, height;
+    function isPxValue(value) {
+      return /^[0-9\.]+px$/.test(value);
+    }
+    width = img.style.width;
+    height = img.style.height;
+    if (width || height) {
+      if (isPxValue(width) && isPxValue(height)) {
+        return {
+          w: parseInt(width, 10),
+          h: parseInt(height, 10)
+        };
+      }
+      return null;
+    }
+    width = img.width;
+    height = img.height;
+    if (width && height) {
+      return {
+        w: parseInt(width, 10),
+        h: parseInt(height, 10)
+      };
+    }
+    return null;
+  }
+  function setImageSize(img, size) {
+    var width, height;
+    if (size) {
+      width = img.style.width;
+      height = img.style.height;
+      if (width || height) {
+        img.style.width = size.w + 'px';
+        img.style.height = size.h + 'px';
+        img.removeAttribute('data-mce-style');
+      }
+      width = img.width;
+      height = img.height;
+      if (width || height) {
+        img.setAttribute('width', size.w);
+        img.setAttribute('height', size.h);
+      }
+    }
+  }
+  function getNaturalImageSize(img) {
+    return {
+      w: img.naturalWidth,
+      h: img.naturalHeight
+    };
+  }
+  var $_g3ygkfdojducwr6n = {
+    getImageSize: getImageSize,
+    setImageSize: setImageSize,
+    getNaturalImageSize: getNaturalImageSize
+  };
+
+  var rawIndexOf = function () {
+    var pIndexOf = Array.prototype.indexOf;
+    var fastIndex = function (xs, x) {
+      return pIndexOf.call(xs, x);
+    };
+    var slowIndex = function (xs, x) {
+      return slowIndexOf(xs, x);
+    };
+    return pIndexOf === undefined ? slowIndex : fastIndex;
+  }();
+  var indexOf = function (xs, x) {
+    var r = rawIndexOf(xs, x);
+    return r === -1 ? Option.none() : Option.some(r);
+  };
+  var contains = function (xs, x) {
+    return rawIndexOf(xs, x) > -1;
+  };
+  var exists = function (xs, pred) {
+    return findIndex(xs, pred).isSome();
+  };
+  var range = function (num, f) {
+    var r = [];
+    for (var i = 0; i < num; i++) {
+      r.push(f(i));
+    }
+    return r;
+  };
+  var chunk = function (array, size) {
+    var r = [];
+    for (var i = 0; i < array.length; i += size) {
+      var s = array.slice(i, i + size);
+      r.push(s);
+    }
+    return r;
+  };
+  var map = function (xs, f) {
+    var len = xs.length;
+    var r = new Array(len);
+    for (var i = 0; i < len; i++) {
+      var x = xs[i];
+      r[i] = f(x, i, xs);
+    }
+    return r;
+  };
+  var each = function (xs, f) {
+    for (var i = 0, len = xs.length; i < len; i++) {
+      var x = xs[i];
+      f(x, i, xs);
+    }
+  };
+  var eachr = function (xs, f) {
+    for (var i = xs.length - 1; i >= 0; i--) {
+      var x = xs[i];
+      f(x, i, xs);
+    }
+  };
+  var partition = function (xs, pred) {
+    var pass = [];
+    var fail = [];
+    for (var i = 0, len = xs.length; i < len; i++) {
+      var x = xs[i];
+      var arr = pred(x, i, xs) ? pass : fail;
+      arr.push(x);
+    }
+    return {
+      pass: pass,
+      fail: fail
+    };
+  };
+  var filter = function (xs, pred) {
+    var r = [];
+    for (var i = 0, len = xs.length; i < len; i++) {
+      var x = xs[i];
+      if (pred(x, i, xs)) {
+        r.push(x);
+      }
+    }
+    return r;
+  };
+  var groupBy = function (xs, f) {
+    if (xs.length === 0) {
+      return [];
+    } else {
+      var wasType = f(xs[0]);
+      var r = [];
+      var group = [];
+      for (var i = 0, len = xs.length; i < len; i++) {
+        var x = xs[i];
+        var type = f(x);
+        if (type !== wasType) {
+          r.push(group);
+          group = [];
+        }
+        wasType = type;
+        group.push(x);
+      }
+      if (group.length !== 0) {
+        r.push(group);
+      }
+      return r;
+    }
+  };
+  var foldr = function (xs, f, acc) {
+    eachr(xs, function (x) {
+      acc = f(acc, x);
+    });
+    return acc;
+  };
+  var foldl = function (xs, f, acc) {
+    each(xs, function (x) {
+      acc = f(acc, x);
+    });
+    return acc;
+  };
+  var find = function (xs, pred) {
+    for (var i = 0, len = xs.length; i < len; i++) {
+      var x = xs[i];
+      if (pred(x, i, xs)) {
+        return Option.some(x);
+      }
+    }
+    return Option.none();
+  };
+  var findIndex = function (xs, pred) {
+    for (var i = 0, len = xs.length; i < len; i++) {
+      var x = xs[i];
+      if (pred(x, i, xs)) {
+        return Option.some(i);
+      }
+    }
+    return Option.none();
+  };
+  var slowIndexOf = function (xs, x) {
+    for (var i = 0, len = xs.length; i < len; ++i) {
+      if (xs[i] === x) {
+        return i;
+      }
+    }
+    return -1;
+  };
+  var push = Array.prototype.push;
+  var flatten = function (xs) {
+    var r = [];
+    for (var i = 0, len = xs.length; i < len; ++i) {
+      if (!Array.prototype.isPrototypeOf(xs[i]))
+        throw new Error('Arr.flatten item ' + i + ' was not an array, input: ' + xs);
+      push.apply(r, xs[i]);
+    }
+    return r;
+  };
+  var bind = function (xs, f) {
+    var output = map(xs, f);
+    return flatten(output);
+  };
+  var forall = function (xs, pred) {
+    for (var i = 0, len = xs.length; i < len; ++i) {
+      var x = xs[i];
+      if (pred(x, i, xs) !== true) {
+        return false;
+      }
+    }
+    return true;
+  };
+  var equal = function (a1, a2) {
+    return a1.length === a2.length && forall(a1, function (x, i) {
+      return x === a2[i];
+    });
+  };
+  var slice = Array.prototype.slice;
+  var reverse = function (xs) {
+    var r = slice.call(xs, 0);
+    r.reverse();
+    return r;
+  };
+  var difference = function (a1, a2) {
+    return filter(a1, function (x) {
+      return !contains(a2, x);
+    });
+  };
+  var mapToObject = function (xs, f) {
+    var r = {};
+    for (var i = 0, len = xs.length; i < len; i++) {
+      var x = xs[i];
+      r[String(x)] = f(x, i);
+    }
+    return r;
+  };
+  var pure = function (x) {
+    return [x];
+  };
+  var sort = function (xs, comparator) {
+    var copy = slice.call(xs, 0);
+    copy.sort(comparator);
+    return copy;
+  };
+  var head = function (xs) {
+    return xs.length === 0 ? Option.none() : Option.some(xs[0]);
+  };
+  var last = function (xs) {
+    return xs.length === 0 ? Option.none() : Option.some(xs[xs.length - 1]);
+  };
+  var $_bq7x4zdrjducwr6v = {
+    map: map,
+    each: each,
+    eachr: eachr,
+    partition: partition,
+    filter: filter,
+    groupBy: groupBy,
+    indexOf: indexOf,
+    foldr: foldr,
+    foldl: foldl,
+    find: find,
+    findIndex: findIndex,
+    flatten: flatten,
+    bind: bind,
+    forall: forall,
+    exists: exists,
+    contains: contains,
+    equal: equal,
+    reverse: reverse,
+    chunk: chunk,
+    difference: difference,
+    mapToObject: mapToObject,
+    pure: pure,
+    sort: sort,
+    range: range,
+    head: head,
+    last: last
+  };
+
+  function XMLHttpRequest$1 () {
+    var f = $_4dfafycvjducwr42.getOrDie('XMLHttpRequest');
+    return new f();
+  }
+
+  var isValue = function (obj) {
+    return obj !== null && obj !== undefined;
+  };
+  var traverse = function (json, path) {
+    var value;
+    value = path.reduce(function (result, key) {
+      return isValue(result) ? result[key] : undefined;
+    }, json);
+    return isValue(value) ? value : null;
+  };
+  var requestUrlAsBlob = function (url, headers) {
+    return new Promise$1(function (resolve) {
+      var xhr;
+      xhr = new XMLHttpRequest$1();
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          resolve({
+            status: xhr.status,
+            blob: this.response
+          });
+        }
+      };
+      xhr.open('GET', url, true);
+      Tools.each(headers, function (value, key) {
+        xhr.setRequestHeader(key, value);
+      });
+      xhr.responseType = 'blob';
+      xhr.send();
+    });
+  };
+  var readBlob = function (blob) {
+    return new Promise$1(function (resolve) {
+      var fr = new FileReader();
+      fr.onload = function (e) {
+        var data = e.target;
+        resolve(data.result);
+      };
+      fr.readAsText(blob);
+    });
+  };
+  var parseJson = function (text) {
+    var json;
+    try {
+      json = JSON.parse(text);
+    } catch (ex) {
+    }
+    return json;
+  };
+  var $_7frxtedsjducwr71 = {
+    traverse: traverse,
+    readBlob: readBlob,
+    requestUrlAsBlob: requestUrlAsBlob,
+    parseJson: parseJson
+  };
+
+  var friendlyHttpErrors = [
+    {
+      code: 404,
+      message: 'Could not find Image Proxy'
+    },
+    {
+      code: 403,
+      message: 'Rejected request'
+    },
+    {
+      code: 0,
+      message: 'Incorrect Image Proxy URL'
+    }
+  ];
+  var friendlyServiceErrors = [
+    {
+      type: 'key_missing',
+      message: 'The request did not include an api key.'
+    },
+    {
+      type: 'key_not_found',
+      message: 'The provided api key could not be found.'
+    },
+    {
+      type: 'domain_not_trusted',
+      message: 'The api key is not valid for the request origins.'
+    }
+  ];
+  var isServiceErrorCode = function (code) {
+    return code === 400 || code === 403 || code === 500;
+  };
+  var getHttpErrorMsg = function (status) {
+    var message = $_bq7x4zdrjducwr6v.find(friendlyHttpErrors, function (error) {
+      return status === error.code;
+    }).fold($_7e8sfvctjducwr3z.constant('Unknown ImageProxy error'), function (error) {
+      return error.message;
+    });
+    return 'ImageProxy HTTP error: ' + message;
+  };
+  var handleHttpError = function (status) {
+    var message = getHttpErrorMsg(status);
+    return Promise$1.reject(message);
+  };
+  var getServiceErrorMsg = function (type) {
+    return $_bq7x4zdrjducwr6v.find(friendlyServiceErrors, function (error) {
+      return error.type === type;
+    }).fold($_7e8sfvctjducwr3z.constant('Unknown service error'), function (error) {
+      return error.message;
+    });
+  };
+  var getServiceError = function (text) {
+    var serviceError = $_7frxtedsjducwr71.parseJson(text);
+    var errorType = $_7frxtedsjducwr71.traverse(serviceError, [
+      'error',
+      'type'
+    ]);
+    var errorMsg = errorType ? getServiceErrorMsg(errorType) : 'Invalid JSON in service error message';
+    return 'ImageProxy Service error: ' + errorMsg;
+  };
+  var handleServiceError = function (status, blob) {
+    return $_7frxtedsjducwr71.readBlob(blob).then(function (text) {
+      var serviceError = getServiceError(text);
+      return Promise$1.reject(serviceError);
+    });
+  };
+  var handleServiceErrorResponse = function (status, blob) {
+    return isServiceErrorCode(status) ? handleServiceError(status, blob) : handleHttpError(status);
+  };
+  var $_fqvj3udqjducwr6r = {
+    handleServiceErrorResponse: handleServiceErrorResponse,
+    handleHttpError: handleHttpError,
+    getHttpErrorMsg: getHttpErrorMsg,
+    getServiceErrorMsg: getServiceErrorMsg
+  };
+
+  var appendApiKey = function (url, apiKey) {
+    var separator = url.indexOf('?') === -1 ? '?' : '&';
+    if (/[?&]apiKey=/.test(url) || !apiKey) {
+      return url;
+    } else {
+      return url + separator + 'apiKey=' + encodeURIComponent(apiKey);
+    }
+  };
+  var requestServiceBlob = function (url, apiKey) {
+    return $_7frxtedsjducwr71.requestUrlAsBlob(appendApiKey(url, apiKey), {
+      'Content-Type': 'application/json;charset=UTF-8',
+      'tiny-api-key': apiKey
+    }).then(function (result) {
+      return result.status < 200 || result.status >= 300 ? $_fqvj3udqjducwr6r.handleServiceErrorResponse(result.status, result.blob) : Promise$1.resolve(result.blob);
+    });
+  };
+  function requestBlob(url) {
+    return $_7frxtedsjducwr71.requestUrlAsBlob(url, {}).then(function (result) {
+      return result.status < 200 || result.status >= 300 ? $_fqvj3udqjducwr6r.handleHttpError(result.status) : Promise$1.resolve(result.blob);
+    });
+  }
+  var getUrl = function (url, apiKey) {
+    return apiKey ? requestServiceBlob(url, apiKey) : requestBlob(url);
+  };
+  var $_48leuodpjducwr6p = { getUrl: getUrl };
 
   var count$1 = 0;
   var isEditableImage = function (editor, img) {
@@ -3213,15 +3213,15 @@ var imagetools = (function () {
   var imageToBlob$2 = function (editor, img) {
     var src = img.src, apiKey;
     if (isCorsImage(editor, img)) {
-      return $_a3pgqwd5jd08mctr.getUrl(img.src, null);
+      return $_48leuodpjducwr6p.getUrl(img.src, null);
     }
     if (!isLocalImage(editor, img)) {
-      src = $_g17dn9d3jd08mcto.getProxyUrl(editor);
+      src = $_dw9k5sdcjducwr5d.getProxyUrl(editor);
       src += (src.indexOf('?') === -1 ? '?' : '&') + 'url=' + encodeURIComponent(img.src);
       apiKey = getApiKey(editor);
-      return $_a3pgqwd5jd08mctr.getUrl(src, apiKey);
+      return $_48leuodpjducwr6p.getUrl(src, apiKey);
     }
-    return $_8wv43ycejd08mcrh.imageToBlob(img);
+    return $_qw14zcnjducwr2u.imageToBlob(img);
   };
   var findSelectedBlob = function (editor) {
     var blobInfo;
@@ -3240,7 +3240,7 @@ var imagetools = (function () {
   var cancelTimedUpload = function (imageUploadTimerState) {
     clearTimeout(imageUploadTimerState.get());
   };
-  var updateSelectedImage = function (editor, ir, uploadImmediately, imageUploadTimerState) {
+  var updateSelectedImage = function (editor, ir, uploadImmediately, imageUploadTimerState, size) {
     return ir.toBlob().then(function (blob) {
       var uri, name, blobCache, blobInfo, selectedImage;
       blobCache = editor.editorUpload.blobCache;
@@ -3275,15 +3275,21 @@ var imagetools = (function () {
           }
         }
         editor.$(selectedImage).on('load', imageLoadedHandler);
+        if (size) {
+          editor.$(selectedImage).attr({
+            width: size.w,
+            height: size.h
+          });
+        }
         editor.$(selectedImage).attr({ src: blobInfo.blobUri() }).removeAttr('data-mce-src');
       });
       return blobInfo;
     });
   };
-  var selectedImageOperation = function (editor, imageUploadTimerState, fn) {
+  var selectedImageOperation = function (editor, imageUploadTimerState, fn, size) {
     return function () {
-      return editor._scanForImages().then($_b2v6wackjd08mcsc.curry(findSelectedBlob, editor)).then($_1wkopvcyjd08mcte.blobToImageResult).then(fn).then(function (imageResult) {
-        return updateSelectedImage(editor, imageResult, false, imageUploadTimerState);
+      return editor._scanForImages().then($_7e8sfvctjducwr3z.curry(findSelectedBlob, editor)).then($_a2nzwvd7jducwr5a.blobToImageResult).then(fn).then(function (imageResult) {
+        return updateSelectedImage(editor, imageResult, false, imageUploadTimerState, size);
       }, function (error) {
         displayError(editor, error);
       });
@@ -3291,54 +3297,52 @@ var imagetools = (function () {
   };
   var rotate$2 = function (editor, imageUploadTimerState, angle) {
     return function () {
+      var size = $_g3ygkfdojducwr6n.getImageSize(getSelectedImage(editor));
+      var flippedSize = size ? {
+        w: size.h,
+        h: size.w
+      } : null;
       return selectedImageOperation(editor, imageUploadTimerState, function (imageResult) {
-        var size = $_8imxajd4jd08mctp.getImageSize(getSelectedImage(editor));
-        if (size) {
-          $_8imxajd4jd08mctp.setImageSize(getSelectedImage(editor), {
-            w: size.h,
-            h: size.w
-          });
-        }
-        return $_c34z08csjd08mcso.rotate(imageResult, angle);
-      })();
+        return $_9tpokfd1jducwr4b.rotate(imageResult, angle);
+      }, flippedSize)();
     };
   };
   var flip$2 = function (editor, imageUploadTimerState, axis) {
     return function () {
       return selectedImageOperation(editor, imageUploadTimerState, function (imageResult) {
-        return $_c34z08csjd08mcso.flip(imageResult, axis);
+        return $_9tpokfd1jducwr4b.flip(imageResult, axis);
       })();
     };
   };
   var editImageDialog = function (editor, imageUploadTimerState) {
     return function () {
-      var img = getSelectedImage(editor), originalSize = $_8imxajd4jd08mctp.getNaturalImageSize(img);
+      var img = getSelectedImage(editor), originalSize = $_g3ygkfdojducwr6n.getNaturalImageSize(img);
       var handleDialogBlob = function (blob) {
         return new Promise$1(function (resolve) {
-          $_8wv43ycejd08mcrh.blobToImage(blob).then(function (newImage) {
-            var newSize = $_8imxajd4jd08mctp.getNaturalImageSize(newImage);
+          $_qw14zcnjducwr2u.blobToImage(blob).then(function (newImage) {
+            var newSize = $_g3ygkfdojducwr6n.getNaturalImageSize(newImage);
             if (originalSize.w !== newSize.w || originalSize.h !== newSize.h) {
-              if ($_8imxajd4jd08mctp.getImageSize(img)) {
-                $_8imxajd4jd08mctp.setImageSize(img, newSize);
+              if ($_g3ygkfdojducwr6n.getImageSize(img)) {
+                $_g3ygkfdojducwr6n.setImageSize(img, newSize);
               }
             }
-            $_3i2p7sczjd08mctf.revokeObjectURL(newImage.src);
+            $_8h1aqxd8jducwr5c.revokeObjectURL(newImage.src);
             resolve(blob);
           });
         });
       };
       var openDialog = function (editor, imageResult) {
-        return $_foawebdajd08mcuc.edit(editor, imageResult).then(handleDialogBlob).then($_1wkopvcyjd08mcte.blobToImageResult).then(function (imageResult) {
+        return $_8wsujuddjducwr5g.edit(editor, imageResult).then(handleDialogBlob).then($_a2nzwvd7jducwr5a.blobToImageResult).then(function (imageResult) {
           return updateSelectedImage(editor, imageResult, true, imageUploadTimerState);
         }, function () {
         });
       };
-      findSelectedBlob(editor).then($_1wkopvcyjd08mcte.blobToImageResult).then($_b2v6wackjd08mcsc.curry(openDialog, editor), function (error) {
+      findSelectedBlob(editor).then($_a2nzwvd7jducwr5a.blobToImageResult).then($_7e8sfvctjducwr3z.curry(openDialog, editor), function (error) {
         displayError(editor, error);
       });
     };
   };
-  var $_e3p2ftcdjd08mcr0 = {
+  var $_bfmhlbcmjducwr2c = {
     rotate: rotate$2,
     flip: flip$2,
     editImageDialog: editImageDialog,
@@ -3348,31 +3352,31 @@ var imagetools = (function () {
 
   var register = function (editor, imageUploadTimerState) {
     Tools.each({
-      mceImageRotateLeft: $_e3p2ftcdjd08mcr0.rotate(editor, imageUploadTimerState, -90),
-      mceImageRotateRight: $_e3p2ftcdjd08mcr0.rotate(editor, imageUploadTimerState, 90),
-      mceImageFlipVertical: $_e3p2ftcdjd08mcr0.flip(editor, imageUploadTimerState, 'v'),
-      mceImageFlipHorizontal: $_e3p2ftcdjd08mcr0.flip(editor, imageUploadTimerState, 'h'),
-      mceEditImage: $_e3p2ftcdjd08mcr0.editImageDialog(editor, imageUploadTimerState)
+      mceImageRotateLeft: $_bfmhlbcmjducwr2c.rotate(editor, imageUploadTimerState, -90),
+      mceImageRotateRight: $_bfmhlbcmjducwr2c.rotate(editor, imageUploadTimerState, 90),
+      mceImageFlipVertical: $_bfmhlbcmjducwr2c.flip(editor, imageUploadTimerState, 'v'),
+      mceImageFlipHorizontal: $_bfmhlbcmjducwr2c.flip(editor, imageUploadTimerState, 'h'),
+      mceEditImage: $_bfmhlbcmjducwr2c.editImageDialog(editor, imageUploadTimerState)
     }, function (fn, cmd) {
       editor.addCommand(cmd, fn);
     });
   };
-  var $_fp8x0hcbjd08mcqs = { register: register };
+  var $_bzjpr9ckjducwr28 = { register: register };
 
   var setup = function (editor, imageUploadTimerState, lastSelectedImageState) {
     editor.on('NodeChange', function (e) {
       var lastSelectedImage = lastSelectedImageState.get();
       if (lastSelectedImage && lastSelectedImage.src !== e.element.src) {
-        $_e3p2ftcdjd08mcr0.cancelTimedUpload(imageUploadTimerState);
+        $_bfmhlbcmjducwr2c.cancelTimedUpload(imageUploadTimerState);
         editor.editorUpload.uploadImagesAuto();
         lastSelectedImageState.set(null);
       }
-      if ($_e3p2ftcdjd08mcr0.isEditableImage(editor, e.element)) {
+      if ($_bfmhlbcmjducwr2c.isEditableImage(editor, e.element)) {
         lastSelectedImageState.set(e.element);
       }
     });
   };
-  var $_fj8xc7dljd08mczs = { setup: setup };
+  var $_6matsldujducwr77 = { setup: setup };
 
   var register$1 = function (editor) {
     editor.addButton('rotateleft', {
@@ -3401,20 +3405,20 @@ var imagetools = (function () {
       cmd: 'mceImage'
     });
   };
-  var $_ewgrv0dmjd08mczv = { register: register$1 };
+  var $_4cmt7udvjducwr79 = { register: register$1 };
 
   var register$2 = function (editor) {
-    editor.addContextToolbar($_b2v6wackjd08mcsc.curry($_e3p2ftcdjd08mcr0.isEditableImage, editor), $_g17dn9d3jd08mcto.getToolbarItems(editor));
+    editor.addContextToolbar($_7e8sfvctjducwr3z.curry($_bfmhlbcmjducwr2c.isEditableImage, editor), $_dw9k5sdcjducwr5d.getToolbarItems(editor));
   };
-  var $_yt4g9dnjd08mczx = { register: register$2 };
+  var $_402gxydwjducwr7b = { register: register$2 };
 
   PluginManager.add('imagetools', function (editor) {
     var imageUploadTimerState = Cell(0);
     var lastSelectedImageState = Cell(null);
-    $_fp8x0hcbjd08mcqs.register(editor, imageUploadTimerState);
-    $_ewgrv0dmjd08mczv.register(editor);
-    $_yt4g9dnjd08mczx.register(editor);
-    $_fj8xc7dljd08mczs.setup(editor, imageUploadTimerState, lastSelectedImageState);
+    $_bzjpr9ckjducwr28.register(editor, imageUploadTimerState);
+    $_4cmt7udvjducwr79.register(editor);
+    $_402gxydwjducwr7b.register(editor);
+    $_6matsldujducwr77.setup(editor, imageUploadTimerState, lastSelectedImageState);
   });
   function Plugin () {
   }
@@ -3422,4 +3426,4 @@ var imagetools = (function () {
   return Plugin;
 
 }());
-})()
+})();

@@ -32,7 +32,7 @@ var spellchecker = (function () {
       return false;
     }
   };
-  var $_4dlk1fipjd08mdon = { hasProPlugin: hasProPlugin };
+  var $_527lmoizjducwrvc = { hasProPlugin: hasProPlugin };
 
   var getLanguages = function (editor) {
     var defaultLanguages = 'English=en,Danish=da,Dutch=nl,Finnish=fi,French=fr_FR,German=de,Italian=it,Polish=pl,Portuguese=pt_BR,Spanish=es,Swedish=sv';
@@ -52,7 +52,7 @@ var spellchecker = (function () {
     var defaultPattern = new RegExp('[^' + '\\s!"#$%&()*+,-./:;<=>?@[\\]^_{|}`' + '\xA7\xA9\xAB\xAE\xB1\xB6\xB7\xB8\xBB' + '\xBC\xBD\xBE\xBF\xD7\xF7\xA4\u201D\u201C\u201E\xA0\u2002\u2003\u2009' + ']+', 'g');
     return editor.getParam('spellchecker_wordchar_pattern', defaultPattern);
   };
-  var $_6jfa36irjd08mdoq = {
+  var $_32whowj1jducwrvh = {
     getLanguages: getLanguages,
     getLanguage: getLanguage,
     getRpcUrl: getRpcUrl,
@@ -72,7 +72,7 @@ var spellchecker = (function () {
   var fireSpellcheckEnd = function (editor) {
     return editor.fire('SpellcheckEnd');
   };
-  var $_2n9j2hiwjd08mdox = {
+  var $_36arycj6jducwrvq = {
     fireSpellcheckStart: fireSpellcheckStart,
     fireSpellcheckEnd: fireSpellcheckEnd
   };
@@ -397,7 +397,7 @@ var spellchecker = (function () {
         postData += key + '=' + encodeURIComponent(value);
       });
       XHR.send({
-        url: new URI(pluginUrl).toAbsolute($_6jfa36irjd08mdoq.getRpcUrl(editor)),
+        url: new URI(pluginUrl).toAbsolute($_32whowj1jducwrvh.getRpcUrl(editor)),
         type: 'post',
         content_type: 'application/x-www-form-urlencoded',
         data: postData,
@@ -413,14 +413,14 @@ var spellchecker = (function () {
           }
         },
         error: function () {
-          var message = editor.translate('The spelling service was not found: (') + $_6jfa36irjd08mdoq.getRpcUrl(editor) + editor.translate(')');
+          var message = editor.translate('The spelling service was not found: (') + $_32whowj1jducwrvh.getRpcUrl(editor) + editor.translate(')');
           errorCallback(message);
         }
       });
     };
   };
   var sendRpcCall = function (editor, pluginUrl, currentLanguageState, name, data, successCallback, errorCallback) {
-    var userSpellcheckCallback = $_6jfa36irjd08mdoq.getSpellcheckerCallback(editor);
+    var userSpellcheckCallback = $_32whowj1jducwrvh.getSpellcheckerCallback(editor);
     var spellCheckCallback = userSpellcheckCallback ? userSpellcheckCallback : defaultSpellcheckCallback(editor, pluginUrl, currentLanguageState);
     spellCheckCallback.call(editor.plugins.spellchecker, name, data, successCallback, errorCallback);
   };
@@ -448,9 +448,9 @@ var spellchecker = (function () {
       finish(editor, startedState, textMatcherState);
     }
   };
-  var addToDictionary = function (editor, pluginUrl, startedState, textMatcherState, word, spans) {
+  var addToDictionary = function (editor, pluginUrl, startedState, textMatcherState, currentLanguageState, word, spans) {
     editor.setProgressState(true);
-    sendRpcCall(editor, pluginUrl, 'addToDictionary', word, function () {
+    sendRpcCall(editor, pluginUrl, currentLanguageState, 'addToDictionary', word, function () {
       editor.setProgressState(false);
       editor.dom.remove(spans, true);
       checkIfFinished(editor, startedState, textMatcherState);
@@ -480,7 +480,7 @@ var spellchecker = (function () {
     textMatcherState.set(null);
     if (startedState.get()) {
       startedState.set(false);
-      $_2n9j2hiwjd08mdox.fireSpellcheckEnd(editor);
+      $_36arycj6jducwrvq.fireSpellcheckEnd(editor);
       return true;
     }
   };
@@ -510,7 +510,7 @@ var spellchecker = (function () {
   };
   var markErrors = function (editor, startedState, textMatcherState, lastSuggestionsState, data) {
     var suggestions, hasDictionarySupport;
-    if (data.words) {
+    if (typeof data !== 'string' && data.words) {
       hasDictionarySupport = !!data.dictionary;
       suggestions = data.words;
     } else {
@@ -530,7 +530,7 @@ var spellchecker = (function () {
       suggestions: suggestions,
       hasDictionarySupport: hasDictionarySupport
     });
-    getTextMatcher(editor, textMatcherState).find($_6jfa36irjd08mdoq.getSpellcheckerWordcharPattern(editor)).filter(function (match) {
+    getTextMatcher(editor, textMatcherState).find($_32whowj1jducwrvh.getSpellcheckerWordcharPattern(editor)).filter(function (match) {
       return !!suggestions[match.text];
     }).wrap(function (match) {
       return editor.dom.create('span', {
@@ -540,9 +540,9 @@ var spellchecker = (function () {
       });
     });
     startedState.set(true);
-    $_2n9j2hiwjd08mdox.fireSpellcheckStart(editor);
+    $_36arycj6jducwrvq.fireSpellcheckStart(editor);
   };
-  var $_8wdxmlisjd08mdos = {
+  var $_38k44wj2jducwrvl = {
     spellcheck: spellcheck,
     checkIfFinished: checkIfFinished,
     addToDictionary: addToDictionary,
@@ -554,13 +554,13 @@ var spellchecker = (function () {
 
   var get = function (editor, startedState, lastSuggestionsState, textMatcherState, url) {
     var getLanguage = function () {
-      return $_6jfa36irjd08mdoq.getLanguage(editor);
+      return $_32whowj1jducwrvh.getLanguage(editor);
     };
     var getWordCharPattern = function () {
-      return $_6jfa36irjd08mdoq.getSpellcheckerWordcharPattern(editor);
+      return $_32whowj1jducwrvh.getSpellcheckerWordcharPattern(editor);
     };
     var markErrors = function (data) {
-      $_8wdxmlisjd08mdos.markErrors(editor, startedState, textMatcherState, lastSuggestionsState, data);
+      $_38k44wj2jducwrvl.markErrors(editor, startedState, textMatcherState, lastSuggestionsState, data);
     };
     var getTextMatcher = function () {
       return textMatcherState.get();
@@ -572,14 +572,14 @@ var spellchecker = (function () {
       getLanguage: getLanguage
     };
   };
-  var $_7tlq83iqjd08mdop = { get: get };
+  var $_5ry32wj0jducwrvd = { get: get };
 
   var register = function (editor, pluginUrl, startedState, textMatcherState, lastSuggestionsState, currentLanguageState) {
     editor.addCommand('mceSpellCheck', function () {
-      $_8wdxmlisjd08mdos.spellcheck(editor, pluginUrl, startedState, textMatcherState, lastSuggestionsState, currentLanguageState);
+      $_38k44wj2jducwrvl.spellcheck(editor, pluginUrl, startedState, textMatcherState, lastSuggestionsState, currentLanguageState);
     });
   };
-  var $_5yith7iyjd08mdp6 = { register: register };
+  var $_gerzu4j8jducwrvw = { register: register };
 
   var buildMenuItems = function (listName, languageValues) {
     var items = [];
@@ -594,14 +594,14 @@ var spellchecker = (function () {
   };
   var updateSelection = function (editor) {
     return function (e) {
-      var selectedLanguage = $_6jfa36irjd08mdoq.getLanguage(editor);
+      var selectedLanguage = $_32whowj1jducwrvh.getLanguage(editor);
       e.control.items().each(function (ctrl) {
         ctrl.active(ctrl.settings.data === selectedLanguage);
       });
     };
   };
   var getItems = function (editor) {
-    return Tools.map($_6jfa36irjd08mdoq.getLanguages(editor).split(','), function (langPair) {
+    return Tools.map($_32whowj1jducwrvh.getLanguages(editor).split(','), function (langPair) {
       langPair = langPair.split('=');
       return {
         name: langPair[0],
@@ -612,7 +612,7 @@ var spellchecker = (function () {
   var register$1 = function (editor, pluginUrl, startedState, textMatcherState, currentLanguageState, lastSuggestionsState) {
     var languageMenuItems = buildMenuItems('Language', getItems(editor));
     var startSpellchecking = function () {
-      $_8wdxmlisjd08mdos.spellcheck(editor, pluginUrl, startedState, textMatcherState, lastSuggestionsState, currentLanguageState);
+      $_38k44wj2jducwrvl.spellcheck(editor, pluginUrl, startedState, textMatcherState, lastSuggestionsState, currentLanguageState);
     };
     var buttonArgs = {
       tooltip: 'Spellcheck',
@@ -647,14 +647,14 @@ var spellchecker = (function () {
       }
     });
   };
-  var $_eqthvvizjd08mdp7 = { register: register$1 };
+  var $_i4ttdj9jducwrvy = { register: register$1 };
 
   var DOMUtils = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
 
   var Factory = tinymce.util.Tools.resolve('tinymce.ui.Factory');
 
   var suggestionsMenu;
-  var showSuggestions = function (editor, pluginUrl, lastSuggestionsState, startedState, textMatcherState, word, spans) {
+  var showSuggestions = function (editor, pluginUrl, lastSuggestionsState, startedState, textMatcherState, currentLanguageState, word, spans) {
     var items = [], suggestions = lastSuggestionsState.get().suggestions[word];
     Tools.each(suggestions, function (suggestion) {
       items.push({
@@ -662,7 +662,7 @@ var spellchecker = (function () {
         onclick: function () {
           editor.insertContent(editor.dom.encode(suggestion));
           editor.dom.remove(spans);
-          $_8wdxmlisjd08mdos.checkIfFinished(editor, startedState, textMatcherState);
+          $_38k44wj2jducwrvl.checkIfFinished(editor, startedState, textMatcherState);
         }
       });
     });
@@ -672,7 +672,7 @@ var spellchecker = (function () {
       items.push({
         text: 'Add to Dictionary',
         onclick: function () {
-          $_8wdxmlisjd08mdos.addToDictionary(editor, pluginUrl, startedState, textMatcherState, word, spans);
+          $_38k44wj2jducwrvl.addToDictionary(editor, pluginUrl, startedState, textMatcherState, currentLanguageState, word, spans);
         }
       });
     }
@@ -680,13 +680,13 @@ var spellchecker = (function () {
       {
         text: 'Ignore',
         onclick: function () {
-          $_8wdxmlisjd08mdos.ignoreWord(editor, startedState, textMatcherState, word, spans);
+          $_38k44wj2jducwrvl.ignoreWord(editor, startedState, textMatcherState, word, spans);
         }
       },
       {
         text: 'Ignore all',
         onclick: function () {
-          $_8wdxmlisjd08mdos.ignoreWord(editor, startedState, textMatcherState, word, spans, true);
+          $_38k44wj2jducwrvl.ignoreWord(editor, startedState, textMatcherState, word, spans, true);
         }
       }
     ]);
@@ -718,34 +718,34 @@ var spellchecker = (function () {
     pos.y += targetPos.y;
     suggestionsMenu.moveTo(pos.x, pos.y + spans[0].offsetHeight);
   };
-  var setup = function (editor, pluginUrl, lastSuggestionsState, startedState, textMatcherState) {
+  var setup = function (editor, pluginUrl, lastSuggestionsState, startedState, textMatcherState, currentLanguageState) {
     editor.on('click', function (e) {
       var target = e.target;
       if (target.className === 'mce-spellchecker-word') {
         e.preventDefault();
-        var spans = $_8wdxmlisjd08mdos.findSpansByIndex(editor, $_8wdxmlisjd08mdos.getElmIndex(target));
+        var spans = $_38k44wj2jducwrvl.findSpansByIndex(editor, $_38k44wj2jducwrvl.getElmIndex(target));
         if (spans.length > 0) {
           var rng = editor.dom.createRng();
           rng.setStartBefore(spans[0]);
           rng.setEndAfter(spans[spans.length - 1]);
           editor.selection.setRng(rng);
-          showSuggestions(editor, pluginUrl, lastSuggestionsState, startedState, textMatcherState, target.getAttribute('data-mce-word'), spans);
+          showSuggestions(editor, pluginUrl, lastSuggestionsState, startedState, textMatcherState, currentLanguageState, target.getAttribute('data-mce-word'), spans);
         }
       }
     });
   };
-  var $_8r8fapj0jd08mdpa = { setup: setup };
+  var $_aa8b0ajajducwrw1 = { setup: setup };
 
   PluginManager.add('spellchecker', function (editor, pluginUrl) {
-    if ($_4dlk1fipjd08mdon.hasProPlugin(editor) === false) {
+    if ($_527lmoizjducwrvc.hasProPlugin(editor) === false) {
       var startedState = Cell(false);
-      var currentLanguageState = Cell($_6jfa36irjd08mdoq.getLanguage(editor));
+      var currentLanguageState = Cell($_32whowj1jducwrvh.getLanguage(editor));
       var textMatcherState = Cell(null);
       var lastSuggestionsState = Cell({});
-      $_eqthvvizjd08mdp7.register(editor, pluginUrl, startedState, textMatcherState, currentLanguageState, lastSuggestionsState);
-      $_8r8fapj0jd08mdpa.setup(editor, pluginUrl, lastSuggestionsState, startedState, textMatcherState);
-      $_5yith7iyjd08mdp6.register(editor, pluginUrl, startedState, textMatcherState, lastSuggestionsState, currentLanguageState);
-      return $_7tlq83iqjd08mdop.get(editor, startedState, lastSuggestionsState, textMatcherState, pluginUrl);
+      $_i4ttdj9jducwrvy.register(editor, pluginUrl, startedState, textMatcherState, currentLanguageState, lastSuggestionsState);
+      $_aa8b0ajajducwrw1.setup(editor, pluginUrl, lastSuggestionsState, startedState, textMatcherState, currentLanguageState);
+      $_gerzu4j8jducwrvw.register(editor, pluginUrl, startedState, textMatcherState, lastSuggestionsState, currentLanguageState);
+      return $_5ry32wj0jducwrvd.get(editor, startedState, lastSuggestionsState, textMatcherState, pluginUrl);
     }
   });
   function Plugin () {
@@ -754,4 +754,4 @@ var spellchecker = (function () {
   return Plugin;
 
 }());
-})()
+})();

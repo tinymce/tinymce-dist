@@ -33,7 +33,7 @@ var importcss = (function () {
   var getFileFilter = function (editor) {
     return editor.getParam('importcss_file_filter');
   };
-  var $_63rxg4dwjd08md5m = {
+  var $_6sqjtje5jducwrdr = {
     shouldMergeClasses: shouldMergeClasses,
     shouldImportExclusive: shouldImportExclusive,
     getSelectorConverter: getSelectorConverter,
@@ -136,7 +136,7 @@ var importcss = (function () {
         classes: classes
       };
     }
-    if ($_63rxg4dwjd08md5m.shouldMergeClasses(editor) !== false) {
+    if ($_6sqjtje5jducwrdr.shouldMergeClasses(editor) !== false) {
       format.classes = classes;
     } else {
       format.attributes = { class: classes };
@@ -162,7 +162,7 @@ var importcss = (function () {
     });
   };
   var isExclusiveMode = function (editor, group) {
-    return group === null || $_63rxg4dwjd08md5m.shouldImportExclusive(editor) !== false;
+    return group === null || $_6sqjtje5jducwrdr.shouldImportExclusive(editor) !== false;
   };
   var isUniqueSelector = function (editor, selector, group, globallyUniqueSelectors) {
     return !(isExclusiveMode(editor, group) ? selector in globallyUniqueSelectors : selector in group.selectors);
@@ -178,8 +178,8 @@ var importcss = (function () {
     var selectorConverter;
     if (group && group.selector_converter) {
       selectorConverter = group.selector_converter;
-    } else if ($_63rxg4dwjd08md5m.getSelectorConverter(editor)) {
-      selectorConverter = $_63rxg4dwjd08md5m.getSelectorConverter(editor);
+    } else if ($_6sqjtje5jducwrdr.getSelectorConverter(editor)) {
+      selectorConverter = $_6sqjtje5jducwrdr.getSelectorConverter(editor);
     } else {
       selectorConverter = function () {
         return defaultConvertSelectorToFormat(editor, selector);
@@ -190,8 +190,8 @@ var importcss = (function () {
   var setup = function (editor) {
     editor.on('renderFormatsMenu', function (e) {
       var globallyUniqueSelectors = {};
-      var selectorFilter = compileFilter($_63rxg4dwjd08md5m.getSelectorFilter(editor)), ctrl = e.control;
-      var groups = compileUserDefinedGroups($_63rxg4dwjd08md5m.getCssGroups(editor));
+      var selectorFilter = compileFilter($_6sqjtje5jducwrdr.getSelectorFilter(editor)), ctrl = e.control;
+      var groups = compileUserDefinedGroups($_6sqjtje5jducwrdr.getCssGroups(editor));
       var processSelector = function (selector, group) {
         if (isUniqueSelector(editor, selector, group, globallyUniqueSelectors)) {
           markUniqueSelector(editor, selector, group, globallyUniqueSelectors);
@@ -207,10 +207,10 @@ var importcss = (function () {
         }
         return null;
       };
-      if (!$_63rxg4dwjd08md5m.shouldAppend(editor)) {
+      if (!$_6sqjtje5jducwrdr.shouldAppend(editor)) {
         ctrl.items().remove();
       }
-      Tools.each(getSelectors(editor, e.doc || editor.getDoc(), compileFilter($_63rxg4dwjd08md5m.getFileFilter(editor))), function (selector) {
+      Tools.each(getSelectors(editor, e.doc || editor.getDoc(), compileFilter($_6sqjtje5jducwrdr.getFileFilter(editor))), function (selector) {
         if (selector.indexOf('.mce-') === -1) {
           if (!selectorFilter || selectorFilter(selector)) {
             var selectorGroups = getGroupsBySelector(groups, selector);
@@ -238,22 +238,22 @@ var importcss = (function () {
       e.control.renderNew();
     });
   };
-  var $_1hjx4qdrjd08md5e = {
+  var $_38p4ioe0jducwrdm = {
     defaultConvertSelectorToFormat: defaultConvertSelectorToFormat,
     setup: setup
   };
 
   var get = function (editor) {
     var convertSelectorToFormat = function (selectorText) {
-      return $_1hjx4qdrjd08md5e.defaultConvertSelectorToFormat(editor, selectorText);
+      return $_38p4ioe0jducwrdm.defaultConvertSelectorToFormat(editor, selectorText);
     };
     return { convertSelectorToFormat: convertSelectorToFormat };
   };
-  var $_cwvb3pdqjd08md5c = { get: get };
+  var $_7j5e1zdzjducwrdk = { get: get };
 
   PluginManager.add('importcss', function (editor) {
-    $_1hjx4qdrjd08md5e.setup(editor);
-    return $_cwvb3pdqjd08md5c.get(editor);
+    $_38p4ioe0jducwrdm.setup(editor);
+    return $_7j5e1zdzjducwrdk.get(editor);
   });
   function Plugin () {
   }
@@ -261,4 +261,4 @@ var importcss = (function () {
   return Plugin;
 
 }());
-})()
+})();
