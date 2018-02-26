@@ -12,7 +12,7 @@ var pagebreak = (function () {
   var shouldSplitBlock = function (editor) {
     return editor.getParam('pagebreak_split_block', false);
   };
-  var $_83mli5h0jducwro1 = {
+  var $_c3cra1h0je4c0hek = {
     getSeparatorHtml: getSeparatorHtml,
     shouldSplitBlock: shouldSplitBlock
   };
@@ -24,7 +24,7 @@ var pagebreak = (function () {
     return '<img src="' + Env.transparentSrc + '" class="' + getPageBreakClass() + '" data-mce-resize="false" data-mce-placeholder />';
   };
   var setup = function (editor) {
-    var separatorHtml = $_83mli5h0jducwro1.getSeparatorHtml(editor);
+    var separatorHtml = $_c3cra1h0je4c0hek.getSeparatorHtml(editor);
     var pageBreakSeparatorRegExp = new RegExp(separatorHtml.replace(/[\?\.\*\[\]\(\)\{\}\+\^\$\:]/g, function (a) {
       return '\\' + a;
     }), 'gi');
@@ -39,7 +39,7 @@ var pagebreak = (function () {
           className = node.attr('class');
           if (className && className.indexOf('mce-pagebreak') !== -1) {
             var parentNode = node.parent;
-            if (editor.schema.getBlockElements()[parentNode.name] && $_83mli5h0jducwro1.shouldSplitBlock(editor)) {
+            if (editor.schema.getBlockElements()[parentNode.name] && $_c3cra1h0je4c0hek.shouldSplitBlock(editor)) {
               parentNode.type = 3;
               parentNode.value = separatorHtml;
               parentNode.raw = true;
@@ -54,7 +54,7 @@ var pagebreak = (function () {
       });
     });
   };
-  var $_33tb1ogyjducwrnz = {
+  var $_fu59klgyje4c0hei = {
     setup: setup,
     getPlaceholderHtml: getPlaceholderHtml,
     getPageBreakClass: getPageBreakClass
@@ -63,22 +63,22 @@ var pagebreak = (function () {
   var register = function (editor) {
     editor.addCommand('mcePageBreak', function () {
       if (editor.settings.pagebreak_split_block) {
-        editor.insertContent('<p>' + $_33tb1ogyjducwrnz.getPlaceholderHtml() + '</p>');
+        editor.insertContent('<p>' + $_fu59klgyje4c0hei.getPlaceholderHtml() + '</p>');
       } else {
-        editor.insertContent($_33tb1ogyjducwrnz.getPlaceholderHtml());
+        editor.insertContent($_fu59klgyje4c0hei.getPlaceholderHtml());
       }
     });
   };
-  var $_cry6wrgxjducwrnw = { register: register };
+  var $_53wu7igxje4c0hee = { register: register };
 
   var setup$1 = function (editor) {
     editor.on('ResolveName', function (e) {
-      if (e.target.nodeName === 'IMG' && editor.dom.hasClass(e.target, $_33tb1ogyjducwrnz.getPageBreakClass())) {
+      if (e.target.nodeName === 'IMG' && editor.dom.hasClass(e.target, $_fu59klgyje4c0hei.getPageBreakClass())) {
         e.name = 'pagebreak';
       }
     });
   };
-  var $_3bcr1kh1jducwro3 = { setup: setup$1 };
+  var $_43x7xoh1je4c0hem = { setup: setup$1 };
 
   var register$1 = function (editor) {
     editor.addButton('pagebreak', {
@@ -92,13 +92,13 @@ var pagebreak = (function () {
       context: 'insert'
     });
   };
-  var $_bewve4h2jducwro4 = { register: register$1 };
+  var $_ewpbjlh2je4c0hen = { register: register$1 };
 
   PluginManager.add('pagebreak', function (editor) {
-    $_cry6wrgxjducwrnw.register(editor);
-    $_bewve4h2jducwro4.register(editor);
-    $_33tb1ogyjducwrnz.setup(editor);
-    $_3bcr1kh1jducwro3.setup(editor);
+    $_53wu7igxje4c0hee.register(editor);
+    $_ewpbjlh2je4c0hen.register(editor);
+    $_fu59klgyje4c0hei.setup(editor);
+    $_43x7xoh1je4c0hem.setup(editor);
   });
   function Plugin () {
   }
