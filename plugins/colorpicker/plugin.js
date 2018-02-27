@@ -108,12 +108,12 @@ var colorpicker = (function () {
     });
     setColor(win, value);
   };
-  var $_d71n1t9uje4c0fy0 = { open: open };
+  var $_1aqyr69uje5nvbn8 = { open: open };
 
   PluginManager.add('colorpicker', function (editor) {
     if (!editor.settings.color_picker_callback) {
       editor.settings.color_picker_callback = function (callback, value) {
-        $_d71n1t9uje4c0fy0.open(editor, callback, value);
+        $_1aqyr69uje5nvbn8.open(editor, callback, value);
       };
     }
   });

@@ -22,7 +22,7 @@ var tabfocus = (function () {
   var getTabFocus = function (editor) {
     return editor.getParam('tab_focus', getTabFocusElements(editor));
   };
-  var $_47wwbojmje4c0hsd = { getTabFocus: getTabFocus };
+  var $_6j62fyjmje5nvcp9 = { getTabFocus: getTabFocus };
 
   var DOM = DOMUtils.DOM;
   var tabCancel = function (e) {
@@ -65,7 +65,7 @@ var tabfocus = (function () {
         }
         return null;
       }
-      v = Tools.explode($_47wwbojmje4c0hsd.getTabFocus(editor));
+      v = Tools.explode($_6j62fyjmje5nvcp9.getTabFocus(editor));
       if (v.length === 1) {
         v[1] = v[0];
         v[0] = ':prev';
@@ -110,10 +110,10 @@ var tabfocus = (function () {
       }
     });
   };
-  var $_d1naijjfje4c0hs8 = { setup: setup };
+  var $_d6stobjfje5nvcp0 = { setup: setup };
 
   PluginManager.add('tabfocus', function (editor) {
-    $_d1naijjfje4c0hs8.setup(editor);
+    $_d6stobjfje5nvcp0.setup(editor);
   });
   function Plugin () {
   }

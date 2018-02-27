@@ -43,7 +43,7 @@ var insertdatetime = (function () {
   var shouldInsertTimeElement = function (editor) {
     return editor.getParam('insertdatetime_element', false);
   };
-  var $_dex3mneaje4c0gs1 = {
+  var $_gj520geaje5nvc6g = {
     getDateFormat: getDateFormat,
     getTimeFormat: getTimeFormat,
     getFormats: getFormats,
@@ -92,7 +92,7 @@ var insertdatetime = (function () {
     editor.selection.collapse(false);
   };
   var insertDateTime = function (editor, format) {
-    if ($_dex3mneaje4c0gs1.shouldInsertTimeElement(editor)) {
+    if ($_gj520geaje5nvc6g.shouldInsertTimeElement(editor)) {
       var userTime = getDateTime(editor, format);
       var computerTime = void 0;
       if (/%[HMSIp]/.test(format)) {
@@ -110,31 +110,31 @@ var insertdatetime = (function () {
       editor.insertContent(getDateTime(editor, format));
     }
   };
-  var $_d627wdebje4c0gs4 = {
+  var $_abq4ynebje5nvc6j = {
     insertDateTime: insertDateTime,
     getDateTime: getDateTime
   };
 
   var register = function (editor) {
     editor.addCommand('mceInsertDate', function () {
-      $_d627wdebje4c0gs4.insertDateTime(editor, $_dex3mneaje4c0gs1.getDateFormat(editor));
+      $_abq4ynebje5nvc6j.insertDateTime(editor, $_gj520geaje5nvc6g.getDateFormat(editor));
     });
     editor.addCommand('mceInsertTime', function () {
-      $_d627wdebje4c0gs4.insertDateTime(editor, $_dex3mneaje4c0gs1.getTimeFormat(editor));
+      $_abq4ynebje5nvc6j.insertDateTime(editor, $_gj520geaje5nvc6g.getTimeFormat(editor));
     });
   };
-  var $_ax9save9je4c0grz = { register: register };
+  var $_a5838e9je5nvc6f = { register: register };
 
   var Tools = tinymce.util.Tools.resolve('tinymce.util.Tools');
 
   var createMenuItems = function (editor, lastFormatState) {
-    var formats = $_dex3mneaje4c0gs1.getFormats(editor);
+    var formats = $_gj520geaje5nvc6g.getFormats(editor);
     return Tools.map(formats, function (fmt) {
       return {
-        text: $_d627wdebje4c0gs4.getDateTime(editor, fmt),
+        text: $_abq4ynebje5nvc6j.getDateTime(editor, fmt),
         onclick: function () {
           lastFormatState.set(fmt);
-          $_d627wdebje4c0gs4.insertDateTime(editor, fmt);
+          $_abq4ynebje5nvc6j.insertDateTime(editor, fmt);
         }
       };
     });
@@ -147,7 +147,7 @@ var insertdatetime = (function () {
       menu: menuItems,
       onclick: function () {
         var lastFormat = lastFormatState.get();
-        $_d627wdebje4c0gs4.insertDateTime(editor, lastFormat ? lastFormat : $_dex3mneaje4c0gs1.getDefaultDateTime(editor));
+        $_abq4ynebje5nvc6j.insertDateTime(editor, lastFormat ? lastFormat : $_gj520geaje5nvc6g.getDefaultDateTime(editor));
       }
     });
     editor.addMenuItem('insertdatetime', {
@@ -157,12 +157,12 @@ var insertdatetime = (function () {
       context: 'insert'
     });
   };
-  var $_cx5ugqecje4c0gs8 = { register: register$1 };
+  var $_evkv3mecje5nvc6n = { register: register$1 };
 
   PluginManager.add('insertdatetime', function (editor) {
     var lastFormatState = Cell(null);
-    $_ax9save9je4c0grz.register(editor);
-    $_cx5ugqecje4c0gs8.register(editor, lastFormatState);
+    $_a5838e9je5nvc6f.register(editor);
+    $_evkv3mecje5nvc6n.register(editor, lastFormatState);
   });
   function Plugin () {
   }
