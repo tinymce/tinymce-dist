@@ -2,11 +2,11 @@
 var save = (function () {
   'use strict';
 
-  var PluginManager = tinymce.util.Tools.resolve('tinymce.PluginManager');
+  var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
-  var DOMUtils = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
+  var global$1 = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
 
-  var Tools = tinymce.util.Tools.resolve('tinymce.util.Tools');
+  var global$2 = tinymce.util.Tools.resolve('tinymce.util.Tools');
 
   var enableWhenDirty = function (editor) {
     return editor.getParam('save_enablewhendirty', true);
@@ -17,7 +17,7 @@ var save = (function () {
   var hasOnCancelCallback = function (editor) {
     return !!editor.getParam('save_oncancelcallback');
   };
-  var $_bzuhyuikje5nvclk = {
+  var $_5hlvt5iujfjlpdfc = {
     enableWhenDirty: enableWhenDirty,
     hasOnSaveCallback: hasOnSaveCallback,
     hasOnCancelCallback: hasOnCancelCallback
@@ -31,12 +31,12 @@ var save = (function () {
   };
   var save = function (editor) {
     var formObj;
-    formObj = DOMUtils.DOM.getParent(editor.id, 'form');
-    if ($_bzuhyuikje5nvclk.enableWhenDirty(editor) && !editor.isDirty()) {
+    formObj = global$1.DOM.getParent(editor.id, 'form');
+    if ($_5hlvt5iujfjlpdfc.enableWhenDirty(editor) && !editor.isDirty()) {
       return;
     }
     editor.save();
-    if ($_bzuhyuikje5nvclk.hasOnSaveCallback(editor)) {
+    if ($_5hlvt5iujfjlpdfc.hasOnSaveCallback(editor)) {
       editor.execCallback('save_onsavecallback', editor);
       editor.nodeChanged();
       return;
@@ -56,8 +56,8 @@ var save = (function () {
     }
   };
   var cancel = function (editor) {
-    var h = Tools.trim(editor.startContent);
-    if ($_bzuhyuikje5nvclk.hasOnCancelCallback(editor)) {
+    var h = global$2.trim(editor.startContent);
+    if ($_5hlvt5iujfjlpdfc.hasOnCancelCallback(editor)) {
       editor.execCallback('save_oncancelcallback', editor);
       return;
     }
@@ -65,26 +65,26 @@ var save = (function () {
     editor.undoManager.clear();
     editor.nodeChanged();
   };
-  var $_f4l313ihje5nvcli = {
+  var $_a24pqnirjfjlpdfa = {
     save: save,
     cancel: cancel
   };
 
   var register = function (editor) {
     editor.addCommand('mceSave', function () {
-      $_f4l313ihje5nvcli.save(editor);
+      $_a24pqnirjfjlpdfa.save(editor);
     });
     editor.addCommand('mceCancel', function () {
-      $_f4l313ihje5nvcli.cancel(editor);
+      $_a24pqnirjfjlpdfa.cancel(editor);
     });
   };
-  var $_g6wwpkigje5nvclg = { register: register };
+  var $_5idpo0iqjfjlpdf9 = { register: register };
 
   var stateToggle = function (editor) {
     return function (e) {
       var ctrl = e.control;
       editor.on('nodeChange dirty', function () {
-        ctrl.disabled($_bzuhyuikje5nvclk.enableWhenDirty(editor) && !editor.isDirty());
+        ctrl.disabled($_5hlvt5iujfjlpdfc.enableWhenDirty(editor) && !editor.isDirty());
       });
     };
   };
@@ -105,11 +105,11 @@ var save = (function () {
     });
     editor.addShortcut('Meta+S', '', 'mceSave');
   };
-  var $_gbof2tilje5nvcll = { register: register$1 };
+  var $_badunjivjfjlpdfd = { register: register$1 };
 
-  PluginManager.add('save', function (editor) {
-    $_gbof2tilje5nvcll.register(editor);
-    $_g6wwpkigje5nvclg.register(editor);
+  global.add('save', function (editor) {
+    $_badunjivjfjlpdfd.register(editor);
+    $_5idpo0iqjfjlpdf9.register(editor);
   });
   function Plugin () {
   }

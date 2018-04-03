@@ -20,9 +20,9 @@ var searchreplace = (function () {
     };
   };
 
-  var PluginManager = tinymce.util.Tools.resolve('tinymce.PluginManager');
+  var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
-  var Tools = tinymce.util.Tools.resolve('tinymce.util.Tools');
+  var global$1 = tinymce.util.Tools.resolve('tinymce.util.Tools');
 
   function isContentEditableFalse(node) {
     return node && node.nodeType === 1 && node.contentEditable === 'false';
@@ -216,7 +216,7 @@ var searchreplace = (function () {
     }
     return count;
   }
-  var $_9njmi2isje5nvcm6 = { findAndReplaceDOMText: findAndReplaceDOMText };
+  var $_1t82xaj2jfjlpdfx = { findAndReplaceDOMText: findAndReplaceDOMText };
 
   var getElmIndex = function (elm) {
     var value = elm.getAttribute('data-mce-index');
@@ -231,7 +231,7 @@ var searchreplace = (function () {
     marker.className = 'mce-match-marker';
     node = editor.getBody();
     done(editor, currentIndexState, false);
-    return $_9njmi2isje5nvcm6.findAndReplaceDOMText(regex, node, marker, false, editor.schema);
+    return $_1t82xaj2jfjlpdfx.findAndReplaceDOMText(regex, node, marker, false, editor.schema);
   };
   var unwrap = function (node) {
     var parentNode = node.parentNode;
@@ -243,7 +243,7 @@ var searchreplace = (function () {
   var findSpansByIndex = function (editor, index) {
     var nodes;
     var spans = [];
-    nodes = Tools.toArray(editor.getBody().getElementsByTagName('span'));
+    nodes = global$1.toArray(editor.getBody().getElementsByTagName('span'));
     if (nodes.length) {
       for (var i = 0; i < nodes.length; i++) {
         var nodeIndex = getElmIndex(nodes[i]);
@@ -313,7 +313,7 @@ var searchreplace = (function () {
     var i, nodes, node, matchIndex, currentMatchIndex, nextIndex = currentIndexState.get(), hasMore;
     forward = forward !== false;
     node = editor.getBody();
-    nodes = Tools.grep(Tools.toArray(node.getElementsByTagName('span')), isMatchSpan);
+    nodes = global$1.grep(global$1.toArray(node.getElementsByTagName('span')), isMatchSpan);
     for (i = 0; i < nodes.length; i++) {
       var nodeIndex = getElmIndex(nodes[i]);
       matchIndex = currentMatchIndex = parseInt(nodeIndex, 10);
@@ -352,7 +352,7 @@ var searchreplace = (function () {
   };
   var done = function (editor, currentIndexState, keepEditorSelection) {
     var i, nodes, startContainer, endContainer;
-    nodes = Tools.toArray(editor.getBody().getElementsByTagName('span'));
+    nodes = global$1.toArray(editor.getBody().getElementsByTagName('span'));
     for (i = 0; i < nodes.length; i++) {
       var nodeIndex = getElmIndex(nodes[i]);
       if (nodeIndex !== null && nodeIndex.length) {
@@ -381,7 +381,7 @@ var searchreplace = (function () {
   var hasPrev = function (editor, currentIndexState) {
     return findSpansByIndex(editor, currentIndexState.get() - 1).length > 0;
   };
-  var $_5zihpiqje5nvcm0 = {
+  var $_ip0w7j0jfjlpdfs = {
     done: done,
     find: find,
     next: next,
@@ -393,19 +393,19 @@ var searchreplace = (function () {
 
   var get = function (editor, currentIndexState) {
     var done = function (keepEditorSelection) {
-      return $_5zihpiqje5nvcm0.done(editor, currentIndexState, keepEditorSelection);
+      return $_ip0w7j0jfjlpdfs.done(editor, currentIndexState, keepEditorSelection);
     };
     var find = function (text, matchCase, wholeWord) {
-      return $_5zihpiqje5nvcm0.find(editor, currentIndexState, text, matchCase, wholeWord);
+      return $_ip0w7j0jfjlpdfs.find(editor, currentIndexState, text, matchCase, wholeWord);
     };
     var next = function () {
-      return $_5zihpiqje5nvcm0.next(editor, currentIndexState);
+      return $_ip0w7j0jfjlpdfs.next(editor, currentIndexState);
     };
     var prev = function () {
-      return $_5zihpiqje5nvcm0.prev(editor, currentIndexState);
+      return $_ip0w7j0jfjlpdfs.prev(editor, currentIndexState);
     };
     var replace = function (text, forward, all) {
-      return $_5zihpiqje5nvcm0.replace(editor, currentIndexState, text, forward, all);
+      return $_ip0w7j0jfjlpdfs.replace(editor, currentIndexState, text, forward, all);
     };
     return {
       done: done,
@@ -415,15 +415,15 @@ var searchreplace = (function () {
       replace: replace
     };
   };
-  var $_1a2uneipje5nvcly = { get: get };
+  var $_uh5k4izjfjlpdfq = { get: get };
 
   var open = function (editor, currentIndexState) {
     var last = {}, selectedText;
     editor.undoManager.add();
-    selectedText = Tools.trim(editor.selection.getContent({ format: 'text' }));
+    selectedText = global$1.trim(editor.selection.getContent({ format: 'text' }));
     function updateButtonStates() {
-      win.statusbar.find('#next').disabled($_5zihpiqje5nvcm0.hasNext(editor, currentIndexState) === false);
-      win.statusbar.find('#prev').disabled($_5zihpiqje5nvcm0.hasPrev(editor, currentIndexState) === false);
+      win.statusbar.find('#next').disabled($_ip0w7j0jfjlpdfs.hasNext(editor, currentIndexState) === false);
+      win.statusbar.find('#prev').disabled($_ip0w7j0jfjlpdfs.hasPrev(editor, currentIndexState) === false);
     }
     function notFoundAlert() {
       editor.windowManager.alert('Could not find the specified string.', function () {
@@ -436,7 +436,7 @@ var searchreplace = (function () {
       align: 'center',
       onClose: function () {
         editor.focus();
-        $_5zihpiqje5nvcm0.done(editor, currentIndexState);
+        $_ip0w7j0jfjlpdfs.done(editor, currentIndexState);
         editor.undoManager.add();
       },
       onSubmit: function (e) {
@@ -446,20 +446,20 @@ var searchreplace = (function () {
         wholeWord = win.find('#words').checked();
         text = win.find('#find').value();
         if (!text.length) {
-          $_5zihpiqje5nvcm0.done(editor, currentIndexState, false);
+          $_ip0w7j0jfjlpdfs.done(editor, currentIndexState, false);
           win.statusbar.items().slice(1).disabled(true);
           return;
         }
         if (last.text === text && last.caseState === caseState && last.wholeWord === wholeWord) {
-          if (!$_5zihpiqje5nvcm0.hasNext(editor, currentIndexState)) {
+          if (!$_ip0w7j0jfjlpdfs.hasNext(editor, currentIndexState)) {
             notFoundAlert();
             return;
           }
-          $_5zihpiqje5nvcm0.next(editor, currentIndexState);
+          $_ip0w7j0jfjlpdfs.next(editor, currentIndexState);
           updateButtonStates();
           return;
         }
-        count = $_5zihpiqje5nvcm0.find(editor, currentIndexState, text, caseState, wholeWord);
+        count = $_ip0w7j0jfjlpdfs.find(editor, currentIndexState, text, caseState, wholeWord);
         if (!count) {
           notFoundAlert();
         }
@@ -483,7 +483,7 @@ var searchreplace = (function () {
           text: 'Replace',
           disabled: true,
           onclick: function () {
-            if (!$_5zihpiqje5nvcm0.replace(editor, currentIndexState, win.find('#replace').value())) {
+            if (!$_ip0w7j0jfjlpdfs.replace(editor, currentIndexState, win.find('#replace').value())) {
               win.statusbar.items().slice(1).disabled(true);
               currentIndexState.set(-1);
               last = {};
@@ -494,7 +494,7 @@ var searchreplace = (function () {
           text: 'Replace all',
           disabled: true,
           onclick: function () {
-            $_5zihpiqje5nvcm0.replace(editor, currentIndexState, win.find('#replace').value(), true, true);
+            $_ip0w7j0jfjlpdfs.replace(editor, currentIndexState, win.find('#replace').value(), true, true);
             win.statusbar.items().slice(1).disabled(true);
             last = {};
           }
@@ -508,7 +508,7 @@ var searchreplace = (function () {
           name: 'prev',
           disabled: true,
           onclick: function () {
-            $_5zihpiqje5nvcm0.prev(editor, currentIndexState);
+            $_ip0w7j0jfjlpdfs.prev(editor, currentIndexState);
             updateButtonStates();
           }
         },
@@ -517,7 +517,7 @@ var searchreplace = (function () {
           name: 'next',
           disabled: true,
           onclick: function () {
-            $_5zihpiqje5nvcm0.next(editor, currentIndexState);
+            $_ip0w7j0jfjlpdfs.next(editor, currentIndexState);
             updateButtonStates();
           }
         }
@@ -558,18 +558,18 @@ var searchreplace = (function () {
       }
     });
   };
-  var $_82pa27iuje5nvcmd = { open: open };
+  var $_ch8iqwj4jfjlpdg4 = { open: open };
 
   var register = function (editor, currentIndexState) {
     editor.addCommand('SearchReplace', function () {
-      $_82pa27iuje5nvcmd.open(editor, currentIndexState);
+      $_ch8iqwj4jfjlpdg4.open(editor, currentIndexState);
     });
   };
-  var $_92a593itje5nvcma = { register: register };
+  var $_e77xpbj3jfjlpdg2 = { register: register };
 
   var showDialog = function (editor, currentIndexState) {
     return function () {
-      $_82pa27iuje5nvcmd.open(editor, currentIndexState);
+      $_ch8iqwj4jfjlpdg4.open(editor, currentIndexState);
     };
   };
   var register$1 = function (editor, currentIndexState) {
@@ -586,13 +586,13 @@ var searchreplace = (function () {
     });
     editor.shortcuts.add('Meta+F', '', showDialog(editor, currentIndexState));
   };
-  var $_b0pfdqivje5nvcmg = { register: register$1 };
+  var $_fa6zqqj5jfjlpdga = { register: register$1 };
 
-  PluginManager.add('searchreplace', function (editor) {
+  global.add('searchreplace', function (editor) {
     var currentIndexState = Cell(-1);
-    $_92a593itje5nvcma.register(editor, currentIndexState);
-    $_b0pfdqivje5nvcmg.register(editor, currentIndexState);
-    return $_1a2uneipje5nvcly.get(editor, currentIndexState);
+    $_e77xpbj3jfjlpdg2.register(editor, currentIndexState);
+    $_fa6zqqj5jfjlpdga.register(editor, currentIndexState);
+    return $_uh5k4izjfjlpdfq.get(editor, currentIndexState);
   });
   function Plugin () {
   }

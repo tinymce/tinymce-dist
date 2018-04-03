@@ -2,12 +2,12 @@
 var legacyoutput = (function () {
   'use strict';
 
-  var PluginManager = tinymce.util.Tools.resolve('tinymce.PluginManager');
+  var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
-  var Tools = tinymce.util.Tools.resolve('tinymce.util.Tools');
+  var global$1 = tinymce.util.Tools.resolve('tinymce.util.Tools');
 
   var overrideFormats = function (editor) {
-    var alignElements = 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img', fontSizes = Tools.explode(editor.settings.font_size_style_values), schema = editor.schema;
+    var alignElements = 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img', fontSizes = global$1.explode(editor.settings.font_size_style_values), schema = editor.schema;
     editor.formatter.register({
       alignleft: {
         selector: alignElements,
@@ -83,7 +83,7 @@ var legacyoutput = (function () {
         inline: 'font',
         attributes: {
           size: function (vars) {
-            return Tools.inArray(fontSizes, vars.value) + 1;
+            return global$1.inArray(fontSizes, vars.value) + 1;
           }
         }
       },
@@ -96,13 +96,13 @@ var legacyoutput = (function () {
         styles: { backgroundColor: '%value' }
       }
     });
-    Tools.each('b,i,u,strike'.split(','), function (name) {
+    global$1.each('b,i,u,strike'.split(','), function (name) {
       schema.addValidElements(name + '[*]');
     });
     if (!schema.getElementRule('font')) {
       schema.addValidElements('font[face|size|color|style]');
     }
-    Tools.each(alignElements.split(','), function (name) {
+    global$1.each(alignElements.split(','), function (name) {
       var rule = schema.getElementRule(name);
       if (rule) {
         if (!rule.attributes.align) {
@@ -118,7 +118,7 @@ var legacyoutput = (function () {
       overrideFormats(editor);
     });
   };
-  var $_a4e5wmegje5nvc76 = { setup: setup };
+  var $_9o23ceeqjfjlpd16 = { setup: setup };
 
   var register = function (editor) {
     editor.addButton('fontsizeselect', function () {
@@ -205,11 +205,11 @@ var legacyoutput = (function () {
       };
     });
   };
-  var $_386ht4eije5nvc7a = { register: register };
+  var $_5kbln5esjfjlpd19 = { register: register };
 
-  PluginManager.add('legacyoutput', function (editor) {
-    $_a4e5wmegje5nvc76.setup(editor);
-    $_386ht4eije5nvc7a.register(editor);
+  global.add('legacyoutput', function (editor) {
+    $_9o23ceeqjfjlpd16.setup(editor);
+    $_5kbln5esjfjlpd19.register(editor);
   });
   function Plugin () {
   }
