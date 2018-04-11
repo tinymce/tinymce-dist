@@ -28,12 +28,12 @@ var visualchars = (function () {
     };
     return { isEnabled: isEnabled };
   };
-  var $_d6cldmrqjfjlpf9n = { get: get };
+  var $_ac6vamrvjfuvizyy = { get: get };
 
   var fireVisualChars = function (editor, state) {
     return editor.fire('VisualChars', { state: state });
   };
-  var $_237jvzrtjfjlpf9r = { fireVisualChars: fireVisualChars };
+  var $_bp2yiryjfuvizz0 = { fireVisualChars: fireVisualChars };
 
   var charMap = {
     '\xA0': 'nbsp',
@@ -56,7 +56,7 @@ var visualchars = (function () {
     }
     return selector;
   };
-  var $_dgtsf6rvjfjlpf9x = {
+  var $_d3i4l8s0jfuvizzb = {
     charMap: charMap,
     regExp: charMapToRegExp(charMap),
     regExpGlobal: charMapToRegExp(charMap, true),
@@ -142,7 +142,7 @@ var visualchars = (function () {
   };
   var never = constant(false);
   var always = constant(true);
-  var $_4wz90arzjfjlpfae = {
+  var $_33vunks4jfuvizzw = {
     noop: noop,
     noarg: noarg,
     compose: compose,
@@ -158,8 +158,8 @@ var visualchars = (function () {
     always: always
   };
 
-  var never$1 = $_4wz90arzjfjlpfae.never;
-  var always$1 = $_4wz90arzjfjlpfae.always;
+  var never$1 = $_33vunks4jfuvizzw.never;
+  var always$1 = $_33vunks4jfuvizzw.always;
   var none = function () {
     return NONE;
   };
@@ -202,7 +202,7 @@ var visualchars = (function () {
       toArray: function () {
         return [];
       },
-      toString: $_4wz90arzjfjlpfae.constant('none()')
+      toString: $_33vunks4jfuvizzw.constant('none()')
     };
     if (Object.freeze)
       Object.freeze(me);
@@ -275,6 +275,32 @@ var visualchars = (function () {
     some: some,
     none: none,
     from: from
+  };
+
+  var typeOf = function (x) {
+    if (x === null)
+      return 'null';
+    var t = typeof x;
+    if (t === 'object' && Array.prototype.isPrototypeOf(x))
+      return 'array';
+    if (t === 'object' && String.prototype.isPrototypeOf(x))
+      return 'string';
+    return t;
+  };
+  var isType = function (type) {
+    return function (value) {
+      return typeOf(value) === type;
+    };
+  };
+  var $_c4ua8qs5jfuvj001 = {
+    isString: isType('string'),
+    isObject: isType('object'),
+    isArray: isType('array'),
+    isNull: isType('null'),
+    isBoolean: isType('boolean'),
+    isUndefined: isType('undefined'),
+    isFunction: isType('function'),
+    isNumber: isType('number')
   };
 
   var rawIndexOf = function () {
@@ -478,7 +504,10 @@ var visualchars = (function () {
   var last = function (xs) {
     return xs.length === 0 ? Option.none() : Option.some(xs[xs.length - 1]);
   };
-  var $_a5cxdrrxjfjlpfa3 = {
+  var from$1 = $_c4ua8qs5jfuvj001.isFunction(Array.from) ? Array.from : function (x) {
+    return slice.call(x);
+  };
+  var $_8kpzfus2jfuvizzn = {
     map: map,
     each: each,
     eachr: eachr,
@@ -504,7 +533,8 @@ var visualchars = (function () {
     sort: sort,
     range: range,
     head: head,
-    last: last
+    last: last,
+    from: from$1
   };
 
   var fromHtml = function (html, scope) {
@@ -530,12 +560,12 @@ var visualchars = (function () {
   var fromDom = function (node) {
     if (node === null || node === undefined)
       throw new Error('Node cannot be null or undefined');
-    return { dom: $_4wz90arzjfjlpfae.constant(node) };
+    return { dom: $_33vunks4jfuvizzw.constant(node) };
   };
   var fromPoint = function (doc, x, y) {
     return Option.from(doc.dom().elementFromPoint(x, y)).map(fromDom);
   };
-  var $_ch6a2qs0jfjlpfai = {
+  var $_6p5m48s6jfuvj003 = {
     fromHtml: fromHtml,
     fromTag: fromTag,
     fromText: fromText,
@@ -543,7 +573,7 @@ var visualchars = (function () {
     fromPoint: fromPoint
   };
 
-  var $_bjend9s2jfjlpfan = {
+  var $_2edk7os8jfuvj00a = {
     ATTRIBUTE: 2,
     CDATA_SECTION: 4,
     COMMENT: 8,
@@ -568,18 +598,18 @@ var visualchars = (function () {
   var value = function (element) {
     return element.dom().nodeValue;
   };
-  var isType = function (t) {
+  var isType$1 = function (t) {
     return function (element) {
       return type(element) === t;
     };
   };
   var isComment = function (element) {
-    return type(element) === $_bjend9s2jfjlpfan.COMMENT || name(element) === '#comment';
+    return type(element) === $_2edk7os8jfuvj00a.COMMENT || name(element) === '#comment';
   };
-  var isElement = isType($_bjend9s2jfjlpfan.ELEMENT);
-  var isText = isType($_bjend9s2jfjlpfan.TEXT);
-  var isDocument = isType($_bjend9s2jfjlpfan.DOCUMENT);
-  var $_89c3sms1jfjlpfam = {
+  var isElement = isType$1($_2edk7os8jfuvj00a.ELEMENT);
+  var isText = isType$1($_2edk7os8jfuvj00a.TEXT);
+  var isDocument = isType$1($_2edk7os8jfuvj00a.DOCUMENT);
+  var $_e2678os7jfuvj009 = {
     name: name,
     type: type,
     value: value,
@@ -590,18 +620,18 @@ var visualchars = (function () {
   };
 
   var wrapCharWithSpan = function (value) {
-    return '<span data-mce-bogus="1" class="mce-' + $_dgtsf6rvjfjlpf9x.charMap[value] + '">' + value + '</span>';
+    return '<span data-mce-bogus="1" class="mce-' + $_d3i4l8s0jfuvizzb.charMap[value] + '">' + value + '</span>';
   };
-  var $_eayu3js3jfjlpfao = { wrapCharWithSpan: wrapCharWithSpan };
+  var $_fee3jys9jfuvj00a = { wrapCharWithSpan: wrapCharWithSpan };
 
   var isMatch = function (n) {
-    return $_89c3sms1jfjlpfam.isText(n) && $_89c3sms1jfjlpfam.value(n) !== undefined && $_dgtsf6rvjfjlpf9x.regExp.test($_89c3sms1jfjlpfam.value(n));
+    return $_e2678os7jfuvj009.isText(n) && $_e2678os7jfuvj009.value(n) !== undefined && $_d3i4l8s0jfuvizzb.regExp.test($_e2678os7jfuvj009.value(n));
   };
   var filterDescendants = function (scope, predicate) {
     var result = [];
     var dom = scope.dom();
-    var children = $_a5cxdrrxjfjlpfa3.map(dom.childNodes, $_ch6a2qs0jfjlpfai.fromDom);
-    $_a5cxdrrxjfjlpfa3.each(children, function (x) {
+    var children = $_8kpzfus2jfuvizzn.map(dom.childNodes, $_6p5m48s6jfuvj003.fromDom);
+    $_8kpzfus2jfuvizzn.each(children, function (x) {
       if (predicate(x)) {
         result = result.concat([x]);
       }
@@ -618,9 +648,9 @@ var visualchars = (function () {
     }
   };
   var replaceWithSpans = function (html) {
-    return html.replace($_dgtsf6rvjfjlpf9x.regExpGlobal, $_eayu3js3jfjlpfao.wrapCharWithSpan);
+    return html.replace($_d3i4l8s0jfuvizzb.regExpGlobal, $_fee3jys9jfuvj00a.wrapCharWithSpan);
   };
-  var $_4pjnbxrwjfjlpf9z = {
+  var $_4ukjx9s1jfuvizzd = {
     isMatch: isMatch,
     filterDescendants: filterDescendants,
     findParentElm: findParentElm,
@@ -629,9 +659,9 @@ var visualchars = (function () {
 
   var show = function (editor, rootElm) {
     var node, div;
-    var nodeList = $_4pjnbxrwjfjlpf9z.filterDescendants($_ch6a2qs0jfjlpfai.fromDom(rootElm), $_4pjnbxrwjfjlpf9z.isMatch);
-    $_a5cxdrrxjfjlpfa3.each(nodeList, function (n) {
-      var withSpans = $_4pjnbxrwjfjlpf9z.replaceWithSpans($_89c3sms1jfjlpfam.value(n));
+    var nodeList = $_4ukjx9s1jfuvizzd.filterDescendants($_6p5m48s6jfuvj003.fromDom(rootElm), $_4ukjx9s1jfuvizzd.isMatch);
+    $_8kpzfus2jfuvizzn.each(nodeList, function (n) {
+      var withSpans = $_4ukjx9s1jfuvizzd.replaceWithSpans($_e2678os7jfuvj009.value(n));
       div = editor.dom.create('div', null, withSpans);
       while (node = div.lastChild) {
         editor.dom.insertAfter(node, n.dom());
@@ -640,21 +670,21 @@ var visualchars = (function () {
     });
   };
   var hide = function (editor, body) {
-    var nodeList = editor.dom.select($_dgtsf6rvjfjlpf9x.selector, body);
-    $_a5cxdrrxjfjlpfa3.each(nodeList, function (node) {
+    var nodeList = editor.dom.select($_d3i4l8s0jfuvizzb.selector, body);
+    $_8kpzfus2jfuvizzn.each(nodeList, function (node) {
       editor.dom.remove(node, 1);
     });
   };
   var toggle = function (editor) {
     var body = editor.getBody();
     var bookmark = editor.selection.getBookmark();
-    var parentNode = $_4pjnbxrwjfjlpf9z.findParentElm(editor.selection.getNode(), body);
+    var parentNode = $_4ukjx9s1jfuvizzd.findParentElm(editor.selection.getNode(), body);
     parentNode = parentNode !== undefined ? parentNode : body;
     hide(editor, parentNode);
     show(editor, parentNode);
     editor.selection.moveToBookmark(bookmark);
   };
-  var $_9lgovsrujfjlpf9s = {
+  var $_2iuj5arzjfuvizz1 = {
     show: show,
     hide: hide,
     toggle: toggle
@@ -665,39 +695,39 @@ var visualchars = (function () {
     var selection = editor.selection;
     var bookmark;
     toggleState.set(!toggleState.get());
-    $_237jvzrtjfjlpf9r.fireVisualChars(editor, toggleState.get());
+    $_bp2yiryjfuvizz0.fireVisualChars(editor, toggleState.get());
     bookmark = selection.getBookmark();
     if (toggleState.get() === true) {
-      $_9lgovsrujfjlpf9s.show(editor, body);
+      $_2iuj5arzjfuvizz1.show(editor, body);
     } else {
-      $_9lgovsrujfjlpf9s.hide(editor, body);
+      $_2iuj5arzjfuvizz1.hide(editor, body);
     }
     selection.moveToBookmark(bookmark);
   };
-  var $_17tfpjrsjfjlpf9q = { toggleVisualChars: toggleVisualChars };
+  var $_ban5ktrxjfuvizyz = { toggleVisualChars: toggleVisualChars };
 
   var register = function (editor, toggleState) {
     editor.addCommand('mceVisualChars', function () {
-      $_17tfpjrsjfjlpf9q.toggleVisualChars(editor, toggleState);
+      $_ban5ktrxjfuvizyz.toggleVisualChars(editor, toggleState);
     });
   };
-  var $_f9yg7nrrjfjlpf9o = { register: register };
+  var $_abgb1urwjfuvizyy = { register: register };
 
   var global$1 = tinymce.util.Tools.resolve('tinymce.util.Delay');
 
   var setup = function (editor, toggleState) {
     var debouncedToggle = global$1.debounce(function () {
-      $_9lgovsrujfjlpf9s.toggle(editor);
+      $_2iuj5arzjfuvizz1.toggle(editor);
     }, 300);
     if (editor.settings.forced_root_block !== false) {
       editor.on('keydown', function (e) {
         if (toggleState.get() === true) {
-          e.keyCode === 13 ? $_9lgovsrujfjlpf9s.toggle(editor) : debouncedToggle();
+          e.keyCode === 13 ? $_2iuj5arzjfuvizz1.toggle(editor) : debouncedToggle();
         }
       });
     }
   };
-  var $_3mcqous4jfjlpfaq = { setup: setup };
+  var $_d4sen5sajfuvj00b = { setup: setup };
 
   var toggleActiveState = function (editor) {
     return function (e) {
@@ -726,10 +756,10 @@ var visualchars = (function () {
 
   global.add('visualchars', function (editor) {
     var toggleState = Cell(false);
-    $_f9yg7nrrjfjlpf9o.register(editor, toggleState);
+    $_abgb1urwjfuvizyy.register(editor, toggleState);
     register$1(editor);
-    $_3mcqous4jfjlpfaq.setup(editor, toggleState);
-    return $_d6cldmrqjfjlpf9n.get(toggleState);
+    $_d4sen5sajfuvj00b.setup(editor, toggleState);
+    return $_ac6vamrvjfuvizyy.get(toggleState);
   });
   function Plugin () {
   }

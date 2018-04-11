@@ -81,7 +81,7 @@ var help = (function () {
   };
   var never = constant(false);
   var always = constant(true);
-  var $_g576csaujfjlpcit = {
+  var $_bsac6zaxjfuviws9 = {
     noop: noop,
     noarg: noarg,
     compose: compose,
@@ -97,8 +97,8 @@ var help = (function () {
     always: always
   };
 
-  var never$1 = $_g576csaujfjlpcit.never;
-  var always$1 = $_g576csaujfjlpcit.always;
+  var never$1 = $_bsac6zaxjfuviws9.never;
+  var always$1 = $_bsac6zaxjfuviws9.always;
   var none = function () {
     return NONE;
   };
@@ -141,7 +141,7 @@ var help = (function () {
       toArray: function () {
         return [];
       },
-      toString: $_g576csaujfjlpcit.constant('none()')
+      toString: $_bsac6zaxjfuviws9.constant('none()')
     };
     if (Object.freeze)
       Object.freeze(me);
@@ -214,6 +214,32 @@ var help = (function () {
     some: some,
     none: none,
     from: from
+  };
+
+  var typeOf = function (x) {
+    if (x === null)
+      return 'null';
+    var t = typeof x;
+    if (t === 'object' && Array.prototype.isPrototypeOf(x))
+      return 'array';
+    if (t === 'object' && String.prototype.isPrototypeOf(x))
+      return 'string';
+    return t;
+  };
+  var isType = function (type) {
+    return function (value) {
+      return typeOf(value) === type;
+    };
+  };
+  var $_cofwf7ayjfuviwsb = {
+    isString: isType('string'),
+    isObject: isType('object'),
+    isArray: isType('array'),
+    isNull: isType('null'),
+    isBoolean: isType('boolean'),
+    isUndefined: isType('undefined'),
+    isFunction: isType('function'),
+    isNumber: isType('number')
   };
 
   var rawIndexOf = function () {
@@ -417,7 +443,10 @@ var help = (function () {
   var last = function (xs) {
     return xs.length === 0 ? Option.none() : Option.some(xs[xs.length - 1]);
   };
-  var $_bw0b0masjfjlpcif = {
+  var from$1 = $_cofwf7ayjfuviwsb.isFunction(Array.from) ? Array.from : function (x) {
+    return slice.call(x);
+  };
+  var $_6hgg0qavjfuviwrv = {
     map: map,
     each: each,
     eachr: eachr,
@@ -443,7 +472,8 @@ var help = (function () {
     sort: sort,
     range: range,
     head: head,
-    last: last
+    last: last,
+    from: from$1
   };
 
   var global$1 = tinymce.util.Tools.resolve('tinymce.util.I18n');
@@ -542,13 +572,13 @@ var help = (function () {
       action: 'Find (if searchreplace plugin activated)'
     }
   ];
-  var $_hqq1sawjfjlpciv = { shortcuts: shortcuts };
+  var $_fxili0b0jfuviwsf = { shortcuts: shortcuts };
 
   var makeTab = function () {
     var makeAriaLabel = function (shortcut) {
       return 'aria-label="Action: ' + shortcut.action + ', Shortcut: ' + shortcut.shortcut.replace(/Ctrl/g, 'Control') + '"';
     };
-    var shortcutLisString = $_bw0b0masjfjlpcif.map($_hqq1sawjfjlpciv.shortcuts, function (shortcut) {
+    var shortcutLisString = $_6hgg0qavjfuviwrv.map($_fxili0b0jfuviwsf.shortcuts, function (shortcut) {
       return '<tr data-mce-tabstop="1" tabindex="-1" ' + makeAriaLabel(shortcut) + '>' + '<td>' + global$1.translate(shortcut.action) + '</td>' + '<td>' + shortcut.shortcut + '</td>' + '</tr>';
     }).join('');
     return {
@@ -561,7 +591,7 @@ var help = (function () {
         }]
     };
   };
-  var $_99g6learjfjlpcib = { makeTab: makeTab };
+  var $_cqqjpuaujfuviwro = { makeTab: makeTab };
 
   var keys = function () {
     var fastKeys = Object.keys;
@@ -638,7 +668,7 @@ var help = (function () {
   var size = function (obj) {
     return values(obj).length;
   };
-  var $_a9taaxazjfjlpcj6 = {
+  var $_q82gsb3jfuviwss = {
     bifilter: bifilter,
     each: each$1,
     map: objectMap,
@@ -662,7 +692,7 @@ var help = (function () {
   var removeFromEnd = function (str, numChars) {
     return str.substring(0, str.length - numChars);
   };
-  var $_3xurbrb1jfjlpcjc = {
+  var $_2r4rf0b5jfuviwsz = {
     addToStart: addToStart,
     addToEnd: addToEnd,
     removeFromStart: removeFromStart,
@@ -681,7 +711,7 @@ var help = (function () {
   var tail = function (str) {
     return str === '' ? Option.none() : Option.some(str.substring(1));
   };
-  var $_7f452vb2jfjlpcjd = {
+  var $_au5ht8b6jfuviwt0 = {
     first: first,
     last: last$1,
     head: head$1,
@@ -707,23 +737,23 @@ var help = (function () {
     });
   };
   var removeLeading = function (str, prefix) {
-    return startsWith(str, prefix) ? $_3xurbrb1jfjlpcjc.removeFromStart(str, prefix.length) : str;
+    return startsWith(str, prefix) ? $_2r4rf0b5jfuviwsz.removeFromStart(str, prefix.length) : str;
   };
   var removeTrailing = function (str, prefix) {
-    return endsWith(str, prefix) ? $_3xurbrb1jfjlpcjc.removeFromEnd(str, prefix.length) : str;
+    return endsWith(str, prefix) ? $_2r4rf0b5jfuviwsz.removeFromEnd(str, prefix.length) : str;
   };
   var ensureLeading = function (str, prefix) {
-    return startsWith(str, prefix) ? str : $_3xurbrb1jfjlpcjc.addToStart(str, prefix);
+    return startsWith(str, prefix) ? str : $_2r4rf0b5jfuviwsz.addToStart(str, prefix);
   };
   var ensureTrailing = function (str, prefix) {
-    return endsWith(str, prefix) ? str : $_3xurbrb1jfjlpcjc.addToEnd(str, prefix);
+    return endsWith(str, prefix) ? str : $_2r4rf0b5jfuviwsz.addToEnd(str, prefix);
   };
   var contains$1 = function (str, substr) {
     return str.indexOf(substr) !== -1;
   };
   var capitalize = function (str) {
-    return $_7f452vb2jfjlpcjd.head(str).bind(function (head) {
-      return $_7f452vb2jfjlpcjd.tail(str).map(function (tail) {
+    return $_au5ht8b6jfuviwt0.head(str).bind(function (head) {
+      return $_au5ht8b6jfuviwt0.tail(str).map(function (tail) {
         return head.toUpperCase() + tail;
       });
     }).getOr(str);
@@ -743,7 +773,7 @@ var help = (function () {
   var rTrim = function (str) {
     return str.replace(/\s+$/g, '');
   };
-  var $_aqvl3jb0jfjlpcj8 = {
+  var $_3z2b8cb4jfuviwsv = {
     supplant: supplant,
     startsWith: startsWith,
     removeLeading: removeLeading,
@@ -936,11 +966,11 @@ var help = (function () {
       name: 'Word Count'
     }
   ];
-  var $_3uw2pnb3jfjlpcje = { urls: urls };
+  var $_erdhkhb7jfuviwt1 = { urls: urls };
 
-  var makeLink = $_g576csaujfjlpcit.curry($_aqvl3jb0jfjlpcj8.supplant, '<a href="${url}" target="_blank" rel="noopener">${name}</a>');
+  var makeLink = $_bsac6zaxjfuviws9.curry($_3z2b8cb4jfuviwsv.supplant, '<a href="${url}" target="_blank" rel="noopener">${name}</a>');
   var maybeUrlize = function (editor, key) {
-    return $_bw0b0masjfjlpcif.find($_3uw2pnb3jfjlpcje.urls, function (x) {
+    return $_6hgg0qavjfuviwrv.find($_erdhkhb7jfuviwt1.urls, function (x) {
       return x.key === key;
     }).fold(function () {
       var getMetadata = editor.plugins[key].getMetadata;
@@ -953,12 +983,12 @@ var help = (function () {
     });
   };
   var getPluginKeys = function (editor) {
-    var keys = $_a9taaxazjfjlpcj6.keys(editor.plugins);
-    return editor.settings.forced_plugins === undefined ? keys : $_bw0b0masjfjlpcif.filter(keys, $_g576csaujfjlpcit.not($_g576csaujfjlpcit.curry($_bw0b0masjfjlpcif.contains, editor.settings.forced_plugins)));
+    var keys = $_q82gsb3jfuviwss.keys(editor.plugins);
+    return editor.settings.forced_plugins === undefined ? keys : $_6hgg0qavjfuviwrv.filter(keys, $_bsac6zaxjfuviws9.not($_bsac6zaxjfuviws9.curry($_6hgg0qavjfuviwrv.contains, editor.settings.forced_plugins)));
   };
   var pluginLister = function (editor) {
     var pluginKeys = getPluginKeys(editor);
-    var pluginLis = $_bw0b0masjfjlpcif.map(pluginKeys, function (key) {
+    var pluginLis = $_6hgg0qavjfuviwrv.map(pluginKeys, function (key) {
       return '<li>' + maybeUrlize(editor, key) + '</li>';
     });
     var count = pluginLis.length;
@@ -996,7 +1026,7 @@ var help = (function () {
       ]
     };
   };
-  var $_bq7zhzayjfjlpciz = { makeTab: makeTab$1 };
+  var $_3ys8ieb2jfuviwsh = { makeTab: makeTab$1 };
 
   var global$3 = tinymce.util.Tools.resolve('tinymce.EditorManager');
 
@@ -1026,7 +1056,7 @@ var help = (function () {
       }
     ];
   };
-  var $_doxsemb4jfjlpcjg = { makeRow: makeRow };
+  var $_apujjmb8jfuviwt3 = { makeRow: makeRow };
 
   var open = function (editor, pluginUrl) {
     return function () {
@@ -1035,10 +1065,10 @@ var help = (function () {
         bodyType: 'tabpanel',
         layout: 'flex',
         body: [
-          $_99g6learjfjlpcib.makeTab(),
-          $_bq7zhzayjfjlpciz.makeTab(editor)
+          $_cqqjpuaujfuviwro.makeTab(),
+          $_3ys8ieb2jfuviwsh.makeTab(editor)
         ],
-        buttons: $_doxsemb4jfjlpcjg.makeRow(),
+        buttons: $_apujjmb8jfuviwt3.makeRow(),
         onPostRender: function () {
           var title = this.getEl('title');
           title.innerHTML = '<img src="' + pluginUrl + '/img/logo.png" alt="TinyMCE Logo" style="display: inline-block; width: 200px; height: 50px">';
@@ -1046,30 +1076,30 @@ var help = (function () {
       });
     };
   };
-  var $_mltnzaqjfjlpci9 = { open: open };
+  var $_g90lyjatjfuviwrm = { open: open };
 
   var register = function (editor, pluginUrl) {
-    editor.addCommand('mceHelp', $_mltnzaqjfjlpci9.open(editor, pluginUrl));
+    editor.addCommand('mceHelp', $_g90lyjatjfuviwrm.open(editor, pluginUrl));
   };
-  var $_6vcdorapjfjlpci8 = { register: register };
+  var $_cvp6s5asjfuviwrm = { register: register };
 
   var register$1 = function (editor, pluginUrl) {
     editor.addButton('help', {
       icon: 'help',
-      onclick: $_mltnzaqjfjlpci9.open(editor, pluginUrl)
+      onclick: $_g90lyjatjfuviwrm.open(editor, pluginUrl)
     });
     editor.addMenuItem('help', {
       text: 'Help',
       icon: 'help',
       context: 'help',
-      onclick: $_mltnzaqjfjlpci9.open(editor, pluginUrl)
+      onclick: $_g90lyjatjfuviwrm.open(editor, pluginUrl)
     });
   };
-  var $_coo99jb6jfjlpcji = { register: register$1 };
+  var $_9zq3iibajfuviwt5 = { register: register$1 };
 
   global.add('help', function (editor, pluginUrl) {
-    $_coo99jb6jfjlpcji.register(editor, pluginUrl);
-    $_6vcdorapjfjlpci8.register(editor, pluginUrl);
+    $_9zq3iibajfuviwt5.register(editor, pluginUrl);
+    $_cvp6s5asjfuviwrm.register(editor, pluginUrl);
     editor.shortcuts.add('Alt+0', 'Open help dialog', 'mceHelp');
   });
   function Plugin () {
