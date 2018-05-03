@@ -81,7 +81,7 @@ var help = (function () {
   };
   var never = constant(false);
   var always = constant(true);
-  var $_bsac6zaxjfuviws9 = {
+  var $_7ffbdpb4jgqkptgq = {
     noop: noop,
     noarg: noarg,
     compose: compose,
@@ -97,8 +97,8 @@ var help = (function () {
     always: always
   };
 
-  var never$1 = $_bsac6zaxjfuviws9.never;
-  var always$1 = $_bsac6zaxjfuviws9.always;
+  var never$1 = $_7ffbdpb4jgqkptgq.never;
+  var always$1 = $_7ffbdpb4jgqkptgq.always;
   var none = function () {
     return NONE;
   };
@@ -141,7 +141,7 @@ var help = (function () {
       toArray: function () {
         return [];
       },
-      toString: $_bsac6zaxjfuviws9.constant('none()')
+      toString: $_7ffbdpb4jgqkptgq.constant('none()')
     };
     if (Object.freeze)
       Object.freeze(me);
@@ -231,7 +231,7 @@ var help = (function () {
       return typeOf(value) === type;
     };
   };
-  var $_cofwf7ayjfuviwsb = {
+  var $_8z4bk8b5jgqkptgt = {
     isString: isType('string'),
     isObject: isType('object'),
     isArray: isType('array'),
@@ -443,10 +443,10 @@ var help = (function () {
   var last = function (xs) {
     return xs.length === 0 ? Option.none() : Option.some(xs[xs.length - 1]);
   };
-  var from$1 = $_cofwf7ayjfuviwsb.isFunction(Array.from) ? Array.from : function (x) {
+  var from$1 = $_8z4bk8b5jgqkptgt.isFunction(Array.from) ? Array.from : function (x) {
     return slice.call(x);
   };
-  var $_6hgg0qavjfuviwrv = {
+  var $_55oiv7b2jgqkptge = {
     map: map,
     each: each,
     eachr: eachr,
@@ -572,13 +572,13 @@ var help = (function () {
       action: 'Find (if searchreplace plugin activated)'
     }
   ];
-  var $_fxili0b0jfuviwsf = { shortcuts: shortcuts };
+  var $_fg6ckrb7jgqkptgx = { shortcuts: shortcuts };
 
   var makeTab = function () {
     var makeAriaLabel = function (shortcut) {
       return 'aria-label="Action: ' + shortcut.action + ', Shortcut: ' + shortcut.shortcut.replace(/Ctrl/g, 'Control') + '"';
     };
-    var shortcutLisString = $_6hgg0qavjfuviwrv.map($_fxili0b0jfuviwsf.shortcuts, function (shortcut) {
+    var shortcutLisString = $_55oiv7b2jgqkptge.map($_fg6ckrb7jgqkptgx.shortcuts, function (shortcut) {
       return '<tr data-mce-tabstop="1" tabindex="-1" ' + makeAriaLabel(shortcut) + '>' + '<td>' + global$1.translate(shortcut.action) + '</td>' + '<td>' + shortcut.shortcut + '</td>' + '</tr>';
     }).join('');
     return {
@@ -591,7 +591,7 @@ var help = (function () {
         }]
     };
   };
-  var $_cqqjpuaujfuviwro = { makeTab: makeTab };
+  var $_etdmcob1jgqkptg7 = { makeTab: makeTab };
 
   var keys = function () {
     var fastKeys = Object.keys;
@@ -668,7 +668,7 @@ var help = (function () {
   var size = function (obj) {
     return values(obj).length;
   };
-  var $_q82gsb3jfuviwss = {
+  var $_2x15mobajgqkpthc = {
     bifilter: bifilter,
     each: each$1,
     map: objectMap,
@@ -692,7 +692,7 @@ var help = (function () {
   var removeFromEnd = function (str, numChars) {
     return str.substring(0, str.length - numChars);
   };
-  var $_2r4rf0b5jfuviwsz = {
+  var $_6031r6bcjgqkpthk = {
     addToStart: addToStart,
     addToEnd: addToEnd,
     removeFromStart: removeFromStart,
@@ -711,7 +711,7 @@ var help = (function () {
   var tail = function (str) {
     return str === '' ? Option.none() : Option.some(str.substring(1));
   };
-  var $_au5ht8b6jfuviwt0 = {
+  var $_5x1psqbdjgqkpthl = {
     first: first,
     last: last$1,
     head: head$1,
@@ -737,23 +737,23 @@ var help = (function () {
     });
   };
   var removeLeading = function (str, prefix) {
-    return startsWith(str, prefix) ? $_2r4rf0b5jfuviwsz.removeFromStart(str, prefix.length) : str;
+    return startsWith(str, prefix) ? $_6031r6bcjgqkpthk.removeFromStart(str, prefix.length) : str;
   };
   var removeTrailing = function (str, prefix) {
-    return endsWith(str, prefix) ? $_2r4rf0b5jfuviwsz.removeFromEnd(str, prefix.length) : str;
+    return endsWith(str, prefix) ? $_6031r6bcjgqkpthk.removeFromEnd(str, prefix.length) : str;
   };
   var ensureLeading = function (str, prefix) {
-    return startsWith(str, prefix) ? str : $_2r4rf0b5jfuviwsz.addToStart(str, prefix);
+    return startsWith(str, prefix) ? str : $_6031r6bcjgqkpthk.addToStart(str, prefix);
   };
   var ensureTrailing = function (str, prefix) {
-    return endsWith(str, prefix) ? str : $_2r4rf0b5jfuviwsz.addToEnd(str, prefix);
+    return endsWith(str, prefix) ? str : $_6031r6bcjgqkpthk.addToEnd(str, prefix);
   };
   var contains$1 = function (str, substr) {
     return str.indexOf(substr) !== -1;
   };
   var capitalize = function (str) {
-    return $_au5ht8b6jfuviwt0.head(str).bind(function (head) {
-      return $_au5ht8b6jfuviwt0.tail(str).map(function (tail) {
+    return $_5x1psqbdjgqkpthl.head(str).bind(function (head) {
+      return $_5x1psqbdjgqkpthl.tail(str).map(function (tail) {
         return head.toUpperCase() + tail;
       });
     }).getOr(str);
@@ -773,7 +773,7 @@ var help = (function () {
   var rTrim = function (str) {
     return str.replace(/\s+$/g, '');
   };
-  var $_3z2b8cb4jfuviwsv = {
+  var $_lc3qcbbjgqkpthf = {
     supplant: supplant,
     startsWith: startsWith,
     removeLeading: removeLeading,
@@ -966,11 +966,11 @@ var help = (function () {
       name: 'Word Count'
     }
   ];
-  var $_erdhkhb7jfuviwt1 = { urls: urls };
+  var $_7t4ujobejgqkpthn = { urls: urls };
 
-  var makeLink = $_bsac6zaxjfuviws9.curry($_3z2b8cb4jfuviwsv.supplant, '<a href="${url}" target="_blank" rel="noopener">${name}</a>');
+  var makeLink = $_7ffbdpb4jgqkptgq.curry($_lc3qcbbjgqkpthf.supplant, '<a href="${url}" target="_blank" rel="noopener">${name}</a>');
   var maybeUrlize = function (editor, key) {
-    return $_6hgg0qavjfuviwrv.find($_erdhkhb7jfuviwt1.urls, function (x) {
+    return $_55oiv7b2jgqkptge.find($_7t4ujobejgqkpthn.urls, function (x) {
       return x.key === key;
     }).fold(function () {
       var getMetadata = editor.plugins[key].getMetadata;
@@ -983,12 +983,12 @@ var help = (function () {
     });
   };
   var getPluginKeys = function (editor) {
-    var keys = $_q82gsb3jfuviwss.keys(editor.plugins);
-    return editor.settings.forced_plugins === undefined ? keys : $_6hgg0qavjfuviwrv.filter(keys, $_bsac6zaxjfuviws9.not($_bsac6zaxjfuviws9.curry($_6hgg0qavjfuviwrv.contains, editor.settings.forced_plugins)));
+    var keys = $_2x15mobajgqkpthc.keys(editor.plugins);
+    return editor.settings.forced_plugins === undefined ? keys : $_55oiv7b2jgqkptge.filter(keys, $_7ffbdpb4jgqkptgq.not($_7ffbdpb4jgqkptgq.curry($_55oiv7b2jgqkptge.contains, editor.settings.forced_plugins)));
   };
   var pluginLister = function (editor) {
     var pluginKeys = getPluginKeys(editor);
-    var pluginLis = $_6hgg0qavjfuviwrv.map(pluginKeys, function (key) {
+    var pluginLis = $_55oiv7b2jgqkptge.map(pluginKeys, function (key) {
       return '<li>' + maybeUrlize(editor, key) + '</li>';
     });
     var count = pluginLis.length;
@@ -1026,7 +1026,7 @@ var help = (function () {
       ]
     };
   };
-  var $_3ys8ieb2jfuviwsh = { makeTab: makeTab$1 };
+  var $_fgprngb9jgqkpth1 = { makeTab: makeTab$1 };
 
   var global$3 = tinymce.util.Tools.resolve('tinymce.EditorManager');
 
@@ -1056,7 +1056,7 @@ var help = (function () {
       }
     ];
   };
-  var $_apujjmb8jfuviwt3 = { makeRow: makeRow };
+  var $_bz0me2bfjgqkpthp = { makeRow: makeRow };
 
   var open = function (editor, pluginUrl) {
     return function () {
@@ -1065,10 +1065,10 @@ var help = (function () {
         bodyType: 'tabpanel',
         layout: 'flex',
         body: [
-          $_cqqjpuaujfuviwro.makeTab(),
-          $_3ys8ieb2jfuviwsh.makeTab(editor)
+          $_etdmcob1jgqkptg7.makeTab(),
+          $_fgprngb9jgqkpth1.makeTab(editor)
         ],
-        buttons: $_apujjmb8jfuviwt3.makeRow(),
+        buttons: $_bz0me2bfjgqkpthp.makeRow(),
         onPostRender: function () {
           var title = this.getEl('title');
           title.innerHTML = '<img src="' + pluginUrl + '/img/logo.png" alt="TinyMCE Logo" style="display: inline-block; width: 200px; height: 50px">';
@@ -1076,30 +1076,30 @@ var help = (function () {
       });
     };
   };
-  var $_g90lyjatjfuviwrm = { open: open };
+  var $_2kvn7db0jgqkptg5 = { open: open };
 
   var register = function (editor, pluginUrl) {
-    editor.addCommand('mceHelp', $_g90lyjatjfuviwrm.open(editor, pluginUrl));
+    editor.addCommand('mceHelp', $_2kvn7db0jgqkptg5.open(editor, pluginUrl));
   };
-  var $_cvp6s5asjfuviwrm = { register: register };
+  var $_bd9z8pazjgqkptg4 = { register: register };
 
   var register$1 = function (editor, pluginUrl) {
     editor.addButton('help', {
       icon: 'help',
-      onclick: $_g90lyjatjfuviwrm.open(editor, pluginUrl)
+      onclick: $_2kvn7db0jgqkptg5.open(editor, pluginUrl)
     });
     editor.addMenuItem('help', {
       text: 'Help',
       icon: 'help',
       context: 'help',
-      onclick: $_g90lyjatjfuviwrm.open(editor, pluginUrl)
+      onclick: $_2kvn7db0jgqkptg5.open(editor, pluginUrl)
     });
   };
-  var $_9zq3iibajfuviwt5 = { register: register$1 };
+  var $_18opvvbhjgqkpthr = { register: register$1 };
 
   global.add('help', function (editor, pluginUrl) {
-    $_9zq3iibajfuviwt5.register(editor, pluginUrl);
-    $_cvp6s5asjfuviwrm.register(editor, pluginUrl);
+    $_18opvvbhjgqkpthr.register(editor, pluginUrl);
+    $_bd9z8pazjgqkptg4.register(editor, pluginUrl);
     editor.shortcuts.add('Alt+0', 'Open help dialog', 'mceHelp');
   });
   function Plugin () {
