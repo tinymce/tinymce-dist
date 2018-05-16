@@ -18,29 +18,30 @@ var anchor = (function () {
     if (isAnchor) {
       selectedNode.removeAttribute('name');
       selectedNode.id = id;
+      editor.undoManager.add();
     } else {
       editor.focus();
       editor.selection.collapse(true);
       editor.execCommand('mceInsertContent', false, editor.dom.createHTML('a', { id: id }));
     }
   };
-  var $_wqhuq8bjgqkpt3v = {
+  var $_8muarh8bjh8lpucu = {
     isValidId: isValidId,
     getId: getId,
     insert: insert
   };
 
   var insertAnchor = function (editor, newId) {
-    if (!$_wqhuq8bjgqkpt3v.isValidId(newId)) {
+    if (!$_8muarh8bjh8lpucu.isValidId(newId)) {
       editor.windowManager.alert('Id should start with a letter, followed only by letters, numbers, dashes, dots, colons or underscores.');
       return true;
     } else {
-      $_wqhuq8bjgqkpt3v.insert(editor, newId);
+      $_8muarh8bjh8lpucu.insert(editor, newId);
       return false;
     }
   };
   var open = function (editor) {
-    var currentId = $_wqhuq8bjgqkpt3v.getId(editor);
+    var currentId = $_8muarh8bjh8lpucu.getId(editor);
     editor.windowManager.open({
       title: 'Anchor',
       body: {
@@ -58,14 +59,14 @@ var anchor = (function () {
       }
     });
   };
-  var $_bmwhhl8ajgqkpt3u = { open: open };
+  var $_ghc7qg8ajh8lpucs = { open: open };
 
   var register = function (editor) {
     editor.addCommand('mceAnchor', function () {
-      $_bmwhhl8ajgqkpt3u.open(editor);
+      $_ghc7qg8ajh8lpucs.open(editor);
     });
   };
-  var $_3sy6sx89jgqkpt3s = { register: register };
+  var $_60epor89jh8lpucr = { register: register };
 
   var isAnchorNode = function (node) {
     return !node.attr('href') && (node.attr('id') || node.attr('name')) && !node.firstChild;
@@ -85,7 +86,7 @@ var anchor = (function () {
       editor.serializer.addNodeFilter('a', setContentEditable(null));
     });
   };
-  var $_7ndhk08cjgqkpt3x = { setup: setup };
+  var $_etc1gj8cjh8lpucv = { setup: setup };
 
   var register$1 = function (editor) {
     editor.addButton('anchor', {
@@ -101,12 +102,12 @@ var anchor = (function () {
       cmd: 'mceAnchor'
     });
   };
-  var $_6zjibd8djgqkpt3y = { register: register$1 };
+  var $_6ikf18djh8lpucw = { register: register$1 };
 
   global.add('anchor', function (editor) {
-    $_7ndhk08cjgqkpt3x.setup(editor);
-    $_3sy6sx89jgqkpt3s.register(editor);
-    $_6zjibd8djgqkpt3y.register(editor);
+    $_etc1gj8cjh8lpucv.setup(editor);
+    $_60epor89jh8lpucr.register(editor);
+    $_6ikf18djh8lpucw.register(editor);
   });
   function Plugin () {
   }
