@@ -1,4 +1,4 @@
-// 4.5.8 (2017-10-05)
+// 4.5.9 (2018-08-02)
 
 /**
  * Compiled inline version. (Library mode)
@@ -15805,7 +15805,9 @@ define("tinymce/dom/ControlSelection", [
 
 					// Hides IE move layer cursor
 					// If we set it on Chrome we get this wounderful bug: #6725
-					if (Env.ie) {
+					// Edge doesn't have this issue however setting contenteditable
+					// will move the selection to that element on Edge 17 see #TINY-1679
+					if (Env.ie === 11) {
 						handleElm.contentEditable = false;
 					}
 
@@ -41028,7 +41030,7 @@ define("tinymce/EditorManager", [
 		 * @property minorVersion
 		 * @type String
 		 */
-		minorVersion: '5.8',
+		minorVersion: '5.9',
 
 		/**
 		 * Release date of TinyMCE build.
@@ -41036,7 +41038,7 @@ define("tinymce/EditorManager", [
 		 * @property releaseDate
 		 * @type String
 		 */
-		releaseDate: '2017-10-05',
+		releaseDate: '2018-08-02',
 
 		/**
 		 * Collection of editor instances.
