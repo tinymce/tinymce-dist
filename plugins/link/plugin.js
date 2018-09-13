@@ -48,7 +48,7 @@ var link = (function () {
   var allowUnsafeLinkTarget = function (editorSettings) {
     return typeof editorSettings.allow_unsafe_link_target === 'boolean' ? editorSettings.allow_unsafe_link_target : false;
   };
-  var $_6v02umfvjkmcdvey = {
+  var $_f6mix1fujm0o6bv7 = {
     assumeExternalTargets: assumeExternalTargets,
     hasContextToolbar: hasContextToolbar,
     getLinkList: getLinkList,
@@ -94,7 +94,7 @@ var link = (function () {
       }
     }
   };
-  var $_eajedefwjkmcdvf1 = { open: open$$1 };
+  var $_9df6txfvjm0o6bva = { open: open$$1 };
 
   var global$4 = tinymce.util.Tools.resolve('tinymce.util.Tools');
 
@@ -158,7 +158,7 @@ var link = (function () {
           class: data.class ? data.class : null,
           title: data.title ? data.title : null
         };
-        if (!$_6v02umfvjkmcdvey.hasRelList(editor.settings) && $_6v02umfvjkmcdvey.allowUnsafeLinkTarget(editor.settings) === false) {
+        if (!$_f6mix1fujm0o6bv7.hasRelList(editor.settings) && $_f6mix1fujm0o6bv7.allowUnsafeLinkTarget(editor.settings) === false) {
           linkAttrs.rel = toggleTargetRules(linkAttrs.rel, linkAttrs.target === '_blank');
         }
         if (data.href === attachState.href) {
@@ -221,7 +221,7 @@ var link = (function () {
       a.appendChild(img);
     }
   };
-  var $_68cwlgg0jkmcdvff = {
+  var $_ft5004fzjm0o6bvs = {
     link: link,
     unlink: unlink,
     isLink: isLink,
@@ -238,7 +238,7 @@ var link = (function () {
 
   var attachState = {};
   var createLinkList = function (editor, callback) {
-    var linkList = $_6v02umfvjkmcdvey.getLinkList(editor.settings);
+    var linkList = $_f6mix1fujm0o6bv7.getLinkList(editor.settings);
     if (typeof linkList === 'string') {
       global$6.send({
         url: linkList,
@@ -355,14 +355,14 @@ var link = (function () {
     var onBeforeCall = function (e) {
       e.meta = win.toJSON();
     };
-    onlyText = $_68cwlgg0jkmcdvff.isOnlyTextSelected(selection.getContent());
-    anchorElm = $_68cwlgg0jkmcdvff.getAnchorElement(editor);
-    data.text = initialText = $_68cwlgg0jkmcdvff.getAnchorText(editor.selection, anchorElm);
+    onlyText = $_ft5004fzjm0o6bvs.isOnlyTextSelected(selection.getContent());
+    anchorElm = $_ft5004fzjm0o6bvs.getAnchorElement(editor);
+    data.text = initialText = $_ft5004fzjm0o6bvs.getAnchorText(editor.selection, anchorElm);
     data.href = anchorElm ? dom.getAttrib(anchorElm, 'href') : '';
     if (anchorElm) {
       data.target = dom.getAttrib(anchorElm, 'target');
-    } else if ($_6v02umfvjkmcdvey.hasDefaultLinkTarget(editor.settings)) {
-      data.target = $_6v02umfvjkmcdvey.getDefaultLinkTarget(editor.settings);
+    } else if ($_f6mix1fujm0o6bv7.hasDefaultLinkTarget(editor.settings)) {
+      data.target = $_f6mix1fujm0o6bv7.getDefaultLinkTarget(editor.settings);
     }
     if (value = dom.getAttrib(anchorElm, 'rel')) {
       data.rel = value;
@@ -401,9 +401,9 @@ var link = (function () {
         }
       };
     }
-    if ($_6v02umfvjkmcdvey.shouldShowTargetList(editor.settings)) {
-      if ($_6v02umfvjkmcdvey.getTargetList(editor.settings) === undefined) {
-        $_6v02umfvjkmcdvey.setTargetList(editor, [
+    if ($_f6mix1fujm0o6bv7.shouldShowTargetList(editor.settings)) {
+      if ($_f6mix1fujm0o6bv7.getTargetList(editor.settings) === undefined) {
+        $_f6mix1fujm0o6bv7.setTargetList(editor, [
           {
             text: 'None',
             value: ''
@@ -418,27 +418,27 @@ var link = (function () {
         name: 'target',
         type: 'listbox',
         label: 'Target',
-        values: buildListItems($_6v02umfvjkmcdvey.getTargetList(editor.settings))
+        values: buildListItems($_f6mix1fujm0o6bv7.getTargetList(editor.settings))
       };
     }
-    if ($_6v02umfvjkmcdvey.hasRelList(editor.settings)) {
+    if ($_f6mix1fujm0o6bv7.hasRelList(editor.settings)) {
       relListCtrl = {
         name: 'rel',
         type: 'listbox',
         label: 'Rel',
-        values: buildListItems($_6v02umfvjkmcdvey.getRelList(editor.settings), function (item) {
-          if ($_6v02umfvjkmcdvey.allowUnsafeLinkTarget(editor.settings) === false) {
-            item.value = $_68cwlgg0jkmcdvff.toggleTargetRules(item.value, data.target === '_blank');
+        values: buildListItems($_f6mix1fujm0o6bv7.getRelList(editor.settings), function (item) {
+          if ($_f6mix1fujm0o6bv7.allowUnsafeLinkTarget(editor.settings) === false) {
+            item.value = $_ft5004fzjm0o6bvs.toggleTargetRules(item.value, data.target === '_blank');
           }
         })
       };
     }
-    if ($_6v02umfvjkmcdvey.hasLinkClassList(editor.settings)) {
+    if ($_f6mix1fujm0o6bv7.hasLinkClassList(editor.settings)) {
       classListCtrl = {
         name: 'class',
         type: 'listbox',
         label: 'Class',
-        values: buildListItems($_6v02umfvjkmcdvey.getLinkClassList(editor.settings), function (item) {
+        values: buildListItems($_f6mix1fujm0o6bv7.getLinkClassList(editor.settings), function (item) {
           if (item.value) {
             item.textStyle = function () {
               return editor.formatter.getCssText({
@@ -450,7 +450,7 @@ var link = (function () {
         })
       };
     }
-    if ($_6v02umfvjkmcdvey.shouldShowLinkTitle(editor.settings)) {
+    if ($_f6mix1fujm0o6bv7.shouldShowLinkTitle(editor.settings)) {
       linkTitleCtrl = {
         name: 'title',
         type: 'textbox',
@@ -483,9 +483,9 @@ var link = (function () {
         classListCtrl
       ],
       onSubmit: function (e) {
-        var assumeExternalTargets = $_6v02umfvjkmcdvey.assumeExternalTargets(editor.settings);
-        var insertLink = $_68cwlgg0jkmcdvff.link(editor, attachState);
-        var removeLink = $_68cwlgg0jkmcdvff.unlink(editor);
+        var assumeExternalTargets = $_f6mix1fujm0o6bv7.assumeExternalTargets(editor.settings);
+        var insertLink = $_ft5004fzjm0o6bvs.link(editor, attachState);
+        var removeLink = $_ft5004fzjm0o6bvs.unlink(editor);
         var resultData = global$4.extend({}, data, e.data);
         var href = resultData.href;
         if (!href) {
@@ -520,7 +520,7 @@ var link = (function () {
   var open$1 = function (editor) {
     createLinkList(editor, showDialog);
   };
-  var $_botga4g2jkmcdvfj = { open: open$1 };
+  var $_b8pm4wg1jm0o6bw1 = { open: open$1 };
 
   var getLink = function (editor, elm) {
     return editor.dom.getParent(elm, 'a[href]');
@@ -548,13 +548,13 @@ var link = (function () {
           editor.selection.scrollIntoView(targetEl[0], true);
         }
       } else {
-        $_eajedefwjkmcdvf1.open(a.href);
+        $_9df6txfvjm0o6bva.open(a.href);
       }
     }
   };
   var openDialog = function (editor) {
     return function () {
-      $_botga4g2jkmcdvfj.open(editor);
+      $_b8pm4wg1jm0o6bw1.open(editor);
     };
   };
   var gotoSelectedLink = function (editor) {
@@ -565,7 +565,7 @@ var link = (function () {
   var leftClickedOnAHref = function (editor) {
     return function (elm) {
       var sel, rng, node;
-      if ($_6v02umfvjkmcdvey.hasContextToolbar(editor.settings) && !isContextMenuVisible(editor) && $_68cwlgg0jkmcdvff.isLink(elm)) {
+      if ($_f6mix1fujm0o6bv7.hasContextToolbar(editor.settings) && !isContextMenuVisible(editor) && $_ft5004fzjm0o6bvs.isLink(elm)) {
         sel = editor.selection;
         rng = sel.getRng();
         node = rng.startContainer;
@@ -596,7 +596,7 @@ var link = (function () {
     return function () {
       var self = this;
       editor.on('nodechange', function (e) {
-        self.active(!editor.readonly && !!$_68cwlgg0jkmcdvff.getAnchorElement(editor, e.element));
+        self.active(!editor.readonly && !!$_ft5004fzjm0o6bvs.getAnchorElement(editor, e.element));
       });
     };
   };
@@ -604,13 +604,13 @@ var link = (function () {
     return function () {
       var self = this;
       var toggleVisibility = function (e) {
-        if ($_68cwlgg0jkmcdvff.hasLinks(e.parents)) {
+        if ($_ft5004fzjm0o6bvs.hasLinks(e.parents)) {
           self.show();
         } else {
           self.hide();
         }
       };
-      if (!$_68cwlgg0jkmcdvff.hasLinks(editor.dom.getParents(editor.selection.getStart()))) {
+      if (!$_ft5004fzjm0o6bvs.hasLinks(editor.dom.getParents(editor.selection.getStart()))) {
         self.hide();
       }
       editor.on('nodechange', toggleVisibility);
@@ -619,7 +619,7 @@ var link = (function () {
       });
     };
   };
-  var $_dtnf6hftjkmcdvev = {
+  var $_7olbusfsjm0o6bv0 = {
     openDialog: openDialog,
     gotoSelectedLink: gotoSelectedLink,
     leftClickedOnAHref: leftClickedOnAHref,
@@ -629,35 +629,35 @@ var link = (function () {
   };
 
   var register = function (editor) {
-    editor.addCommand('mceLink', $_dtnf6hftjkmcdvev.openDialog(editor));
+    editor.addCommand('mceLink', $_7olbusfsjm0o6bv0.openDialog(editor));
   };
-  var $_bp9jsufsjkmcdveu = { register: register };
+  var $_7zt0w7frjm0o6bux = { register: register };
 
   var setup = function (editor) {
-    editor.addShortcut('Meta+K', '', $_dtnf6hftjkmcdvev.openDialog(editor));
+    editor.addShortcut('Meta+K', '', $_7olbusfsjm0o6bv0.openDialog(editor));
   };
-  var $_7nese6g5jkmcdvfo = { setup: setup };
+  var $_2m19iug4jm0o6bwa = { setup: setup };
 
   var setupButtons = function (editor) {
     editor.addButton('link', {
       active: false,
       icon: 'link',
       tooltip: 'Insert/edit link',
-      onclick: $_dtnf6hftjkmcdvev.openDialog(editor),
-      onpostrender: $_dtnf6hftjkmcdvev.toggleActiveState(editor)
+      onclick: $_7olbusfsjm0o6bv0.openDialog(editor),
+      onpostrender: $_7olbusfsjm0o6bv0.toggleActiveState(editor)
     });
     editor.addButton('unlink', {
       active: false,
       icon: 'unlink',
       tooltip: 'Remove link',
-      onclick: $_68cwlgg0jkmcdvff.unlink(editor),
-      onpostrender: $_dtnf6hftjkmcdvev.toggleActiveState(editor)
+      onclick: $_ft5004fzjm0o6bvs.unlink(editor),
+      onpostrender: $_7olbusfsjm0o6bv0.toggleActiveState(editor)
     });
     if (editor.addContextToolbar) {
       editor.addButton('openlink', {
         icon: 'newtab',
         tooltip: 'Open link',
-        onclick: $_dtnf6hftjkmcdvev.gotoSelectedLink(editor)
+        onclick: $_7olbusfsjm0o6bv0.gotoSelectedLink(editor)
       });
     }
   };
@@ -665,15 +665,15 @@ var link = (function () {
     editor.addMenuItem('openlink', {
       text: 'Open link',
       icon: 'newtab',
-      onclick: $_dtnf6hftjkmcdvev.gotoSelectedLink(editor),
-      onPostRender: $_dtnf6hftjkmcdvev.toggleViewLinkState(editor),
+      onclick: $_7olbusfsjm0o6bv0.gotoSelectedLink(editor),
+      onPostRender: $_7olbusfsjm0o6bv0.toggleViewLinkState(editor),
       prependToContext: true
     });
     editor.addMenuItem('link', {
       icon: 'link',
       text: 'Link',
       shortcut: 'Meta+K',
-      onclick: $_dtnf6hftjkmcdvev.openDialog(editor),
+      onclick: $_7olbusfsjm0o6bv0.openDialog(editor),
       stateSelector: 'a[href]',
       context: 'insert',
       prependToContext: true
@@ -681,28 +681,28 @@ var link = (function () {
     editor.addMenuItem('unlink', {
       icon: 'unlink',
       text: 'Remove link',
-      onclick: $_68cwlgg0jkmcdvff.unlink(editor),
+      onclick: $_ft5004fzjm0o6bvs.unlink(editor),
       stateSelector: 'a[href]'
     });
   };
   var setupContextToolbars = function (editor) {
     if (editor.addContextToolbar) {
-      editor.addContextToolbar($_dtnf6hftjkmcdvev.leftClickedOnAHref(editor), 'openlink | link unlink');
+      editor.addContextToolbar($_7olbusfsjm0o6bv0.leftClickedOnAHref(editor), 'openlink | link unlink');
     }
   };
-  var $_80dwb6g6jkmcdvfp = {
+  var $_euo7nbg5jm0o6bwc = {
     setupButtons: setupButtons,
     setupMenuItems: setupMenuItems,
     setupContextToolbars: setupContextToolbars
   };
 
   global.add('link', function (editor) {
-    $_80dwb6g6jkmcdvfp.setupButtons(editor);
-    $_80dwb6g6jkmcdvfp.setupMenuItems(editor);
-    $_80dwb6g6jkmcdvfp.setupContextToolbars(editor);
-    $_dtnf6hftjkmcdvev.setupGotoLinks(editor);
-    $_bp9jsufsjkmcdveu.register(editor);
-    $_7nese6g5jkmcdvfo.setup(editor);
+    $_euo7nbg5jm0o6bwc.setupButtons(editor);
+    $_euo7nbg5jm0o6bwc.setupMenuItems(editor);
+    $_euo7nbg5jm0o6bwc.setupContextToolbars(editor);
+    $_7olbusfsjm0o6bv0.setupGotoLinks(editor);
+    $_7zt0w7frjm0o6bux.register(editor);
+    $_2m19iug4jm0o6bwa.setup(editor);
   });
   function Plugin () {
   }
