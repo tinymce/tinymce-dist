@@ -28,7 +28,7 @@ var contextmenu = (function () {
     };
     return { isContextMenuVisible: isContextMenuVisible };
   };
-  var $_188cj4arjm0o6ay0 = { get: get };
+  var $_jnjhmasjnlpb104 = { get: get };
 
   var shouldNeverUseNative = function (editor) {
     return editor.settings.contextmenu_never_use_native;
@@ -36,7 +36,7 @@ var contextmenu = (function () {
   var getContextMenu = function (editor) {
     return editor.getParam('contextmenu', 'link openlink image inserttable | cell row column deletetable');
   };
-  var $_e6lrbatjm0o6ay2 = {
+  var $_3lx8x2aujnlpb106 = {
     shouldNeverUseNative: shouldNeverUseNative,
     getContextMenu: getContextMenu
   };
@@ -84,7 +84,7 @@ var contextmenu = (function () {
       return transposeUiContainer(getUiContainer(editor), iframePos);
     }
   };
-  var $_fwdti8aujm0o6ay4 = { getPos: getPos };
+  var $_fmy8vhavjnlpb108 = { getPos: getPos };
 
   var global$2 = tinymce.util.Tools.resolve('tinymce.ui.Factory');
 
@@ -93,7 +93,7 @@ var contextmenu = (function () {
   var renderMenu = function (editor, visibleState) {
     var menu, contextmenu;
     var items = [];
-    contextmenu = $_e6lrbatjm0o6ay2.getContextMenu(editor);
+    contextmenu = $_3lx8x2aujnlpb106.getContextMenu(editor);
     global$3.each(contextmenu.split(/[ ,]/), function (name) {
       var item = editor.menuItems[name];
       if (name === '|') {
@@ -138,10 +138,10 @@ var contextmenu = (function () {
     menu.get().moveTo(pos.x, pos.y);
     visibleState.set(true);
   };
-  var $_50m348axjm0o6ay9 = { show: show };
+  var $_3bkazwayjnlpb10i = { show: show };
 
   var isNativeOverrideKeyEvent = function (editor, e) {
-    return e.ctrlKey && !$_e6lrbatjm0o6ay2.shouldNeverUseNative(editor);
+    return e.ctrlKey && !$_3lx8x2aujnlpb106.shouldNeverUseNative(editor);
   };
   var setup = function (editor, visibleState, menu) {
     editor.on('contextmenu', function (e) {
@@ -149,15 +149,15 @@ var contextmenu = (function () {
         return;
       }
       e.preventDefault();
-      $_50m348axjm0o6ay9.show(editor, $_fwdti8aujm0o6ay4.getPos(editor, e), visibleState, menu);
+      $_3bkazwayjnlpb10i.show(editor, $_fmy8vhavjnlpb108.getPos(editor, e), visibleState, menu);
     });
   };
-  var $_31ivf7asjm0o6ay1 = { setup: setup };
+  var $_a5yp2watjnlpb105 = { setup: setup };
 
   global.add('contextmenu', function (editor) {
     var menu = Cell(null), visibleState = Cell(false);
-    $_31ivf7asjm0o6ay1.setup(editor, visibleState, menu);
-    return $_188cj4arjm0o6ay0.get(visibleState);
+    $_a5yp2watjnlpb105.setup(editor, visibleState, menu);
+    return $_jnjhmasjnlpb104.get(visibleState);
   });
   function Plugin () {
   }

@@ -216,7 +216,7 @@ var searchreplace = (function () {
     }
     return count;
   }
-  var $_2m36lhk0jm0o6ccx = { findAndReplaceDOMText: findAndReplaceDOMText };
+  var $_gbwwp0k1jnlpb2kj = { findAndReplaceDOMText: findAndReplaceDOMText };
 
   var getElmIndex = function (elm) {
     var value = elm.getAttribute('data-mce-index');
@@ -231,7 +231,7 @@ var searchreplace = (function () {
     marker.className = 'mce-match-marker';
     node = editor.getBody();
     done(editor, currentIndexState, false);
-    return $_2m36lhk0jm0o6ccx.findAndReplaceDOMText(regex, node, marker, false, editor.schema);
+    return $_gbwwp0k1jnlpb2kj.findAndReplaceDOMText(regex, node, marker, false, editor.schema);
   };
   var unwrap = function (node) {
     var parentNode = node.parentNode;
@@ -284,7 +284,7 @@ var searchreplace = (function () {
   };
   var find = function (editor, currentIndexState, text, matchCase, wholeWord) {
     text = text.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
-    text = text.replace(/\s/g, '\\s');
+    text = text.replace(/\s/g, '[^\\S\\r\\n]');
     text = wholeWord ? '\\b' + text + '\\b' : text;
     var count = markAllMatches(editor, currentIndexState, new RegExp(text, matchCase ? 'g' : 'gi'));
     if (count) {
@@ -381,7 +381,7 @@ var searchreplace = (function () {
   var hasPrev = function (editor, currentIndexState) {
     return findSpansByIndex(editor, currentIndexState.get() - 1).length > 0;
   };
-  var $_w16ckjyjm0o6cce = {
+  var $_ftb750jzjnlpb2kd = {
     done: done,
     find: find,
     next: next,
@@ -393,19 +393,19 @@ var searchreplace = (function () {
 
   var get = function (editor, currentIndexState) {
     var done = function (keepEditorSelection) {
-      return $_w16ckjyjm0o6cce.done(editor, currentIndexState, keepEditorSelection);
+      return $_ftb750jzjnlpb2kd.done(editor, currentIndexState, keepEditorSelection);
     };
     var find = function (text, matchCase, wholeWord) {
-      return $_w16ckjyjm0o6cce.find(editor, currentIndexState, text, matchCase, wholeWord);
+      return $_ftb750jzjnlpb2kd.find(editor, currentIndexState, text, matchCase, wholeWord);
     };
     var next = function () {
-      return $_w16ckjyjm0o6cce.next(editor, currentIndexState);
+      return $_ftb750jzjnlpb2kd.next(editor, currentIndexState);
     };
     var prev = function () {
-      return $_w16ckjyjm0o6cce.prev(editor, currentIndexState);
+      return $_ftb750jzjnlpb2kd.prev(editor, currentIndexState);
     };
     var replace = function (text, forward, all) {
-      return $_w16ckjyjm0o6cce.replace(editor, currentIndexState, text, forward, all);
+      return $_ftb750jzjnlpb2kd.replace(editor, currentIndexState, text, forward, all);
     };
     return {
       done: done,
@@ -415,15 +415,15 @@ var searchreplace = (function () {
       replace: replace
     };
   };
-  var $_4wtkv4jxjm0o6ccb = { get: get };
+  var $_1pj7w7jyjnlpb2kb = { get: get };
 
   var open = function (editor, currentIndexState) {
     var last = {}, selectedText;
     editor.undoManager.add();
     selectedText = global$1.trim(editor.selection.getContent({ format: 'text' }));
     function updateButtonStates() {
-      win.statusbar.find('#next').disabled($_w16ckjyjm0o6cce.hasNext(editor, currentIndexState) === false);
-      win.statusbar.find('#prev').disabled($_w16ckjyjm0o6cce.hasPrev(editor, currentIndexState) === false);
+      win.statusbar.find('#next').disabled($_ftb750jzjnlpb2kd.hasNext(editor, currentIndexState) === false);
+      win.statusbar.find('#prev').disabled($_ftb750jzjnlpb2kd.hasPrev(editor, currentIndexState) === false);
     }
     function notFoundAlert() {
       editor.windowManager.alert('Could not find the specified string.', function () {
@@ -436,7 +436,7 @@ var searchreplace = (function () {
       align: 'center',
       onClose: function () {
         editor.focus();
-        $_w16ckjyjm0o6cce.done(editor, currentIndexState);
+        $_ftb750jzjnlpb2kd.done(editor, currentIndexState);
         editor.undoManager.add();
       },
       onSubmit: function (e) {
@@ -446,20 +446,20 @@ var searchreplace = (function () {
         wholeWord = win.find('#words').checked();
         text = win.find('#find').value();
         if (!text.length) {
-          $_w16ckjyjm0o6cce.done(editor, currentIndexState, false);
+          $_ftb750jzjnlpb2kd.done(editor, currentIndexState, false);
           win.statusbar.items().slice(1).disabled(true);
           return;
         }
         if (last.text === text && last.caseState === caseState && last.wholeWord === wholeWord) {
-          if (!$_w16ckjyjm0o6cce.hasNext(editor, currentIndexState)) {
+          if (!$_ftb750jzjnlpb2kd.hasNext(editor, currentIndexState)) {
             notFoundAlert();
             return;
           }
-          $_w16ckjyjm0o6cce.next(editor, currentIndexState);
+          $_ftb750jzjnlpb2kd.next(editor, currentIndexState);
           updateButtonStates();
           return;
         }
-        count = $_w16ckjyjm0o6cce.find(editor, currentIndexState, text, caseState, wholeWord);
+        count = $_ftb750jzjnlpb2kd.find(editor, currentIndexState, text, caseState, wholeWord);
         if (!count) {
           notFoundAlert();
         }
@@ -483,7 +483,7 @@ var searchreplace = (function () {
           text: 'Replace',
           disabled: true,
           onclick: function () {
-            if (!$_w16ckjyjm0o6cce.replace(editor, currentIndexState, win.find('#replace').value())) {
+            if (!$_ftb750jzjnlpb2kd.replace(editor, currentIndexState, win.find('#replace').value())) {
               win.statusbar.items().slice(1).disabled(true);
               currentIndexState.set(-1);
               last = {};
@@ -494,7 +494,7 @@ var searchreplace = (function () {
           text: 'Replace all',
           disabled: true,
           onclick: function () {
-            $_w16ckjyjm0o6cce.replace(editor, currentIndexState, win.find('#replace').value(), true, true);
+            $_ftb750jzjnlpb2kd.replace(editor, currentIndexState, win.find('#replace').value(), true, true);
             win.statusbar.items().slice(1).disabled(true);
             last = {};
           }
@@ -508,7 +508,7 @@ var searchreplace = (function () {
           name: 'prev',
           disabled: true,
           onclick: function () {
-            $_w16ckjyjm0o6cce.prev(editor, currentIndexState);
+            $_ftb750jzjnlpb2kd.prev(editor, currentIndexState);
             updateButtonStates();
           }
         },
@@ -517,7 +517,7 @@ var searchreplace = (function () {
           name: 'next',
           disabled: true,
           onclick: function () {
-            $_w16ckjyjm0o6cce.next(editor, currentIndexState);
+            $_ftb750jzjnlpb2kd.next(editor, currentIndexState);
             updateButtonStates();
           }
         }
@@ -558,18 +558,18 @@ var searchreplace = (function () {
       }
     });
   };
-  var $_9ac285k2jm0o6cdd = { open: open };
+  var $_1qh3ank3jnlpb2ku = { open: open };
 
   var register = function (editor, currentIndexState) {
     editor.addCommand('SearchReplace', function () {
-      $_9ac285k2jm0o6cdd.open(editor, currentIndexState);
+      $_1qh3ank3jnlpb2ku.open(editor, currentIndexState);
     });
   };
-  var $_203btqk1jm0o6cd8 = { register: register };
+  var $_3eag16k2jnlpb2ks = { register: register };
 
   var showDialog = function (editor, currentIndexState) {
     return function () {
-      $_9ac285k2jm0o6cdd.open(editor, currentIndexState);
+      $_1qh3ank3jnlpb2ku.open(editor, currentIndexState);
     };
   };
   var register$1 = function (editor, currentIndexState) {
@@ -586,13 +586,13 @@ var searchreplace = (function () {
     });
     editor.shortcuts.add('Meta+F', '', showDialog(editor, currentIndexState));
   };
-  var $_4q5nonk3jm0o6cdj = { register: register$1 };
+  var $_gi078yk4jnlpb2kz = { register: register$1 };
 
   global.add('searchreplace', function (editor) {
     var currentIndexState = Cell(-1);
-    $_203btqk1jm0o6cd8.register(editor, currentIndexState);
-    $_4q5nonk3jm0o6cdj.register(editor, currentIndexState);
-    return $_4wtkv4jxjm0o6ccb.get(editor, currentIndexState);
+    $_3eag16k2jnlpb2ks.register(editor, currentIndexState);
+    $_gi078yk4jnlpb2kz.register(editor, currentIndexState);
+    return $_1pj7w7jyjnlpb2kb.get(editor, currentIndexState);
   });
   function Plugin () {
   }

@@ -28,12 +28,12 @@ var visualchars = (function () {
     };
     return { isEnabled: isEnabled };
   };
-  var $_1r99cdssjm0o6evh = { get: get };
+  var $_ccm92dstjnlpb4x9 = { get: get };
 
   var fireVisualChars = function (editor, state) {
     return editor.fire('VisualChars', { state: state });
   };
-  var $_75nvlvsvjm0o6evl = { fireVisualChars: fireVisualChars };
+  var $_27tp75swjnlpb4xc = { fireVisualChars: fireVisualChars };
 
   var charMap = {
     '\xA0': 'nbsp',
@@ -56,7 +56,7 @@ var visualchars = (function () {
     }
     return selector;
   };
-  var $_eoyq0tsxjm0o6evu = {
+  var $_70byx0syjnlpb4xk = {
     charMap: charMap,
     regExp: charMapToRegExp(charMap),
     regExpGlobal: charMapToRegExp(charMap, true),
@@ -308,7 +308,7 @@ var visualchars = (function () {
     fromPoint: fromPoint
   };
 
-  var $_fvbug3t6jm0o6ex2 = {
+  var $_s8tfst7jnlpb4yv = {
     ATTRIBUTE: Node.ATTRIBUTE_NODE,
     CDATA_SECTION: Node.CDATA_SECTION_NODE,
     COMMENT: Node.COMMENT_NODE,
@@ -339,12 +339,12 @@ var visualchars = (function () {
     };
   };
   var isComment = function (element) {
-    return type(element) === $_fvbug3t6jm0o6ex2.COMMENT || name(element) === '#comment';
+    return type(element) === $_s8tfst7jnlpb4yv.COMMENT || name(element) === '#comment';
   };
-  var isElement = isType$1($_fvbug3t6jm0o6ex2.ELEMENT);
-  var isText = isType$1($_fvbug3t6jm0o6ex2.TEXT);
-  var isDocument = isType$1($_fvbug3t6jm0o6ex2.DOCUMENT);
-  var $_1tgwgat5jm0o6ex0 = {
+  var isElement = isType$1($_s8tfst7jnlpb4yv.ELEMENT);
+  var isText = isType$1($_s8tfst7jnlpb4yv.TEXT);
+  var isDocument = isType$1($_s8tfst7jnlpb4yv.DOCUMENT);
+  var $_cn3t1ft6jnlpb4yu = {
     name: name,
     type: type,
     value: value,
@@ -355,12 +355,12 @@ var visualchars = (function () {
   };
 
   var wrapCharWithSpan = function (value) {
-    return '<span data-mce-bogus="1" class="mce-' + $_eoyq0tsxjm0o6evu.charMap[value] + '">' + value + '</span>';
+    return '<span data-mce-bogus="1" class="mce-' + $_70byx0syjnlpb4xk.charMap[value] + '">' + value + '</span>';
   };
-  var $_1afcuct7jm0o6ex4 = { wrapCharWithSpan: wrapCharWithSpan };
+  var $_2b5bght8jnlpb4yx = { wrapCharWithSpan: wrapCharWithSpan };
 
   var isMatch = function (n) {
-    return $_1tgwgat5jm0o6ex0.isText(n) && $_1tgwgat5jm0o6ex0.value(n) !== undefined && $_eoyq0tsxjm0o6evu.regExp.test($_1tgwgat5jm0o6ex0.value(n));
+    return $_cn3t1ft6jnlpb4yu.isText(n) && $_cn3t1ft6jnlpb4yu.value(n) !== undefined && $_70byx0syjnlpb4xk.regExp.test($_cn3t1ft6jnlpb4yu.value(n));
   };
   var filterDescendants = function (scope, predicate) {
     var result = [];
@@ -383,9 +383,9 @@ var visualchars = (function () {
     }
   };
   var replaceWithSpans = function (html) {
-    return html.replace($_eoyq0tsxjm0o6evu.regExpGlobal, $_1afcuct7jm0o6ex4.wrapCharWithSpan);
+    return html.replace($_70byx0syjnlpb4xk.regExpGlobal, $_2b5bght8jnlpb4yx.wrapCharWithSpan);
   };
-  var $_alc455syjm0o6evv = {
+  var $_7pugakszjnlpb4xl = {
     isMatch: isMatch,
     filterDescendants: filterDescendants,
     findParentElm: findParentElm,
@@ -394,9 +394,9 @@ var visualchars = (function () {
 
   var show = function (editor, rootElm) {
     var node, div;
-    var nodeList = $_alc455syjm0o6evv.filterDescendants(Element$$1.fromDom(rootElm), $_alc455syjm0o6evv.isMatch);
+    var nodeList = $_7pugakszjnlpb4xl.filterDescendants(Element$$1.fromDom(rootElm), $_7pugakszjnlpb4xl.isMatch);
     each(nodeList, function (n) {
-      var withSpans = $_alc455syjm0o6evv.replaceWithSpans($_1tgwgat5jm0o6ex0.value(n));
+      var withSpans = $_7pugakszjnlpb4xl.replaceWithSpans($_cn3t1ft6jnlpb4yu.value(n));
       div = editor.dom.create('div', null, withSpans);
       while (node = div.lastChild) {
         editor.dom.insertAfter(node, n.dom());
@@ -405,7 +405,7 @@ var visualchars = (function () {
     });
   };
   var hide = function (editor, body) {
-    var nodeList = editor.dom.select($_eoyq0tsxjm0o6evu.selector, body);
+    var nodeList = editor.dom.select($_70byx0syjnlpb4xk.selector, body);
     each(nodeList, function (node) {
       editor.dom.remove(node, 1);
     });
@@ -413,13 +413,13 @@ var visualchars = (function () {
   var toggle = function (editor) {
     var body = editor.getBody();
     var bookmark = editor.selection.getBookmark();
-    var parentNode = $_alc455syjm0o6evv.findParentElm(editor.selection.getNode(), body);
+    var parentNode = $_7pugakszjnlpb4xl.findParentElm(editor.selection.getNode(), body);
     parentNode = parentNode !== undefined ? parentNode : body;
     hide(editor, parentNode);
     show(editor, parentNode);
     editor.selection.moveToBookmark(bookmark);
   };
-  var $_cdjqgeswjm0o6evm = {
+  var $_g70gbrsxjnlpb4xd = {
     show: show,
     hide: hide,
     toggle: toggle
@@ -430,39 +430,39 @@ var visualchars = (function () {
     var selection = editor.selection;
     var bookmark;
     toggleState.set(!toggleState.get());
-    $_75nvlvsvjm0o6evl.fireVisualChars(editor, toggleState.get());
+    $_27tp75swjnlpb4xc.fireVisualChars(editor, toggleState.get());
     bookmark = selection.getBookmark();
     if (toggleState.get() === true) {
-      $_cdjqgeswjm0o6evm.show(editor, body);
+      $_g70gbrsxjnlpb4xd.show(editor, body);
     } else {
-      $_cdjqgeswjm0o6evm.hide(editor, body);
+      $_g70gbrsxjnlpb4xd.hide(editor, body);
     }
     selection.moveToBookmark(bookmark);
   };
-  var $_deudjfsujm0o6evj = { toggleVisualChars: toggleVisualChars };
+  var $_gdzoq5svjnlpb4xb = { toggleVisualChars: toggleVisualChars };
 
   var register = function (editor, toggleState) {
     editor.addCommand('mceVisualChars', function () {
-      $_deudjfsujm0o6evj.toggleVisualChars(editor, toggleState);
+      $_gdzoq5svjnlpb4xb.toggleVisualChars(editor, toggleState);
     });
   };
-  var $_208mwstjm0o6evi = { register: register };
+  var $_76faglsujnlpb4xa = { register: register };
 
   var global$1 = tinymce.util.Tools.resolve('tinymce.util.Delay');
 
   var setup = function (editor, toggleState) {
     var debouncedToggle = global$1.debounce(function () {
-      $_cdjqgeswjm0o6evm.toggle(editor);
+      $_g70gbrsxjnlpb4xd.toggle(editor);
     }, 300);
     if (editor.settings.forced_root_block !== false) {
       editor.on('keydown', function (e) {
         if (toggleState.get() === true) {
-          e.keyCode === 13 ? $_cdjqgeswjm0o6evm.toggle(editor) : debouncedToggle();
+          e.keyCode === 13 ? $_g70gbrsxjnlpb4xd.toggle(editor) : debouncedToggle();
         }
       });
     }
   };
-  var $_5wsp22t8jm0o6ex6 = { setup: setup };
+  var $_3ba6jet9jnlpb4yy = { setup: setup };
 
   var toggleActiveState = function (editor) {
     return function (e) {
@@ -491,10 +491,10 @@ var visualchars = (function () {
 
   global.add('visualchars', function (editor) {
     var toggleState = Cell(false);
-    $_208mwstjm0o6evi.register(editor, toggleState);
+    $_76faglsujnlpb4xa.register(editor, toggleState);
     register$1(editor);
-    $_5wsp22t8jm0o6ex6.setup(editor, toggleState);
-    return $_1r99cdssjm0o6evh.get(toggleState);
+    $_3ba6jet9jnlpb4yy.setup(editor, toggleState);
+    return $_ccm92dstjnlpb4x9.get(toggleState);
   });
   function Plugin () {
   }
