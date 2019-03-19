@@ -274,7 +274,7 @@ button::-moz-focus-inner {
   border-radius: 3px;
   box-shadow: 0 0 0 2px transparent;
   height: 24px;
-  padding: calc(3px);
+  padding: calc(4px - 1px);
   width: 24px;
 }
 .tox .tox-checkbox__icons .tox-checkbox-icon__unchecked svg {
@@ -307,7 +307,7 @@ button::-moz-focus-inner {
 .tox input.tox-checkbox__input:focus + .tox-checkbox__icons {
   border-radius: 3px;
   box-shadow: inset 0 0 0 1px #3498db;
-  padding: calc(3px);
+  padding: calc(4px - 1px);
 }
 .tox .tox-bar .tox-checkbox {
   margin-left: 4px;
@@ -533,7 +533,7 @@ button::-moz-focus-inner {
   border: 1px solid red !important;
 }
 .tox .tox-rgb-form label {
-  margin-right: .5em;
+  margin-right: 0.5em;
 }
 .tox .tox-rgb-form .tox-rgba-preview {
   border: 1px solid black;
@@ -650,7 +650,7 @@ button::-moz-focus-inner {
   content: "";
   display: flex;
   left: 0;
-  opacity: .9;
+  opacity: 0.9;
   position: absolute;
   right: 0;
   top: 0;
@@ -697,7 +697,7 @@ button::-moz-focus-inner {
   flex-direction: column;
   flex-grow: 1;
   left: 0;
-  opacity: .9;
+  opacity: 0.9;
   position: absolute;
   right: 0;
   text-align: center;
@@ -732,7 +732,7 @@ button::-moz-focus-inner {
   text-align: center;
 }
 .tox .tox-comment__overlaytext div:nth-of-type(2) {
-  font-size: .8em;
+  font-size: 0.8em;
 }
 .tox .tox-comment__busy-spinner {
   align-items: center;
@@ -856,6 +856,7 @@ button::-moz-focus-inner {
   font-style: normal;
   font-weight: normal;
   line-height: 1.3;
+  min-width: 0;
   padding: 0 16px;
   text-align: left;
   text-transform: normal;
@@ -1281,7 +1282,7 @@ body.tox-dialog__disable-scroll {
 .tox .tox-croprect-block {
   background: black;
   filter: alpha(opacity=50);
-  opacity: .5;
+  opacity: 0.5;
   position: absolute;
   zoom: 1;
 }
@@ -1465,10 +1466,8 @@ body.tox-dialog__disable-scroll {
   border-style: solid;
   border-width: 1px;
   box-sizing: border-box;
-  display: -ms-grid;
   display: grid;
-  -ms-grid-columns: minmax(40px, 1fr) auto minmax(40px, 1fr);
-      grid-template-columns: minmax(40px, 1fr) auto minmax(40px, 1fr);
+  grid-template-columns: minmax(40px, 1fr) auto minmax(40px, 1fr);
   margin-top: 5px;
   opacity: 0;
   padding: 5px;
@@ -1494,17 +1493,14 @@ body.tox-dialog__disable-scroll {
   border-color: #779ecb;
 }
 .tox .tox-notification__body {
-  -ms-grid-row-align: center;
-      align-self: center;
+  align-self: center;
   color: #31708f;
   font-size: 14px;
   grid-column-end: 3;
   -ms-grid-column-span: 1;
-  -ms-grid-column: 2;
-      grid-column-start: 2;
+  grid-column-start: 2;
   grid-row-end: 2;
-  -ms-grid-row: 1;
-      grid-row-start: 1;
+  grid-row-start: 1;
   text-align: center;
   white-space: normal;
   word-break: break-all;
@@ -1517,44 +1513,36 @@ body.tox-dialog__disable-scroll {
   margin-top: 1rem;
 }
 .tox .tox-notification__icon {
-  -ms-grid-row-align: center;
-      align-self: center;
+  align-self: center;
   -ms-grid-column-align: end;
   grid-column-end: 2;
   -ms-grid-column-span: 1;
-  -ms-grid-column: 1;
-      grid-column-start: 1;
+  grid-column-start: 1;
   grid-row-end: 2;
-  -ms-grid-row: 1;
-      grid-row-start: 1;
+  grid-row-start: 1;
   justify-self: end;
 }
 .tox .tox-notification__icon svg {
   display: block;
 }
 .tox .tox-notification__dismiss {
-  -ms-grid-row-align: start;
-      align-self: start;
+  align-self: start;
   -ms-grid-column-align: end;
   grid-column-end: 4;
   -ms-grid-column-span: 1;
-  -ms-grid-column: 3;
-      grid-column-start: 3;
+  grid-column-start: 3;
   grid-row-end: 2;
-  -ms-grid-row: 1;
-      grid-row-start: 1;
+  grid-row-start: 1;
   justify-self: end;
 }
 .tox .tox-notification .tox-progress-bar {
   -ms-grid-column-align: center;
   grid-column-end: 4;
   -ms-grid-column-span: 3;
-  -ms-grid-column: 1;
-      grid-column-start: 1;
+  grid-column-start: 1;
   grid-row-end: 3;
   -ms-grid-row-span: 1;
-  -ms-grid-row: 2;
-      grid-row-start: 2;
+  grid-row-start: 2;
   justify-self: center;
 }
 .tox .tox-pop {
@@ -1562,7 +1550,7 @@ body.tox-dialog__disable-scroll {
   position: relative;
 }
 .tox .tox-pop--resizing {
-  transition: width .1s ease;
+  transition: width 0.1s ease;
 }
 .tox .tox-pop--resizing .tox-toolbar {
   flex-wrap: nowrap;
@@ -1692,7 +1680,7 @@ body.tox-dialog__disable-scroll {
 }
 .tox .tox-sidebar--sliding-growing,
 .tox .tox-sidebar--sliding-shrinking {
-  transition: width .5s ease, opacity .5s ease;
+  transition: width 0.5s ease, opacity 0.5s ease;
 }
 .tox .tox-slider {
   align-items: center;
@@ -1706,21 +1694,22 @@ body.tox-dialog__disable-scroll {
 .tox .tox-slider__rail {
   background-color: transparent;
   border: 1px solid #000000;
-  border-radius: 6px;
-  height: 6px;
+  border-radius: 3px;
+  height: 10px;
   min-width: 120px;
   width: 100%;
 }
 .tox .tox-slider__handle {
   background-color: #3498db;
-  border-radius: 1.5px;
+  border: 2px solid #217dbb;
+  border-radius: 3px;
   box-shadow: none;
   height: 24px;
   left: 50%;
   position: absolute;
   top: 50%;
   transform: translateX(-50%) translateY(-50%);
-  width: 3px;
+  width: 14px;
 }
 .tox .tox-source-code {
   overflow: auto;
@@ -1911,8 +1900,7 @@ body.tox-dialog__disable-scroll {
   width: 68px;
 }
 .tox .tox-tbtn--return {
-  -ms-grid-row-align: stretch;
-      align-self: stretch;
+  align-self: stretch;
   height: unset;
   width: 16px;
 }

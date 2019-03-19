@@ -29,7 +29,7 @@
 }
 .tox-checklist > li:not(.tox-checklist--hidden) {
   list-style: none;
-  margin: .25em 0;
+  margin: 0.25em 0;
   position: relative;
 }
 .tox-checklist > li:not(.tox-checklist--hidden)::before {
@@ -40,7 +40,7 @@
   height: 1em;
   left: -1.5em;
   position: absolute;
-  top: .125em;
+  top: 0.125em;
   width: 1em;
 }
 .tox-checklist li:not(.tox-checklist--hidden).tox-checklist--checked::before {
@@ -58,7 +58,7 @@ pre[class*="language-"] {
   color: black;
   text-shadow: 0 1px white;
   font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
-  font-size: .875rem;
+  font-size: 0.875rem;
   direction: ltr;
   text-align: left;
   white-space: pre;
@@ -95,7 +95,7 @@ code[class*="language-"] ::selection {
 /* Code blocks */
 pre[class*="language-"] {
   padding: 1em;
-  margin: .5em 0;
+  margin: 0.5em 0;
   overflow: auto;
 }
 :not(pre) > code[class*="language-"],
@@ -105,8 +105,8 @@ pre[class*="language-"] {
 }
 /* Inline code */
 :not(pre) > code[class*="language-"] {
-  padding: .1em;
-  border-radius: .3em;
+  padding: 0.1em;
+  border-radius: 0.3em;
 }
 .token.comment,
 .token.prolog,
@@ -118,7 +118,7 @@ pre[class*="language-"] {
   color: #999;
 }
 .namespace {
-  opacity: .7;
+  opacity: 0.7;
 }
 .token.property,
 .token.tag,
@@ -143,7 +143,7 @@ pre[class*="language-"] {
 .language-css .token.string,
 .style .token.string {
   color: #a67f59;
-  background: rgba(255, 255, 255, 0.5);
+  background: hsla(0, 0%, 100%, 0.5);
 }
 .token.atrule,
 .token.attr-value,
@@ -169,6 +169,10 @@ pre[class*="language-"] {
   cursor: help;
 }
 /* stylelint-enable */
+.mce-content-body {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
 .mce-content-body .mce-visual-caret {
   background-color: black;
   background-color: currentcolor;
@@ -328,7 +332,7 @@ pre[class*="language-"] {
   cursor: nesw-resize;
 }
 .mce-content-body .mce-clonedresizable {
-  opacity: .5;
+  opacity: 0.5;
   outline: 1px dashed black;
   position: absolute;
   z-index: 10000;
