@@ -1,11 +1,3 @@
-/**
- * Copyright (c) Tiny Technologies, Inc. All rights reserved.
- * Licensed under the LGPL or a commercial license.
- * For LGPL see License.txt in the project root for license information.
- * For commercial licenses see https://www.tiny.cloud/
- *
- * Version: 5.0.3 (2019-03-19)
- */
 (function () {
 var nonbreaking = (function () {
     'use strict';
@@ -66,19 +58,15 @@ var nonbreaking = (function () {
     var Keyboard = { setup: setup };
 
     var register$1 = function (editor) {
-      editor.ui.registry.addButton('nonbreaking', {
-        icon: 'non-breaking',
-        tooltip: 'Nonbreaking space',
-        onAction: function () {
-          return editor.execCommand('mceNonBreaking');
-        }
+      editor.addButton('nonbreaking', {
+        title: 'Nonbreaking space',
+        cmd: 'mceNonBreaking'
       });
-      editor.ui.registry.addMenuItem('nonbreaking', {
-        icon: 'non-breaking',
+      editor.addMenuItem('nonbreaking', {
+        icon: 'nonbreaking',
         text: 'Nonbreaking space',
-        onAction: function () {
-          return editor.execCommand('mceNonBreaking');
-        }
+        cmd: 'mceNonBreaking',
+        context: 'insert'
       });
     };
     var Buttons = { register: register$1 };

@@ -1,11 +1,3 @@
-/**
- * Copyright (c) Tiny Technologies, Inc. All rights reserved.
- * Licensed under the LGPL or a commercial license.
- * For LGPL see License.txt in the project root for license information.
- * For commercial licenses see https://www.tiny.cloud/
- *
- * Version: 5.0.3 (2019-03-19)
- */
 (function () {
 var pagebreak = (function () {
     'use strict';
@@ -89,19 +81,15 @@ var pagebreak = (function () {
     var ResolveName = { setup: setup$1 };
 
     var register$1 = function (editor) {
-      editor.ui.registry.addButton('pagebreak', {
-        icon: 'page-break',
-        tooltip: 'Page break',
-        onAction: function () {
-          return editor.execCommand('mcePageBreak');
-        }
+      editor.addButton('pagebreak', {
+        title: 'Page break',
+        cmd: 'mcePageBreak'
       });
-      editor.ui.registry.addMenuItem('pagebreak', {
+      editor.addMenuItem('pagebreak', {
         text: 'Page break',
-        icon: 'page-break',
-        onAction: function () {
-          return editor.execCommand('mcePageBreak');
-        }
+        icon: 'pagebreak',
+        cmd: 'mcePageBreak',
+        context: 'insert'
       });
     };
     var Buttons = { register: register$1 };

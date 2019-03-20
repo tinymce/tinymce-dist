@@ -1,32 +1,8 @@
-/**
- * Copyright (c) Tiny Technologies, Inc. All rights reserved.
- * Licensed under the LGPL or a commercial license.
- * For LGPL see License.txt in the project root for license information.
- * For commercial licenses see https://www.tiny.cloud/
- *
- * Version: 5.0.3 (2019-03-19)
- */
 (function () {
 var table = (function (domGlobals) {
     'use strict';
 
-    var Cell = function (initial) {
-      var value = initial;
-      var get = function () {
-        return value;
-      };
-      var set = function (v) {
-        value = v;
-      };
-      var clone = function () {
-        return Cell(get());
-      };
-      return {
-        get: get,
-        set: set,
-        clone: clone
-      };
-    };
+    var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
     var noop = function () {
       var args = [];
@@ -214,8 +190,6 @@ var table = (function (domGlobals) {
       from: from
     };
 
-    var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
-
     var typeOf = function (x) {
       if (x === null)
         return 'null';
@@ -387,7 +361,6 @@ var table = (function (domGlobals) {
     };
 
     var keys = Object.keys;
-    var hasOwnProperty = Object.hasOwnProperty;
     var each$1 = function (obj, f) {
       var props = keys(obj);
       for (var k = 0, len = props.length; k < len; k++) {
@@ -411,12 +384,6 @@ var table = (function (domGlobals) {
         r[tuple.k] = tuple.v;
       });
       return r;
-    };
-    var get = function (obj, key) {
-      return has(obj, key) ? Option.from(obj[key]) : Option.none();
-    };
-    var has = function (obj, key) {
-      return hasOwnProperty.call(obj, key);
     };
 
     var Immutable = function () {
@@ -549,11 +516,11 @@ var table = (function (domGlobals) {
         rawSet(dom, k, v);
       });
     };
-    var get$1 = function (element, key) {
+    var get = function (element, key) {
       var v = element.dom().getAttribute(key);
       return v === null ? undefined : v;
     };
-    var has$1 = function (element, key) {
+    var has = function (element, key) {
       var dom = element.dom();
       return dom && dom.hasAttribute ? dom.hasAttribute(key) : false;
     };
@@ -577,9 +544,6 @@ var table = (function (domGlobals) {
     };
     var contains$1 = function (str, substr) {
       return str.indexOf(substr) !== -1;
-    };
-    var startsWith = function (str, prefix) {
-      return checkRange(str, prefix, 0);
     };
     var endsWith = function (str, suffix) {
       return checkRange(str, suffix, str.length - suffix.length);
@@ -685,7 +649,7 @@ var table = (function (domGlobals) {
         internalSet(dom, k, v);
       });
     };
-    var get$2 = function (element, property) {
+    var get$1 = function (element, property) {
       var dom = element.dom();
       var styles = domGlobals.window.getComputedStyle(dom);
       var r = styles.getPropertyValue(property);
@@ -705,7 +669,7 @@ var table = (function (domGlobals) {
     var remove$1 = function (element, property) {
       var dom = element.dom();
       internalRemove(dom, property);
-      if (has$1(element, 'style') && trim(get$1(element, 'style')) === '') {
+      if (has(element, 'style') && trim(get(element, 'style')) === '') {
         remove(element, 'style');
       }
     };
@@ -1413,7 +1377,7 @@ var table = (function (domGlobals) {
       return LayerSelector.firstLayer(ancestor, 'tr');
     };
     var attr = function (element, property) {
-      return parseInt(get$1(element, property), 10);
+      return parseInt(get(element, property), 10);
     };
     var grid$1 = function (element, rowProp, colProp) {
       var rowsCount = attr(element, rowProp);
@@ -1444,8 +1408,8 @@ var table = (function (domGlobals) {
           return parentName === 'tfoot' || parentName === 'thead' || parentName === 'tbody' ? parentName : 'tbody';
         }).getOr('tbody');
         var cells = map(TableLookup.cells(row), function (cell) {
-          var rowspan = has$1(cell, 'rowspan') ? parseInt(get$1(cell, 'rowspan'), 10) : 1;
-          var colspan = has$1(cell, 'colspan') ? parseInt(get$1(cell, 'colspan'), 10) : 1;
+          var rowspan = has(cell, 'rowspan') ? parseInt(get(cell, 'rowspan'), 10) : 1;
+          var colspan = has(cell, 'colspan') ? parseInt(get(cell, 'colspan'), 10) : 1;
           return Structs.detail(cell, rowspan, colspan);
         });
         return Structs.rowdata(element, cells, parentSection);
@@ -1454,8 +1418,8 @@ var table = (function (domGlobals) {
     var fromPastedRows = function (rows, example) {
       return map(rows, function (row) {
         var cells = map(TableLookup.cells(row), function (cell) {
-          var rowspan = has$1(cell, 'rowspan') ? parseInt(get$1(cell, 'rowspan'), 10) : 1;
-          var colspan = has$1(cell, 'colspan') ? parseInt(get$1(cell, 'colspan'), 10) : 1;
+          var rowspan = has(cell, 'rowspan') ? parseInt(get(cell, 'rowspan'), 10) : 1;
+          var colspan = has(cell, 'colspan') ? parseInt(get(cell, 'colspan'), 10) : 1;
           return Structs.detail(cell, rowspan, colspan);
         });
         return Structs.rowdata(row, cells, example.section());
@@ -1651,7 +1615,7 @@ var table = (function (domGlobals) {
     }
 
     var api = NodeValue(isText, 'text');
-    var get$3 = function (element) {
+    var get$2 = function (element) {
       return api.get(element);
     };
     var getOption = function (element) {
@@ -1902,13 +1866,13 @@ var table = (function (domGlobals) {
           predicate: descendants
         }),
         styles: constant({
-          get: get$2,
+          get: get$1,
           getRaw: getRaw,
           set: set$1,
           remove: remove$1
         }),
         attrs: constant({
-          get: get$1,
+          get: get,
           set: set,
           remove: remove,
           copyTo: copyAttributesTo
@@ -1944,7 +1908,7 @@ var table = (function (domGlobals) {
           isText: isText,
           isComment: isComment,
           isElement: isElement,
-          getText: get$3,
+          getText: get$2,
           setText: set$2,
           isBoundary: isBoundary,
           isEmptyTag: isEmptyTag
@@ -2504,7 +2468,7 @@ var table = (function (domGlobals) {
     };
     var unmergable = function (cell, selections) {
       var hasSpan = function (elem) {
-        return has$1(elem, 'rowspan') && parseInt(get$1(elem, 'rowspan'), 10) > 1 || has$1(elem, 'colspan') && parseInt(get$1(elem, 'colspan'), 10) > 1;
+        return has(elem, 'rowspan') && parseInt(get(elem, 'rowspan'), 10) > 1 || has(elem, 'colspan') && parseInt(get(elem, 'colspan'), 10) > 1;
       };
       var candidates = selection(cell, selections);
       return candidates.length > 0 && forall(candidates, hasSpan) ? Option.some(candidates) : Option.none();
@@ -2633,7 +2597,7 @@ var table = (function (domGlobals) {
       var get = function (element) {
         var r = getOffset(element);
         if (r <= 0 || r === null) {
-          var css = get$2(element, name);
+          var css = get$1(element, name);
           return parseFloat(css) || 0;
         }
         return r;
@@ -2641,7 +2605,7 @@ var table = (function (domGlobals) {
       var getOuter = get;
       var aggregate = function (element, properties) {
         return foldl(properties, function (acc, property) {
-          var val = get$2(element, property);
+          var val = get$1(element, property);
           var value = val === undefined ? 0 : parseInt(val, 10);
           return isNaN(value) ? acc : acc + value;
         }, 0);
@@ -2664,7 +2628,7 @@ var table = (function (domGlobals) {
       var dom = element.dom();
       return inBody(element) ? dom.getBoundingClientRect().height : dom.offsetHeight;
     });
-    var get$4 = function (element) {
+    var get$3 = function (element) {
       return api$1.get(element);
     };
     var getOuter = function (element) {
@@ -2674,7 +2638,7 @@ var table = (function (domGlobals) {
     var api$2 = Dimension('width', function (element) {
       return element.dom().offsetWidth;
     });
-    var get$5 = function (element) {
+    var get$4 = function (element) {
       return api$2.get(element);
     };
     var getOuter$1 = function (element) {
@@ -2690,7 +2654,7 @@ var table = (function (domGlobals) {
       return isNaN(num) ? fallback : num;
     };
     var getProp = function (elm, name, fallback) {
-      return toNumber(get$2(elm, name), fallback);
+      return toNumber(get$1(elm, name), fallback);
     };
     var getCalculatedHeight = function (cell) {
       var paddingTop = getProp(cell, 'padding-top', 0);
@@ -2698,15 +2662,15 @@ var table = (function (domGlobals) {
       var borderTop = getProp(cell, 'border-top-width', 0);
       var borderBottom = getProp(cell, 'border-bottom-width', 0);
       var height = cell.dom().getBoundingClientRect().height;
-      var boxSizing = get$2(cell, 'box-sizing');
+      var boxSizing = get$1(cell, 'box-sizing');
       var borders = borderTop + borderBottom;
       return boxSizing === 'border-box' ? height : height - paddingTop - paddingBottom - borders;
     };
     var getWidth = function (cell) {
-      return getProp(cell, 'width', get$5(cell));
+      return getProp(cell, 'width', get$4(cell));
     };
     var getHeight = function (cell) {
-      return needManualCalc() ? getCalculatedHeight(cell) : getProp(cell, 'height', get$4(cell));
+      return needManualCalc() ? getCalculatedHeight(cell) : getProp(cell, 'height', get$3(cell));
     };
     var RuntimeSize = {
       getWidth: getWidth,
@@ -2745,22 +2709,22 @@ var table = (function (domGlobals) {
     var getTotalHeight = function (cell) {
       var value = getHeightValue(cell);
       if (!value) {
-        return get$4(cell);
+        return get$3(cell);
       }
-      return normalizePixelSize(value, cell, get$4, setHeight);
+      return normalizePixelSize(value, cell, get$3, setHeight);
     };
-    var get$6 = function (cell, type, f) {
+    var get$5 = function (cell, type, f) {
       var v = f(cell);
       var span = getSpan(cell, type);
       return v / span;
     };
     var getSpan = function (cell, type) {
-      return has$1(cell, type) ? parseInt(get$1(cell, type), 10) : 1;
+      return has(cell, type) ? parseInt(get(cell, type), 10) : 1;
     };
     var getRawWidth = function (element) {
       var cssWidth = getRaw(element, 'width');
       return cssWidth.fold(function () {
-        return Option.from(get$1(element, 'width'));
+        return Option.from(get(element, 'width'));
       }, function (width) {
         return Option.some(width);
       });
@@ -2773,14 +2737,14 @@ var table = (function (domGlobals) {
         var percentMatch = percentageBasedSizeRegex.exec(width);
         return parseFloat(percentMatch[1]);
       } else {
-        var intWidth = get$5(element);
+        var intWidth = get$4(element);
         return normalizePercentageWidth(intWidth, tableSize);
       }
     };
     var getPercentageWidth = function (cell, tableSize) {
       var width = getRawWidth(cell);
       return width.fold(function () {
-        var intWidth = get$5(cell);
+        var intWidth = get$4(cell);
         return normalizePercentageWidth(intWidth, tableSize);
       }, function (w) {
         return choosePercentageSize(cell, w, tableSize);
@@ -2798,19 +2762,19 @@ var table = (function (domGlobals) {
         var floatWidth = parseFloat(percentMatch[1]);
         return normalizePixelWidth(floatWidth, tableSize);
       } else {
-        return get$5(element);
+        return get$4(element);
       }
     };
     var getPixelWidth = function (cell, tableSize) {
       var width = getRawWidth(cell);
       return width.fold(function () {
-        return get$5(cell);
+        return get$4(cell);
       }, function (w) {
         return choosePixelSize(cell, w, tableSize);
       });
     };
     var getHeight$1 = function (cell) {
-      return get$6(cell, 'rowspan', getTotalHeight);
+      return get$5(cell, 'rowspan', getTotalHeight);
     };
     var getGenericWidth = function (cell) {
       var width = getRawWidth(cell);
@@ -3003,7 +2967,7 @@ var table = (function (domGlobals) {
     };
     var TableGridSize = { getGridSize: getGridSize };
 
-    var hasOwnProperty$1 = Object.prototype.hasOwnProperty;
+    var hasOwnProperty = Object.prototype.hasOwnProperty;
     var shallow$1 = function (old, nu) {
       return nu;
     };
@@ -3018,7 +2982,7 @@ var table = (function (domGlobals) {
         for (var j = 0; j < objects.length; j++) {
           var curObject = objects[j];
           for (var key in curObject)
-            if (hasOwnProperty$1.call(curObject, key)) {
+            if (hasOwnProperty.call(curObject, key)) {
               ret[key] = merger(ret[key], curObject[key]);
             }
         }
@@ -3135,7 +3099,7 @@ var table = (function (domGlobals) {
     };
 
     var read = function (element, attr) {
-      var value = get$1(element, attr);
+      var value = get(element, attr);
       return value === undefined || value === '' ? [] : value.split(' ');
     };
     var add = function (element, attr, id) {
@@ -3159,7 +3123,7 @@ var table = (function (domGlobals) {
     var supports = function (element) {
       return element.dom().classList !== undefined;
     };
-    var get$7 = function (element) {
+    var get$6 = function (element) {
       return read(element, 'class');
     };
     var add$1 = function (element, clazz) {
@@ -3177,7 +3141,7 @@ var table = (function (domGlobals) {
       }
     };
     var cleanClass = function (element) {
-      var classList = supports(element) ? element.dom().classList : get$7(element);
+      var classList = supports(element) ? element.dom().classList : get$6(element);
       if (classList.length === 0) {
         remove(element, 'class');
       }
@@ -3191,7 +3155,7 @@ var table = (function (domGlobals) {
       }
       cleanClass(element);
     };
-    var has$2 = function (element, clazz) {
+    var has$1 = function (element, clazz) {
       return supports(element) && element.dom().classList.contains(clazz);
     };
 
@@ -3439,10 +3403,10 @@ var table = (function (domGlobals) {
       });
     };
     var isRowBar = function (element) {
-      return has$2(element, resizeRowBar);
+      return has$1(element, resizeRowBar);
     };
     var isColBar = function (element) {
-      return has$2(element, resizeColBar);
+      return has$1(element, resizeColBar);
     };
     var Bars = {
       refresh: refresh,
@@ -4007,7 +3971,7 @@ var table = (function (domGlobals) {
       deleteColumnsAt: deleteColumnsAt
     };
 
-    var get$8 = function (element) {
+    var get$7 = function (element) {
       return element.dom().textContent;
     };
 
@@ -4051,7 +4015,7 @@ var table = (function (domGlobals) {
       var sortGroup = function (group) {
         var texted = map(group, function (row) {
           var cell = GridRow.getCell(row, index);
-          var text = get$8(cell.element());
+          var text = get$7(cell.element());
           return {
             row: row,
             text: text
@@ -4072,7 +4036,7 @@ var table = (function (domGlobals) {
     var sortTableColumns = function (grid, index, comparator, ascending) {
       var targetRow = grid[index].cells();
       var targetReferences = map(targetRow, function (cell) {
-        return get$8(cell.element());
+        return get$7(cell.element());
       });
       var zip = function (row) {
         var zippedCells = map(row.cells(), function (cell, i) {
@@ -4210,7 +4174,7 @@ var table = (function (domGlobals) {
     var Deltas = { determine: determine };
 
     var getSpan$1 = function (cell, type) {
-      return has$1(cell, type) && parseInt(get$1(cell, type), 10) > 1;
+      return has(cell, type) && parseInt(get(cell, type), 10) > 1;
     };
     var hasColspan = function (cell) {
       return getSpan$1(cell, 'colspan');
@@ -4219,7 +4183,7 @@ var table = (function (domGlobals) {
       return getSpan$1(cell, 'rowspan');
     };
     var getInt = function (element, property) {
-      return parseInt(get$2(element, property), 10);
+      return parseInt(get$1(element, property), 10);
     };
     var CellUtils = {
       hasColspan: hasColspan,
@@ -4355,7 +4319,7 @@ var table = (function (domGlobals) {
 
     var percentageSize = function (width, element) {
       var floatWidth = parseFloat(width);
-      var pixelWidth = get$5(element);
+      var pixelWidth = get$4(element);
       var getCellDelta = function (delta) {
         return delta / pixelWidth * 100;
       };
@@ -4412,14 +4376,14 @@ var table = (function (domGlobals) {
         var pixelMatch = Sizes.pixelBasedSizeRegex().exec(width);
         return pixelSize(pixelMatch[1]);
       } else {
-        var fallbackWidth = get$5(element);
+        var fallbackWidth = get$4(element);
         return pixelSize(fallbackWidth);
       }
     };
     var getTableSize = function (element) {
       var width = Sizes.getRawWidth(element);
       return width.fold(function () {
-        var fallbackWidth = get$5(element);
+        var fallbackWidth = get$4(element);
         return pixelSize(fallbackWidth);
       }, function (w) {
         return chooseSize(element, w);
@@ -4494,6 +4458,24 @@ var table = (function (domGlobals) {
       adjustWidthTo: adjustWidthTo
     };
 
+    var Cell = function (initial) {
+      var value = initial;
+      var get = function () {
+        return value;
+      };
+      var set = function (v) {
+        value = v;
+      };
+      var clone = function () {
+        return Cell(get());
+      };
+      return {
+        get: get,
+        set: set,
+        clone: clone
+      };
+    };
+
     var base = function (handleUnsupported, required) {
       return baseWith(handleUnsupported, required, {
         validate: isFunction,
@@ -4533,8 +4515,8 @@ var table = (function (domGlobals) {
     };
 
     var elementToData = function (element) {
-      var colspan = has$1(element, 'colspan') ? parseInt(get$1(element, 'colspan'), 10) : 1;
-      var rowspan = has$1(element, 'rowspan') ? parseInt(get$1(element, 'rowspan'), 10) : 1;
+      var colspan = has(element, 'colspan') ? parseInt(get(element, 'colspan'), 10) : 1;
+      var rowspan = has(element, 'rowspan') ? parseInt(get(element, 'rowspan'), 10) : 1;
       return {
         element: constant(element),
         colspan: constant(colspan),
@@ -4791,7 +4773,7 @@ var table = (function (domGlobals) {
       };
       var advancedBr = function (children) {
         return forall(children, function (c) {
-          return isBr(c) || isText(c) && get$3(c).trim().length === 0;
+          return isBr(c) || isText(c) && get$2(c).trim().length === 0;
         });
       };
       var isListItem = function (el) {
@@ -5089,7 +5071,7 @@ var table = (function (domGlobals) {
     };
 
     var getDirection = function (element) {
-      return get$2(element, 'direction') === 'rtl' ? 'rtl' : 'ltr';
+      return get$1(element, 'direction') === 'rtl' ? 'rtl' : 'ltr';
     };
 
     var ltr$1 = { isRtl: constant(false) };
@@ -5100,7 +5082,18 @@ var table = (function (domGlobals) {
     };
     var Direction = { directionAt: directionAt };
 
-    var defaultTableToolbar = 'tableprops tabledelete | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol';
+    var defaultTableToolbar = [
+      'tableprops',
+      'tabledelete',
+      '|',
+      'tableinsertrowbefore',
+      'tableinsertrowafter',
+      'tabledeleterow',
+      '|',
+      'tableinsertcolbefore',
+      'tableinsertcolafter',
+      'tabledeletecol'
+    ];
     var defaultStyles = {
       'border-collapse': 'collapse',
       'width': '100%'
@@ -5145,11 +5138,11 @@ var table = (function (domGlobals) {
     var getTableClassList = function (editor) {
       return editor.getParam('table_class_list', [], 'array');
     };
+    var getColorPickerCallback = function (editor) {
+      return editor.getParam('color_picker_callback');
+    };
     var isPixelsForced = function (editor) {
       return editor.getParam('table_responsive_width') === false;
-    };
-    var getToolbar = function (editor) {
-      return editor.getParam('table_toolbar', defaultTableToolbar);
     };
     var getCloneElements = function (editor) {
       var cloneElements = editor.getParam('table_clone_elements');
@@ -5164,6 +5157,18 @@ var table = (function (domGlobals) {
     var hasObjectResizing = function (editor) {
       var objectResizing = editor.getParam('object_resizing', true);
       return objectResizing === 'table' || objectResizing;
+    };
+    var getToolbar = function (editor) {
+      var toolbar = editor.getParam('table_toolbar', defaultTableToolbar);
+      if (toolbar === '' || toolbar === false) {
+        return [];
+      } else if (isString(toolbar)) {
+        return toolbar.split(/[ ,]/);
+      } else if (isArray(toolbar)) {
+        return toolbar;
+      } else {
+        return [];
+      }
     };
 
     var fireNewRow = function (editor, row) {
@@ -5310,19 +5315,6 @@ var table = (function (domGlobals) {
       getTDTHOverallStyle: getTDTHOverallStyle
     };
 
-    var __assign = function () {
-      __assign = Object.assign || function __assign(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-          s = arguments[i];
-          for (var p in s)
-            if (Object.prototype.hasOwnProperty.call(s, p))
-              t[p] = s[p];
-        }
-        return t;
-      };
-      return __assign.apply(this, arguments);
-    };
-
     var buildListItems = function (inputList, itemCallback, startItems) {
       var appendItems = function (values, output) {
         output = output || [];
@@ -5342,450 +5334,245 @@ var table = (function (domGlobals) {
       };
       return appendItems(inputList, startItems || []);
     };
-    var extractAdvancedStyles = function (dom, elm) {
-      var rgbToHex = function (value) {
-        return startsWith(value, 'rgb') ? dom.toHex(value) : value;
-      };
-      var borderStyle = getRaw(Element.fromDom(elm), 'border-style').getOr('');
-      var borderColor = getRaw(Element.fromDom(elm), 'border-color').map(rgbToHex).getOr('');
-      var bgColor = getRaw(Element.fromDom(elm), 'background-color').map(rgbToHex).getOr('');
-      return {
-        borderstyle: borderStyle,
-        bordercolor: borderColor,
-        backgroundcolor: bgColor
-      };
-    };
-    var getSharedValues = function (data) {
-      var baseData = data[0];
-      var comparisonData = data.slice(1);
-      var keys$1 = keys(baseData);
-      each(comparisonData, function (items) {
-        each(keys$1, function (key) {
-          each$1(items, function (itemValue, itemKey, _) {
-            var comparisonValue = baseData[key];
-            if (comparisonValue !== '' && key === itemKey) {
-              if (comparisonValue !== itemValue) {
-                baseData[key] = '';
-              }
-            }
-          });
-        });
-      });
-      return baseData;
-    };
-    var getAdvancedTab = function () {
-      var items = [
-        {
-          name: 'borderstyle',
-          type: 'selectbox',
-          label: 'Border style',
-          items: [
-            {
-              text: 'Select...',
-              value: ''
-            },
-            {
-              text: 'Solid',
-              value: 'solid'
-            },
-            {
-              text: 'Dotted',
-              value: 'dotted'
-            },
-            {
-              text: 'Dashed',
-              value: 'dashed'
-            },
-            {
-              text: 'Double',
-              value: 'double'
-            },
-            {
-              text: 'Groove',
-              value: 'groove'
-            },
-            {
-              text: 'Ridge',
-              value: 'ridge'
-            },
-            {
-              text: 'Inset',
-              value: 'inset'
-            },
-            {
-              text: 'Outset',
-              value: 'outset'
-            },
-            {
-              text: 'None',
-              value: 'none'
-            },
-            {
-              text: 'Hidden',
-              value: 'hidden'
-            }
-          ]
-        },
-        {
-          name: 'bordercolor',
-          type: 'colorinput',
-          label: 'Border color'
-        },
-        {
-          name: 'backgroundcolor',
-          type: 'colorinput',
-          label: 'Background color'
-        }
-      ];
-      return {
-        title: 'Advanced',
-        items: items
-      };
-    };
-    var getAlignment = function (alignments, formatName, dataName, editor, elm) {
-      var alignmentData = {};
-      global$1.each(alignments.split(' '), function (name) {
-        if (editor.formatter.matchNode(elm, formatName + name)) {
-          alignmentData[dataName] = name;
-        }
-      });
-      if (!alignmentData[dataName]) {
-        alignmentData[dataName] = '';
+    function styleFieldHasFocus(e) {
+      return e.control.rootControl.find('#style')[0].getEl().isEqualNode(domGlobals.document.activeElement);
+    }
+    var syncAdvancedStyleFields = function (editor, evt) {
+      if (styleFieldHasFocus(evt)) {
+        updateAdvancedFields(editor, evt);
+      } else {
+        updateStyleField(editor, evt);
       }
-      return alignmentData;
     };
-    var getHAlignment = curry(getAlignment, 'left center right');
-    var getVAlignment = curry(getAlignment, 'top middle bottom');
-    var extractDataFromSettings = function (editor, hasAdvTableTab) {
-      var style = getDefaultStyles(editor);
-      var attrs = getDefaultAttributes(editor);
-      var extractAdvancedStyleData = function (dom) {
-        var rgbToHex = function (value) {
-          return startsWith(value, 'rgb') ? dom.toHex(value) : value;
-        };
-        var borderStyle = get(style, 'border-style').getOr('');
-        var borderColor = get(style, 'border-color').getOr('');
-        var bgColor = get(style, 'background-color').getOr('');
-        return {
-          borderstyle: borderStyle,
-          bordercolor: rgbToHex(borderColor),
-          backgroundcolor: rgbToHex(bgColor)
-        };
-      };
-      var defaultData = {
-        height: '',
-        width: '100%',
-        cellspacing: '',
-        cellpadding: '',
-        caption: false,
-        class: '',
-        align: '',
-        border: ''
-      };
-      var getBorder = function () {
-        var borderWidth = style['border-width'];
-        if (shouldStyleWithCss(editor) && borderWidth) {
-          return { border: borderWidth };
-        }
-        return get(attrs, 'border').fold(function () {
-          return {};
-        }, function (border) {
-          return { border: border };
-        });
-      };
+    var updateStyleField = function (editor, evt) {
       var dom = editor.dom;
-      var advStyle = hasAdvTableTab ? extractAdvancedStyleData(dom) : {};
-      var getCellPaddingCellSpacing = function () {
-        var spacing = get(style, 'border-spacing').or(get(attrs, 'cellspacing')).fold(function () {
-          return {};
-        }, function (cellspacing) {
-          return { cellspacing: cellspacing };
-        });
-        var padding = get(style, 'border-padding').or(get(attrs, 'cellpadding')).fold(function () {
-          return {};
-        }, function (cellpadding) {
-          return { cellpadding: cellpadding };
-        });
-        return __assign({}, spacing, padding);
-      };
-      var data = __assign({}, defaultData, style, attrs, advStyle, getBorder(), getCellPaddingCellSpacing());
+      var rootControl = evt.control.rootControl;
+      var data = rootControl.toJSON();
+      var css = dom.parseStyle(data.style);
+      css['border-style'] = data.borderStyle;
+      css['border-color'] = data.borderColor;
+      css['background-color'] = data.backgroundColor;
+      css.width = data.width ? addSizeSuffix(data.width) : '';
+      css.height = data.height ? addSizeSuffix(data.height) : '';
+      rootControl.find('#style').value(dom.serializeStyle(dom.parseStyle(dom.serializeStyle(css))));
+    };
+    var updateAdvancedFields = function (editor, evt) {
+      var dom = editor.dom;
+      var rootControl = evt.control.rootControl;
+      var data = rootControl.toJSON();
+      var css = dom.parseStyle(data.style);
+      rootControl.find('#borderStyle').value(css['border-style'] || '');
+      rootControl.find('#borderColor').value(css['border-color'] || '');
+      rootControl.find('#backgroundColor').value(css['background-color'] || '');
+      rootControl.find('#width').value(css.width || '');
+      rootControl.find('#height').value(css.height || '');
+    };
+    var extractAdvancedStyles = function (dom, elm) {
+      var css = dom.parseStyle(dom.getAttrib(elm, 'style'));
+      var data = {};
+      if (css['border-style']) {
+        data.borderStyle = css['border-style'];
+      }
+      if (css['border-color']) {
+        data.borderColor = css['border-color'];
+      }
+      if (css['background-color']) {
+        data.backgroundColor = css['background-color'];
+      }
+      data.style = dom.serializeStyle(css);
       return data;
     };
-    var extractDataFromTableElement = function (editor, elm, hasAdvTableTab) {
-      var getBorder = function (dom, elm) {
-        var optBorderWidth = getRaw(Element.fromDom(elm), 'border-width');
-        if (shouldStyleWithCss(editor) && optBorderWidth.isSome()) {
-          return optBorderWidth.getOr('');
-        }
-        return dom.getAttrib(elm, 'border') || Styles$1.getTDTHOverallStyle(editor.dom, elm, 'border-width') || Styles$1.getTDTHOverallStyle(editor.dom, elm, 'border');
-      };
-      var dom = editor.dom;
-      var data = __assign({
-        width: dom.getStyle(elm, 'width') || dom.getAttrib(elm, 'width'),
-        height: dom.getStyle(elm, 'height') || dom.getAttrib(elm, 'height'),
-        cellspacing: dom.getStyle(elm, 'border-spacing') || dom.getAttrib(elm, 'cellspacing'),
-        cellpadding: dom.getAttrib(elm, 'cellpadding') || Styles$1.getTDTHOverallStyle(editor.dom, elm, 'padding'),
-        border: getBorder(dom, elm),
-        caption: !!dom.select('caption', elm)[0],
-        class: dom.getAttrib(elm, 'class', '')
-      }, getHAlignment('align', 'align', editor, elm), hasAdvTableTab ? extractAdvancedStyles(dom, elm) : {});
-      return data;
-    };
-    var extractDataFromRowElement = function (editor, elm, hasAdvancedRowTab) {
-      var dom = editor.dom;
-      var data = __assign({
-        height: dom.getStyle(elm, 'height') || dom.getAttrib(elm, 'height'),
-        scope: dom.getAttrib(elm, 'scope'),
-        class: dom.getAttrib(elm, 'class', ''),
-        align: '',
-        type: elm.parentNode.nodeName.toLowerCase()
-      }, getHAlignment('align', 'align', editor, elm), hasAdvancedRowTab ? extractAdvancedStyles(dom, elm) : {});
-      return data;
-    };
-    var extractDataFromCellElement = function (editor, elm, hasAdvancedCellTab) {
-      var dom = editor.dom;
-      var data = __assign({
-        width: dom.getStyle(elm, 'width') || dom.getAttrib(elm, 'width'),
-        height: dom.getStyle(elm, 'height') || dom.getAttrib(elm, 'height'),
-        scope: dom.getAttrib(elm, 'scope'),
-        celltype: elm.nodeName.toLowerCase(),
-        class: dom.getAttrib(elm, 'class', '')
-      }, getHAlignment('align', 'halign', editor, elm), getVAlignment('valign', 'valign', editor, elm), hasAdvancedCellTab ? extractAdvancedStyles(dom, elm) : {});
-      return data;
-    };
-    var Helpers = {
-      buildListItems: buildListItems,
-      extractAdvancedStyles: extractAdvancedStyles,
-      getSharedValues: getSharedValues,
-      getAdvancedTab: getAdvancedTab,
-      extractDataFromTableElement: extractDataFromTableElement,
-      extractDataFromRowElement: extractDataFromRowElement,
-      extractDataFromCellElement: extractDataFromCellElement,
-      extractDataFromSettings: extractDataFromSettings
-    };
-
-    var getClassList = function (editor) {
-      var rowClassList = getCellClassList(editor);
-      var classes = Helpers.buildListItems(rowClassList, function (item) {
-        if (item.value) {
-          item.textStyle = function () {
-            return editor.formatter.getCssText({
-              block: 'tr',
-              classes: [item.value]
-            });
+    var createStyleForm = function (editor) {
+      var createColorPickAction = function () {
+        var colorPickerCallback = getColorPickerCallback(editor);
+        if (colorPickerCallback) {
+          return function (evt) {
+            return colorPickerCallback.call(editor, function (value) {
+              evt.control.value(value).fire('change');
+            }, evt.control.value());
           };
         }
-      });
-      if (rowClassList.length > 0) {
-        return Option.some({
-          name: 'class',
-          type: 'selectbox',
-          label: 'Class',
-          items: classes
-        });
-      }
-      return Option.none();
-    };
-    var children$3 = [
-      {
-        name: 'width',
-        type: 'input',
-        label: 'Width'
-      },
-      {
-        name: 'height',
-        type: 'input',
-        label: 'Height'
-      },
-      {
-        name: 'celltype',
-        type: 'selectbox',
-        label: 'Cell type',
-        items: [
-          {
-            text: 'Cell',
-            value: 'td'
-          },
-          {
-            text: 'Header cell',
-            value: 'th'
-          }
-        ]
-      },
-      {
-        name: 'scope',
-        type: 'selectbox',
-        label: 'Scope',
-        items: [
-          {
-            text: 'None',
-            value: ''
-          },
-          {
-            text: 'Row',
-            value: 'row'
-          },
-          {
-            text: 'Column',
-            value: 'col'
-          },
-          {
-            text: 'Row group',
-            value: 'rowgroup'
-          },
-          {
-            text: 'Column group',
-            value: 'colgroup'
-          }
-        ]
-      },
-      {
-        name: 'halign',
-        type: 'selectbox',
-        label: 'H Align',
-        items: [
-          {
-            text: 'None',
-            value: ''
-          },
-          {
-            text: 'Left',
-            value: 'left'
-          },
-          {
-            text: 'Center',
-            value: 'center'
-          },
-          {
-            text: 'Right',
-            value: 'right'
-          }
-        ]
-      },
-      {
-        name: 'valign',
-        type: 'selectbox',
-        label: 'V Align',
-        items: [
-          {
-            text: 'None',
-            value: ''
-          },
-          {
-            text: 'Top',
-            value: 'top'
-          },
-          {
-            text: 'Middle',
-            value: 'middle'
-          },
-          {
-            text: 'Bottom',
-            value: 'bottom'
-          }
-        ]
-      }
-    ];
-    var items = function (editor) {
-      return getClassList(editor).fold(function () {
-        return children$3;
-      }, function (classlist) {
-        return children$3.concat(classlist);
-      });
-    };
-    var CellDialogGeneralTab = { items: items };
-
-    var normal = function (dom, node) {
-      var setAttrib = function (attr, value) {
-        dom.setAttrib(node, attr, value);
-      };
-      var setStyle = function (prop, value) {
-        dom.setStyle(node, prop, value);
       };
       return {
-        setAttrib: setAttrib,
-        setStyle: setStyle
+        title: 'Advanced',
+        type: 'form',
+        defaults: { onchange: curry(updateStyleField, editor) },
+        items: [
+          {
+            label: 'Style',
+            name: 'style',
+            type: 'textbox',
+            onchange: curry(updateAdvancedFields, editor)
+          },
+          {
+            type: 'form',
+            padding: 0,
+            formItemDefaults: {
+              layout: 'grid',
+              alignH: [
+                'start',
+                'right'
+              ]
+            },
+            defaults: { size: 7 },
+            items: [
+              {
+                label: 'Border style',
+                type: 'listbox',
+                name: 'borderStyle',
+                width: 90,
+                onselect: curry(updateStyleField, editor),
+                values: [
+                  {
+                    text: 'Select...',
+                    value: ''
+                  },
+                  {
+                    text: 'Solid',
+                    value: 'solid'
+                  },
+                  {
+                    text: 'Dotted',
+                    value: 'dotted'
+                  },
+                  {
+                    text: 'Dashed',
+                    value: 'dashed'
+                  },
+                  {
+                    text: 'Double',
+                    value: 'double'
+                  },
+                  {
+                    text: 'Groove',
+                    value: 'groove'
+                  },
+                  {
+                    text: 'Ridge',
+                    value: 'ridge'
+                  },
+                  {
+                    text: 'Inset',
+                    value: 'inset'
+                  },
+                  {
+                    text: 'Outset',
+                    value: 'outset'
+                  },
+                  {
+                    text: 'None',
+                    value: 'none'
+                  },
+                  {
+                    text: 'Hidden',
+                    value: 'hidden'
+                  }
+                ]
+              },
+              {
+                label: 'Border color',
+                type: 'colorbox',
+                name: 'borderColor',
+                onaction: createColorPickAction()
+              },
+              {
+                label: 'Background color',
+                type: 'colorbox',
+                name: 'backgroundColor',
+                onaction: createColorPickAction()
+              }
+            ]
+          }
+        ]
       };
     };
-    var ifTruthy = function (dom, node) {
-      var setAttrib = function (attr, value) {
-        if (value) {
-          dom.setAttrib(node, attr, value);
-        }
-      };
-      var setStyle = function (prop, value) {
-        if (value) {
-          dom.setStyle(node, prop, value);
-        }
-      };
-      return {
-        setAttrib: setAttrib,
-        setStyle: setStyle
-      };
-    };
-    var DomModifiers = {
-      normal: normal,
-      ifTruthy: ifTruthy
+    var Helpers = {
+      createStyleForm: createStyleForm,
+      buildListItems: buildListItems,
+      updateStyleField: updateStyleField,
+      extractAdvancedStyles: extractAdvancedStyles,
+      updateAdvancedFields: updateAdvancedFields,
+      syncAdvancedStyleFields: syncAdvancedStyleFields
     };
 
-    var updateSimpleProps = function (modifiers, data) {
-      modifiers.setAttrib('scope', data.scope);
-      modifiers.setAttrib('class', data.class);
-      modifiers.setStyle('width', addSizeSuffix(data.width));
-      modifiers.setStyle('height', addSizeSuffix(data.height));
+    var updateStyles = function (elm, cssText) {
+      delete elm.dataset.mceStyle;
+      elm.style.cssText += ';' + cssText;
     };
-    var updateAdvancedProps = function (modifiers, data) {
-      modifiers.setStyle('background-color', data.backgroundcolor);
-      modifiers.setStyle('border-color', data.bordercolor);
-      modifiers.setStyle('border-style', data.borderstyle);
-    };
-    var applyToSingle = function (editor, cells, data) {
+    var extractDataFromElement = function (editor, elm) {
       var dom = editor.dom;
-      var cellElm = data.celltype && cells[0].nodeName.toLowerCase() !== data.celltype ? dom.rename(cells[0], data.celltype) : cells[0];
-      var modifiers = DomModifiers.normal(dom, cellElm);
-      updateSimpleProps(modifiers, data);
+      var data = {
+        width: dom.getStyle(elm, 'width') || dom.getAttrib(elm, 'width'),
+        height: dom.getStyle(elm, 'height') || dom.getAttrib(elm, 'height'),
+        scope: dom.getAttrib(elm, 'scope'),
+        class: dom.getAttrib(elm, 'class'),
+        type: elm.nodeName.toLowerCase(),
+        style: '',
+        align: '',
+        valign: ''
+      };
+      global$1.each('left center right'.split(' '), function (name) {
+        if (editor.formatter.matchNode(elm, 'align' + name)) {
+          data.align = name;
+        }
+      });
+      global$1.each('top middle bottom'.split(' '), function (name) {
+        if (editor.formatter.matchNode(elm, 'valign' + name)) {
+          data.valign = name;
+        }
+      });
       if (hasAdvancedCellTab(editor)) {
-        updateAdvancedProps(modifiers, data);
+        global$1.extend(data, Helpers.extractAdvancedStyles(dom, elm));
       }
-      Styles$1.unApplyAlign(editor, cellElm);
-      Styles$1.unApplyVAlign(editor, cellElm);
-      if (data.halign) {
-        Styles$1.applyAlign(editor, cellElm, data.halign);
-      }
-      if (data.valign) {
-        Styles$1.applyVAlign(editor, cellElm, data.valign);
-      }
+      return data;
     };
-    var applyToMultiple = function (editor, cells, data) {
+    var onSubmitCellForm = function (editor, cells, evt) {
       var dom = editor.dom;
-      global$1.each(cells, function (cellElm) {
-        if (data.celltype && cellElm.nodeName.toLowerCase() !== data.celltype) {
-          cellElm = dom.rename(cellElm, data.celltype);
+      var data;
+      function setAttrib(elm, name, value) {
+        if (cells.length === 1 || value) {
+          dom.setAttrib(elm, name, value);
         }
-        var modifiers = DomModifiers.ifTruthy(dom, cellElm);
-        updateSimpleProps(modifiers, data);
-        if (hasAdvancedCellTab(editor)) {
-          updateAdvancedProps(modifiers, data);
+      }
+      function setStyle(elm, name, value) {
+        if (cells.length === 1 || value) {
+          dom.setStyle(elm, name, value);
         }
-        if (data.halign) {
-          Styles$1.applyAlign(editor, cellElm, data.halign);
-        }
-        if (data.valign) {
-          Styles$1.applyVAlign(editor, cellElm, data.valign);
-        }
-      });
-    };
-    var onSubmitCellForm = function (editor, cells, api) {
-      var data = api.getData();
-      api.close();
+      }
+      if (hasAdvancedCellTab(editor)) {
+        Helpers.syncAdvancedStyleFields(editor, evt);
+      }
+      data = evt.control.rootControl.toJSON();
       editor.undoManager.transact(function () {
-        var applicator = cells.length === 1 ? applyToSingle : applyToMultiple;
-        applicator(editor, cells, data);
+        global$1.each(cells, function (cellElm) {
+          setAttrib(cellElm, 'scope', data.scope);
+          if (cells.length === 1) {
+            setAttrib(cellElm, 'style', data.style);
+          } else {
+            updateStyles(cellElm, data.style);
+          }
+          setAttrib(cellElm, 'class', data.class);
+          setStyle(cellElm, 'width', addSizeSuffix(data.width));
+          setStyle(cellElm, 'height', addSizeSuffix(data.height));
+          if (data.type && cellElm.nodeName.toLowerCase() !== data.type) {
+            cellElm = dom.rename(cellElm, data.type);
+          }
+          if (cells.length === 1) {
+            Styles$1.unApplyAlign(editor, cellElm);
+            Styles$1.unApplyVAlign(editor, cellElm);
+          }
+          if (data.align) {
+            Styles$1.applyAlign(editor, cellElm, data.align);
+          }
+          if (data.valign) {
+            Styles$1.applyVAlign(editor, cellElm, data.valign);
+          }
+        });
         editor.focus();
       });
     };
     var open = function (editor) {
-      var cellElm, cells = [];
+      var cellElm, data, classListCtrl, cells = [];
       cells = editor.dom.select('td[data-mce-selected],th[data-mce-selected]');
       cellElm = editor.dom.getParent(editor.selection.getStart(), 'td,th');
       if (!cells.length && cellElm) {
@@ -5795,131 +5582,216 @@ var table = (function (domGlobals) {
       if (!cellElm) {
         return;
       }
-      var cellsData = global$1.map(cells, function (cellElm) {
-        return Helpers.extractDataFromCellElement(editor, cellElm, hasAdvancedCellTab(editor));
-      });
-      var data = Helpers.getSharedValues(cellsData);
-      var dialogTabPanel = {
-        type: 'tabpanel',
-        tabs: [
+      if (cells.length > 1) {
+        data = {
+          width: '',
+          height: '',
+          scope: '',
+          class: '',
+          align: '',
+          valign: '',
+          style: '',
+          type: cellElm.nodeName.toLowerCase()
+        };
+      } else {
+        data = extractDataFromElement(editor, cellElm);
+      }
+      if (getCellClassList(editor).length > 0) {
+        classListCtrl = {
+          name: 'class',
+          type: 'listbox',
+          label: 'Class',
+          values: Helpers.buildListItems(getCellClassList(editor), function (item) {
+            if (item.value) {
+              item.textStyle = function () {
+                return editor.formatter.getCssText({
+                  block: 'td',
+                  classes: [item.value]
+                });
+              };
+            }
+          })
+        };
+      }
+      var generalCellForm = {
+        type: 'form',
+        layout: 'flex',
+        direction: 'column',
+        labelGapCalc: 'children',
+        padding: 0,
+        items: [
           {
-            title: 'General',
-            items: CellDialogGeneralTab.items(editor)
+            type: 'form',
+            layout: 'grid',
+            columns: 2,
+            labelGapCalc: false,
+            padding: 0,
+            defaults: {
+              type: 'textbox',
+              maxWidth: 50
+            },
+            items: [
+              {
+                label: 'Width',
+                name: 'width',
+                onchange: curry(Helpers.updateStyleField, editor)
+              },
+              {
+                label: 'Height',
+                name: 'height',
+                onchange: curry(Helpers.updateStyleField, editor)
+              },
+              {
+                label: 'Cell type',
+                name: 'type',
+                type: 'listbox',
+                text: 'None',
+                minWidth: 90,
+                maxWidth: null,
+                values: [
+                  {
+                    text: 'Cell',
+                    value: 'td'
+                  },
+                  {
+                    text: 'Header cell',
+                    value: 'th'
+                  }
+                ]
+              },
+              {
+                label: 'Scope',
+                name: 'scope',
+                type: 'listbox',
+                text: 'None',
+                minWidth: 90,
+                maxWidth: null,
+                values: [
+                  {
+                    text: 'None',
+                    value: ''
+                  },
+                  {
+                    text: 'Row',
+                    value: 'row'
+                  },
+                  {
+                    text: 'Column',
+                    value: 'col'
+                  },
+                  {
+                    text: 'Row group',
+                    value: 'rowgroup'
+                  },
+                  {
+                    text: 'Column group',
+                    value: 'colgroup'
+                  }
+                ]
+              },
+              {
+                label: 'H Align',
+                name: 'align',
+                type: 'listbox',
+                text: 'None',
+                minWidth: 90,
+                maxWidth: null,
+                values: [
+                  {
+                    text: 'None',
+                    value: ''
+                  },
+                  {
+                    text: 'Left',
+                    value: 'left'
+                  },
+                  {
+                    text: 'Center',
+                    value: 'center'
+                  },
+                  {
+                    text: 'Right',
+                    value: 'right'
+                  }
+                ]
+              },
+              {
+                label: 'V Align',
+                name: 'valign',
+                type: 'listbox',
+                text: 'None',
+                minWidth: 90,
+                maxWidth: null,
+                values: [
+                  {
+                    text: 'None',
+                    value: ''
+                  },
+                  {
+                    text: 'Top',
+                    value: 'top'
+                  },
+                  {
+                    text: 'Middle',
+                    value: 'middle'
+                  },
+                  {
+                    text: 'Bottom',
+                    value: 'bottom'
+                  }
+                ]
+              }
+            ]
           },
-          Helpers.getAdvancedTab()
+          classListCtrl
         ]
       };
-      var dialogPanel = {
-        type: 'panel',
-        items: [{
-            type: 'grid',
-            columns: 2,
-            items: CellDialogGeneralTab.items(editor)
-          }]
-      };
-      editor.windowManager.open({
-        title: 'Cell Properties',
-        size: 'normal',
-        body: hasAdvancedCellTab(editor) ? dialogTabPanel : dialogPanel,
-        buttons: [
-          {
-            type: 'cancel',
-            name: 'cancel',
-            text: 'Cancel'
-          },
-          {
-            type: 'submit',
-            name: 'save',
-            text: 'Save',
-            primary: true
-          }
-        ],
-        initialData: data,
-        onSubmit: curry(onSubmitCellForm, editor, cells)
-      });
+      if (hasAdvancedCellTab(editor)) {
+        editor.windowManager.open({
+          title: 'Cell properties',
+          bodyType: 'tabpanel',
+          data: data,
+          body: [
+            {
+              title: 'General',
+              type: 'form',
+              items: generalCellForm
+            },
+            Helpers.createStyleForm(editor)
+          ],
+          onsubmit: curry(onSubmitCellForm, editor, cells)
+        });
+      } else {
+        editor.windowManager.open({
+          title: 'Cell properties',
+          data: data,
+          body: generalCellForm,
+          onsubmit: curry(onSubmitCellForm, editor, cells)
+        });
+      }
     };
     var CellDialog = { open: open };
 
-    var getClassList$1 = function (editor) {
-      var rowClassList = getRowClassList(editor);
-      var classes = Helpers.buildListItems(rowClassList, function (item) {
-        if (item.value) {
-          item.textStyle = function () {
-            return editor.formatter.getCssText({
-              block: 'tr',
-              classes: [item.value]
-            });
-          };
+    var extractDataFromElement$1 = function (editor, elm) {
+      var dom = editor.dom;
+      var data = {
+        height: dom.getStyle(elm, 'height') || dom.getAttrib(elm, 'height'),
+        scope: dom.getAttrib(elm, 'scope'),
+        class: dom.getAttrib(elm, 'class'),
+        align: '',
+        style: '',
+        type: elm.parentNode.nodeName.toLowerCase()
+      };
+      global$1.each('left center right'.split(' '), function (name) {
+        if (editor.formatter.matchNode(elm, 'align' + name)) {
+          data.align = name;
         }
       });
-      if (rowClassList.length > 0) {
-        return Option.some({
-          name: 'class',
-          type: 'selectbox',
-          label: 'Class',
-          items: classes
-        });
+      if (hasAdvancedRowTab(editor)) {
+        global$1.extend(data, Helpers.extractAdvancedStyles(dom, elm));
       }
-      return Option.none();
+      return data;
     };
-    var formChildren = [
-      {
-        type: 'selectbox',
-        name: 'type',
-        label: 'Row type',
-        items: [
-          {
-            text: 'Header',
-            value: 'thead'
-          },
-          {
-            text: 'Body',
-            value: 'tbody'
-          },
-          {
-            text: 'Footer',
-            value: 'tfoot'
-          }
-        ]
-      },
-      {
-        type: 'selectbox',
-        name: 'align',
-        label: 'Alignment',
-        items: [
-          {
-            text: 'None',
-            value: ''
-          },
-          {
-            text: 'Left',
-            value: 'left'
-          },
-          {
-            text: 'Center',
-            value: 'center'
-          },
-          {
-            text: 'Right',
-            value: 'right'
-          }
-        ]
-      },
-      {
-        label: 'Height',
-        name: 'height',
-        type: 'input'
-      }
-    ];
-    var items$1 = function (editor) {
-      return getClassList$1(editor).fold(function () {
-        return formChildren;
-      }, function (classes) {
-        return formChildren.concat(classes);
-      });
-    };
-    var RowDialogGeneralTab = { items: items$1 };
-
     var switchRowType = function (dom, rowElm, toType) {
       var tableElm = dom.getParent(rowElm, 'table');
       var oldParentElm = rowElm.parentNode;
@@ -5941,27 +5813,30 @@ var table = (function (domGlobals) {
         dom.remove(oldParentElm);
       }
     };
-    var updateAdvancedProps$1 = function (modifiers, data) {
-      modifiers.setStyle('background-color', data.backgroundcolor);
-      modifiers.setStyle('border-color', data.bordercolor);
-      modifiers.setStyle('border-style', data.borderstyle);
-    };
-    var onSubmitRowForm = function (editor, rows, oldData, api) {
+    function onSubmitRowForm(editor, rows, oldData, evt) {
       var dom = editor.dom;
-      var data = api.getData();
-      api.close();
-      var createModifier = rows.length === 1 ? DomModifiers.normal : DomModifiers.ifTruthy;
+      function setAttrib(elm, name, value) {
+        if (rows.length === 1 || value) {
+          dom.setAttrib(elm, name, value);
+        }
+      }
+      function setStyle(elm, name, value) {
+        if (rows.length === 1 || value) {
+          dom.setStyle(elm, name, value);
+        }
+      }
+      if (hasAdvancedRowTab(editor)) {
+        Helpers.syncAdvancedStyleFields(editor, evt);
+      }
+      var data = evt.control.rootControl.toJSON();
       editor.undoManager.transact(function () {
         global$1.each(rows, function (rowElm) {
+          setAttrib(rowElm, 'scope', data.scope);
+          setAttrib(rowElm, 'style', data.style);
+          setAttrib(rowElm, 'class', data.class);
+          setStyle(rowElm, 'height', addSizeSuffix(data.height));
           if (data.type !== rowElm.parentNode.nodeName.toLowerCase()) {
             switchRowType(editor.dom, rowElm, data.type);
-          }
-          var modifiers = createModifier(dom, rowElm);
-          modifiers.setAttrib('scope', data.scope);
-          modifiers.setAttrib('class', data.class);
-          modifiers.setStyle('height', addSizeSuffix(data.height));
-          if (hasAdvancedRowTab(editor)) {
-            updateAdvancedProps$1(modifiers, data);
           }
           if (data.align !== oldData.align) {
             Styles$1.unApplyAlign(editor, rowElm);
@@ -5970,19 +5845,17 @@ var table = (function (domGlobals) {
         });
         editor.focus();
       });
-    };
+    }
     var open$1 = function (editor) {
       var dom = editor.dom;
-      var tableElm, cellElm, rowElm;
+      var tableElm, cellElm, rowElm, classListCtrl, data;
       var rows = [];
+      var generalRowForm;
       tableElm = dom.getParent(editor.selection.getStart(), 'table');
-      if (!tableElm) {
-        return;
-      }
       cellElm = dom.getParent(editor.selection.getStart(), 'td,th');
       global$1.each(tableElm.rows, function (row) {
         global$1.each(row.cells, function (cell) {
-          if ((dom.getAttrib(cell, 'data-mce-selected') || cell === cellElm) && rows.indexOf(row) < 0) {
+          if (dom.getAttrib(cell, 'data-mce-selected') || cell === cellElm) {
             rows.push(row);
             return false;
           }
@@ -5992,48 +5865,117 @@ var table = (function (domGlobals) {
       if (!rowElm) {
         return;
       }
-      var rowsData = global$1.map(rows, function (rowElm) {
-        return Helpers.extractDataFromRowElement(editor, rowElm, hasAdvancedRowTab(editor));
-      });
-      var data = Helpers.getSharedValues(rowsData);
-      var dialogTabPanel = {
-        type: 'tabpanel',
-        tabs: [
+      if (rows.length > 1) {
+        data = {
+          height: '',
+          scope: '',
+          style: '',
+          class: '',
+          align: '',
+          type: rowElm.parentNode.nodeName.toLowerCase()
+        };
+      } else {
+        data = extractDataFromElement$1(editor, rowElm);
+      }
+      if (getRowClassList(editor).length > 0) {
+        classListCtrl = {
+          name: 'class',
+          type: 'listbox',
+          label: 'Class',
+          values: Helpers.buildListItems(getRowClassList(editor), function (item) {
+            if (item.value) {
+              item.textStyle = function () {
+                return editor.formatter.getCssText({
+                  block: 'tr',
+                  classes: [item.value]
+                });
+              };
+            }
+          })
+        };
+      }
+      generalRowForm = {
+        type: 'form',
+        columns: 2,
+        padding: 0,
+        defaults: { type: 'textbox' },
+        items: [
           {
-            title: 'General',
-            items: RowDialogGeneralTab.items(editor)
+            type: 'listbox',
+            name: 'type',
+            label: 'Row type',
+            text: 'Header',
+            maxWidth: null,
+            values: [
+              {
+                text: 'Header',
+                value: 'thead'
+              },
+              {
+                text: 'Body',
+                value: 'tbody'
+              },
+              {
+                text: 'Footer',
+                value: 'tfoot'
+              }
+            ]
           },
-          Helpers.getAdvancedTab()
+          {
+            type: 'listbox',
+            name: 'align',
+            label: 'Alignment',
+            text: 'None',
+            maxWidth: null,
+            values: [
+              {
+                text: 'None',
+                value: ''
+              },
+              {
+                text: 'Left',
+                value: 'left'
+              },
+              {
+                text: 'Center',
+                value: 'center'
+              },
+              {
+                text: 'Right',
+                value: 'right'
+              }
+            ]
+          },
+          {
+            label: 'Height',
+            name: 'height'
+          },
+          classListCtrl
         ]
       };
-      var dialogPanel = {
-        type: 'panel',
-        items: [{
-            type: 'grid',
-            columns: 2,
-            items: RowDialogGeneralTab.items(editor)
-          }]
-      };
-      editor.windowManager.open({
-        title: 'Row Properties',
-        size: 'normal',
-        body: hasAdvancedRowTab(editor) ? dialogTabPanel : dialogPanel,
-        buttons: [
-          {
-            type: 'cancel',
-            name: 'cancel',
-            text: 'Cancel'
-          },
-          {
-            type: 'submit',
-            name: 'save',
-            text: 'Save',
-            primary: true
-          }
-        ],
-        initialData: data,
-        onSubmit: curry(onSubmitRowForm, editor, rows, data)
-      });
+      if (hasAdvancedRowTab(editor)) {
+        editor.windowManager.open({
+          title: 'Row properties',
+          data: data,
+          bodyType: 'tabpanel',
+          body: [
+            {
+              title: 'General',
+              type: 'form',
+              items: generalRowForm
+            },
+            Helpers.createStyleForm(editor)
+          ],
+          onsubmit: curry(onSubmitRowForm, editor, rows, data)
+        });
+      } else {
+        editor.windowManager.open({
+          title: 'Row properties',
+          data: data,
+          body: generalRowForm,
+          onsubmit: curry(onSubmitRowForm, editor, rows, data)
+        });
+      }
     };
     var RowDialog = { open: open$1 };
 
@@ -6094,14 +6036,14 @@ var table = (function (domGlobals) {
       return table;
     };
 
-    var get$9 = function (element) {
+    var get$8 = function (element) {
       return element.dom().innerHTML;
     };
     var getOuter$2 = function (element) {
       var container = Element.fromTag('div');
       var clone = Element.fromDom(element.dom().cloneNode(true));
       append(container, clone);
-      return get$9(container);
+      return get$8(container);
     };
 
     var placeCaretInCell = function (editor, cell) {
@@ -6135,7 +6077,7 @@ var table = (function (domGlobals) {
       editor.insertContent(html);
       return descendant$1(getBody$1(editor), 'table[data-mce-id="__mce"]').map(function (table) {
         if (isPixelsForced(editor)) {
-          set$1(table, 'width', get$2(table, 'width'));
+          set$1(table, 'width', get$1(table, 'width'));
         }
         remove(table, 'data-mce-id');
         fireEvents(editor, table);
@@ -6145,7 +6087,7 @@ var table = (function (domGlobals) {
     };
     var InsertTable = { insert: insert$1 };
 
-    var styleTDTH = function (dom, elm, name, value) {
+    function styleTDTH(dom, elm, name, value) {
       if (elm.tagName === 'TD' || elm.tagName === 'TH') {
         dom.setStyle(elm, name, value);
       } else {
@@ -6155,6 +6097,28 @@ var table = (function (domGlobals) {
           }
         }
       }
+    }
+    var extractDataFromElement$2 = function (editor, tableElm) {
+      var dom = editor.dom;
+      var data = {
+        width: dom.getStyle(tableElm, 'width') || dom.getAttrib(tableElm, 'width'),
+        height: dom.getStyle(tableElm, 'height') || dom.getAttrib(tableElm, 'height'),
+        cellspacing: dom.getStyle(tableElm, 'border-spacing') || dom.getAttrib(tableElm, 'cellspacing'),
+        cellpadding: dom.getAttrib(tableElm, 'data-mce-cell-padding') || dom.getAttrib(tableElm, 'cellpadding') || Styles$1.getTDTHOverallStyle(editor.dom, tableElm, 'padding'),
+        border: dom.getAttrib(tableElm, 'data-mce-border') || dom.getAttrib(tableElm, 'border') || Styles$1.getTDTHOverallStyle(editor.dom, tableElm, 'border'),
+        borderColor: dom.getAttrib(tableElm, 'data-mce-border-color'),
+        caption: !!dom.select('caption', tableElm)[0],
+        class: dom.getAttrib(tableElm, 'class')
+      };
+      global$1.each('left center right'.split(' '), function (name) {
+        if (editor.formatter.matchNode(tableElm, 'align' + name)) {
+          data.align = name;
+        }
+      });
+      if (hasAdvancedTableTab(editor)) {
+        global$1.extend(data, Helpers.extractAdvancedStyles(dom, tableElm));
+      }
+      return data;
     };
     var applyDataToElement = function (editor, tableElm, data) {
       var dom = editor.dom;
@@ -6170,43 +6134,51 @@ var table = (function (domGlobals) {
       if (shouldStyleWithCss(editor)) {
         styles['border-width'] = addSizeSuffix(data.border);
         styles['border-spacing'] = addSizeSuffix(data.cellspacing);
+        global$1.extend(attrs, {
+          'data-mce-border-color': data.borderColor,
+          'data-mce-cell-padding': data.cellpadding,
+          'data-mce-border': data.border
+        });
       } else {
-        attrs.border = data.border;
-        attrs.cellpadding = data.cellpadding;
-        attrs.cellspacing = data.cellspacing;
+        global$1.extend(attrs, {
+          border: data.border,
+          cellpadding: data.cellpadding,
+          cellspacing: data.cellspacing
+        });
       }
-      if (shouldStyleWithCss(editor) && tableElm.children) {
-        for (var i = 0; i < tableElm.children.length; i++) {
-          styleTDTH(dom, tableElm.children[i], {
-            'border-width': addSizeSuffix(data.border),
-            'padding': addSizeSuffix(data.cellpadding)
-          });
-          if (hasAdvancedTableTab(editor)) {
-            styleTDTH(dom, tableElm.children[i], { 'border-color': data.bordercolor });
+      if (shouldStyleWithCss(editor)) {
+        if (tableElm.children) {
+          for (var i = 0; i < tableElm.children.length; i++) {
+            styleTDTH(dom, tableElm.children[i], {
+              'border-width': addSizeSuffix(data.border),
+              'border-color': data.borderColor,
+              'padding': addSizeSuffix(data.cellpadding)
+            });
           }
         }
       }
-      if (hasAdvancedTableTab(editor)) {
-        styles['background-color'] = data.backgroundcolor;
-        styles['border-color'] = data.bordercolor;
-        styles['border-style'] = data.borderstyle;
+      if (data.style) {
+        global$1.extend(styles, dom.parseStyle(data.style));
+      } else {
+        styles = global$1.extend({}, dom.parseStyle(dom.getAttrib(tableElm, 'style')), styles);
       }
-      attrs.style = dom.serializeStyle(merge(getDefaultStyles(editor), styles));
-      dom.setAttribs(tableElm, merge(getDefaultAttributes(editor), attrs));
+      attrs.style = dom.serializeStyle(styles);
+      dom.setAttribs(tableElm, attrs);
     };
-    var onSubmitTableForm = function (editor, tableElm, api) {
+    var onSubmitTableForm = function (editor, tableElm, evt) {
       var dom = editor.dom;
       var captionElm;
-      var data = api.getData();
-      api.close();
-      if (data.class === '') {
+      var data;
+      if (hasAdvancedTableTab(editor)) {
+        Helpers.syncAdvancedStyleFields(editor, evt);
+      }
+      data = evt.control.rootControl.toJSON();
+      if (data.class === false) {
         delete data.class;
       }
       editor.undoManager.transact(function () {
         if (!tableElm) {
-          var cols = parseInt(data.cols, 10) || 1;
-          var rows = parseInt(data.rows, 10) || 1;
-          tableElm = InsertTable.insert(editor, cols, rows);
+          tableElm = InsertTable.insert(editor, data.cols || 1, data.rows || 1);
         }
         applyDataToElement(editor, tableElm, data);
         captionElm = dom.select('caption', tableElm)[0];
@@ -6218,123 +6190,41 @@ var table = (function (domGlobals) {
           captionElm.innerHTML = !global$2.ie ? '<br data-mce-bogus="1"/>' : '\xA0';
           tableElm.insertBefore(captionElm, tableElm.firstChild);
         }
-        if (data.align === '') {
-          Styles$1.unApplyAlign(editor, tableElm);
-        } else {
+        Styles$1.unApplyAlign(editor, tableElm);
+        if (data.align) {
           Styles$1.applyAlign(editor, tableElm, data.align);
         }
         editor.focus();
         editor.addVisual();
       });
     };
-    var open$2 = function (editor, isNew) {
+    var open$2 = function (editor, isProps) {
       var dom = editor.dom;
-      var tableElm;
-      var data = Helpers.extractDataFromSettings(editor, hasAdvancedTableTab(editor));
-      if (isNew === false) {
+      var tableElm, colsCtrl, rowsCtrl, classListCtrl, data = {}, generalTableForm;
+      if (isProps === true) {
         tableElm = dom.getParent(editor.selection.getStart(), 'table');
         if (tableElm) {
-          data = Helpers.extractDataFromTableElement(editor, tableElm, hasAdvancedTableTab(editor));
-        } else {
-          if (hasAdvancedTableTab(editor)) {
-            data.borderstyle = '';
-            data.bordercolor = '';
-            data.backgroundcolor = '';
-          }
+          data = extractDataFromElement$2(editor, tableElm);
         }
       } else {
-        data.cols = '1';
-        data.rows = '1';
-        if (hasAdvancedTableTab(editor)) {
-          data.borderstyle = '';
-          data.bordercolor = '';
-          data.backgroundcolor = '';
-        }
+        colsCtrl = {
+          label: 'Cols',
+          name: 'cols'
+        };
+        rowsCtrl = {
+          label: 'Rows',
+          name: 'rows'
+        };
       }
-      var hasClasses = getTableClassList(editor).length > 0;
-      if (hasClasses) {
+      if (getTableClassList(editor).length > 0) {
         if (data.class) {
           data.class = data.class.replace(/\s*mce\-item\-table\s*/g, '');
         }
-      }
-      var rowColCountItems = !isNew ? [] : [
-        {
-          type: 'input',
-          name: 'cols',
-          label: 'Cols'
-        },
-        {
-          type: 'input',
-          name: 'rows',
-          label: 'Rows'
-        }
-      ];
-      var alwaysItems = [
-        {
-          type: 'input',
-          name: 'width',
-          label: 'Width'
-        },
-        {
-          type: 'input',
-          name: 'height',
-          label: 'Height'
-        }
-      ];
-      var appearanceItems = hasAppearanceOptions(editor) ? [
-        {
-          type: 'input',
-          name: 'cellspacing',
-          label: 'Cell spacing'
-        },
-        {
-          type: 'input',
-          name: 'cellpadding',
-          label: 'Cell padding'
-        },
-        {
-          type: 'input',
-          name: 'border',
-          label: 'Border width'
-        },
-        {
-          type: 'label',
-          label: 'Caption',
-          items: [{
-              type: 'checkbox',
-              name: 'caption',
-              label: 'Show caption'
-            }]
-        }
-      ] : [];
-      var alignmentItem = [{
-          type: 'selectbox',
-          name: 'align',
-          label: 'Alignment',
-          items: [
-            {
-              text: 'None',
-              value: ''
-            },
-            {
-              text: 'Left',
-              value: 'left'
-            },
-            {
-              text: 'Center',
-              value: 'center'
-            },
-            {
-              text: 'Right',
-              value: 'right'
-            }
-          ]
-        }];
-      var classListItem = hasClasses ? [{
-          type: 'selectbox',
+        classListCtrl = {
           name: 'class',
+          type: 'listbox',
           label: 'Class',
-          items: Helpers.buildListItems(getTableClassList(editor), function (item) {
+          values: Helpers.buildListItems(getTableClassList(editor), function (item) {
             if (item.value) {
               item.textStyle = function () {
                 return editor.formatter.getCssText({
@@ -6344,82 +6234,147 @@ var table = (function (domGlobals) {
               };
             }
           })
-        }] : [];
-      var generalTabItems = rowColCountItems.concat(alwaysItems).concat(appearanceItems).concat(alignmentItem).concat(classListItem);
-      var generalPanel = {
-        type: 'grid',
-        columns: 2,
-        items: generalTabItems
-      };
-      var nonAdvancedForm = {
-        type: 'panel',
-        items: [generalPanel]
-      };
-      var advancedForm = {
-        type: 'tabpanel',
-        tabs: [
+        };
+      }
+      generalTableForm = {
+        type: 'form',
+        layout: 'flex',
+        direction: 'column',
+        labelGapCalc: 'children',
+        padding: 0,
+        items: [
           {
-            title: 'General',
-            items: [generalPanel]
+            type: 'form',
+            labelGapCalc: false,
+            padding: 0,
+            layout: 'grid',
+            columns: 2,
+            defaults: {
+              type: 'textbox',
+              maxWidth: 50
+            },
+            items: hasAppearanceOptions(editor) ? [
+              colsCtrl,
+              rowsCtrl,
+              {
+                label: 'Width',
+                name: 'width',
+                onchange: curry(Helpers.updateStyleField, editor)
+              },
+              {
+                label: 'Height',
+                name: 'height',
+                onchange: curry(Helpers.updateStyleField, editor)
+              },
+              {
+                label: 'Cell spacing',
+                name: 'cellspacing'
+              },
+              {
+                label: 'Cell padding',
+                name: 'cellpadding'
+              },
+              {
+                label: 'Border',
+                name: 'border'
+              },
+              {
+                label: 'Caption',
+                name: 'caption',
+                type: 'checkbox'
+              }
+            ] : [
+              colsCtrl,
+              rowsCtrl,
+              {
+                label: 'Width',
+                name: 'width',
+                onchange: curry(Helpers.updateStyleField, editor)
+              },
+              {
+                label: 'Height',
+                name: 'height',
+                onchange: curry(Helpers.updateStyleField, editor)
+              }
+            ]
           },
-          Helpers.getAdvancedTab()
+          {
+            label: 'Alignment',
+            name: 'align',
+            type: 'listbox',
+            text: 'None',
+            values: [
+              {
+                text: 'None',
+                value: ''
+              },
+              {
+                text: 'Left',
+                value: 'left'
+              },
+              {
+                text: 'Center',
+                value: 'center'
+              },
+              {
+                text: 'Right',
+                value: 'right'
+              }
+            ]
+          },
+          classListCtrl
         ]
       };
-      var dialogBody = hasAdvancedTableTab(editor) ? advancedForm : nonAdvancedForm;
-      editor.windowManager.open({
-        title: 'Table Properties',
-        size: 'normal',
-        body: dialogBody,
-        onSubmit: curry(onSubmitTableForm, editor, tableElm),
-        buttons: [
-          {
-            type: 'cancel',
-            name: 'cancel',
-            text: 'Cancel'
-          },
-          {
-            type: 'submit',
-            name: 'save',
-            text: 'Save',
-            primary: true
-          }
-        ],
-        initialData: data
-      });
+      if (hasAdvancedTableTab(editor)) {
+        editor.windowManager.open({
+          title: 'Table properties',
+          data: data,
+          bodyType: 'tabpanel',
+          body: [
+            {
+              title: 'General',
+              type: 'form',
+              items: generalTableForm
+            },
+            Helpers.createStyleForm(editor)
+          ],
+          onsubmit: curry(onSubmitTableForm, editor, tableElm)
+        });
+      } else {
+        editor.windowManager.open({
+          title: 'Table properties',
+          data: data,
+          body: generalTableForm,
+          onsubmit: curry(onSubmitTableForm, editor, tableElm)
+        });
+      }
     };
     var TableDialog = { open: open$2 };
-
-    var getSelectionStartFromSelector = function (selector) {
-      return function (editor) {
-        return Option.from(editor.dom.getParent(editor.selection.getStart(), selector)).map(Element.fromDom);
-      };
-    };
-    var getSelectionStartCell = getSelectionStartFromSelector('th,td');
-    var getSelectionStartCellOrCaption = getSelectionStartFromSelector('th,td,caption');
 
     var each$3 = global$1.each;
     var registerCommands = function (editor, actions, cellSelection, selections, clipboardRows) {
       var isRoot = getIsRoot(editor);
       var eraseTable = function () {
-        getSelectionStartCellOrCaption(editor).each(function (cellOrCaption) {
-          var tableOpt = TableLookup.table(cellOrCaption, isRoot);
-          tableOpt.filter(not(isRoot)).each(function (table) {
+        getSelectionStartCell().orThunk(getSelectionStartCaption).each(function (cellOrCaption) {
+          var table = TableLookup.table(cellOrCaption, isRoot);
+          table.filter(not(isRoot)).each(function (table) {
             var cursor = Element.fromText('');
             after(table, cursor);
             remove$2(table);
-            if (editor.dom.isEmpty(editor.getBody())) {
-              editor.setContent('');
-              editor.selection.setCursorLocation();
-            } else {
-              var rng = editor.dom.createRng();
-              rng.setStart(cursor.dom(), 0);
-              rng.setEnd(cursor.dom(), 0);
-              editor.selection.setRng(rng);
-              editor.nodeChanged();
-            }
+            var rng = editor.dom.createRng();
+            rng.setStart(cursor.dom(), 0);
+            rng.setEnd(cursor.dom(), 0);
+            editor.selection.setRng(rng);
           });
         });
       };
+      var getSelectionStartFromSelector = function (selector) {
+        return function () {
+          return Option.from(editor.dom.getParent(editor.selection.getStart(), selector)).map(Element.fromDom);
+        };
+      };
+      var getSelectionStartCaption = getSelectionStartFromSelector('caption');
+      var getSelectionStartCell = getSelectionStartFromSelector('th,td');
       var getTableFromCell = function (cell) {
         return TableLookup.table(cell, isRoot);
       };
@@ -6437,7 +6392,7 @@ var table = (function (domGlobals) {
         }
       };
       var actOnSelection = function (execute) {
-        getSelectionStartCell(editor).each(function (cell) {
+        getSelectionStartCell().each(function (cell) {
           getTableFromCell(cell).each(function (table) {
             var targets = TableTargets.forMenu(selections, table, cell);
             var beforeSize = getSize(table);
@@ -6452,7 +6407,7 @@ var table = (function (domGlobals) {
         });
       };
       var copyRowSelection = function (execute) {
-        return getSelectionStartCell(editor).map(function (cell) {
+        return getSelectionStartCell().bind(function (cell) {
           return getTableFromCell(cell).bind(function (table) {
             var doc = Element.fromDom(editor.getDoc());
             var targets = TableTargets.forMenu(selections, table, cell);
@@ -6466,7 +6421,7 @@ var table = (function (domGlobals) {
           var clonedRows = map(rows, function (row) {
             return deep(row);
           });
-          getSelectionStartCell(editor).each(function (cell) {
+          getSelectionStartCell().each(function (cell) {
             getTableFromCell(cell).each(function (table) {
               var doc = Element.fromDom(editor.getDoc());
               var generators = TableFill.paste(doc);
@@ -6506,15 +6461,11 @@ var table = (function (domGlobals) {
           actOnSelection(actions.deleteRow);
         },
         mceTableCutRow: function (grid) {
-          copyRowSelection().each(function (selection) {
-            clipboardRows.set(selection);
-            actOnSelection(actions.deleteRow);
-          });
+          clipboardRows.set(copyRowSelection());
+          actOnSelection(actions.deleteRow);
         },
         mceTableCopyRow: function (grid) {
-          copyRowSelection().each(function (selection) {
-            clipboardRows.set(selection);
-          });
+          clipboardRows.set(copyRowSelection());
         },
         mceTablePasteRowBefore: function (grid) {
           pasteOnSelection(actions.pasteRowsBefore);
@@ -6527,8 +6478,8 @@ var table = (function (domGlobals) {
         editor.addCommand(name, func);
       });
       each$3({
-        mceInsertTable: curry(TableDialog.open, editor, true),
-        mceTableProps: curry(TableDialog.open, editor, false),
+        mceInsertTable: curry(TableDialog.open, editor),
+        mceTableProps: curry(TableDialog.open, editor, true),
         mceTableRowProps: curry(RowDialog.open, editor),
         mceTableCellProps: curry(CellDialog.open, editor)
       }, function (func, name) {
@@ -6965,7 +6916,7 @@ var table = (function (domGlobals) {
       var resizing = Dragger.transform(mutation, {});
       var hoverTable = Option.none();
       var getResizer = function (element, type) {
-        return Option.from(get$1(element, type));
+        return Option.from(get(element, type));
       };
       mutation.events.drag.bind(function (event) {
         getResizer(event.target(), 'data-row').each(function (_dataRow) {
@@ -6979,7 +6930,7 @@ var table = (function (domGlobals) {
       });
       var getDelta = function (target, dir) {
         var newX = CellUtils.getInt(target, dir);
-        var oldX = parseInt(get$1(target, 'data-initial-' + dir), 10);
+        var oldX = parseInt(get(target, 'data-initial-' + dir), 10);
         return newX - oldX;
       };
       resizing.events.stop.bind(function () {
@@ -7002,7 +6953,7 @@ var table = (function (domGlobals) {
       var handler = function (target, dir) {
         events.trigger.startAdjust();
         mutation.assign(target);
-        set(target, 'data-initial-' + dir, parseInt(get$2(target, dir), 10));
+        set(target, 'data-initial-' + dir, parseInt(get$1(target, dir), 10));
         add$2(target, resizeBarDragging);
         set$1(target, 'opacity', '0.2');
         resizing.go(wire.parent());
@@ -7107,7 +7058,7 @@ var table = (function (domGlobals) {
       append(body(), container);
       return container;
     };
-    var get$a = function (editor, container) {
+    var get$9 = function (editor, container) {
       return editor.inline ? ResizeWire.body(getBody$1(editor), createContainer()) : ResizeWire.only(Element.fromDom(editor.getDoc()));
     };
     var remove$6 = function (editor, wire) {
@@ -7116,7 +7067,7 @@ var table = (function (domGlobals) {
       }
     };
     var TableWire = {
-      get: get$a,
+      get: get$9,
       remove: remove$6
     };
 
@@ -7341,7 +7292,6 @@ var table = (function (domGlobals) {
       var start = getStart$1(selection);
       return defaultView(start);
     };
-    var domRange = type$2.domRange;
     var relative = type$2.relative;
     var exact = type$2.exact;
 
@@ -7499,8 +7449,6 @@ var table = (function (domGlobals) {
         }
       });
     };
-    var ltr$2 = adt$1.ltr;
-    var rtl$2 = adt$1.rtl;
 
     var searchForPoint = function (rectForOffset, x, y, maxX, length) {
       if (length === 0) {
@@ -7537,7 +7485,7 @@ var table = (function (domGlobals) {
         var r = rangeForOffset(o);
         return r.getBoundingClientRect();
       };
-      var length = get$3(textnode).length;
+      var length = get$2(textnode).length;
       var offset = searchForPoint(rectForOffset, x, y, rect.right, length);
       return rangeForOffset(offset);
     };
@@ -7755,7 +7703,7 @@ var table = (function (domGlobals) {
         return sel.rangeCount > 0;
       }).bind(doGetExact);
     };
-    var get$b = function (win) {
+    var get$a = function (win) {
       return getExact(win).map(function (range) {
         return exact(range.start(), range.soffset(), range.finish(), range.foffset());
       });
@@ -7883,7 +7831,7 @@ var table = (function (domGlobals) {
     };
 
     var isSafari = PlatformDetection$1.detect().browser.isSafari();
-    var get$c = function (_DOC) {
+    var get$b = function (_DOC) {
       var doc = _DOC !== undefined ? _DOC.dom() : domGlobals.document;
       var x = doc.body.scrollLeft || doc.documentElement.scrollLeft;
       var y = doc.body.scrollTop || doc.documentElement.scrollTop;
@@ -7909,7 +7857,7 @@ var table = (function (domGlobals) {
         });
       };
       var getSelection = function () {
-        return get$b(win).map(function (exactAdt) {
+        return get$a(win).map(function (exactAdt) {
           return Util$1.convertToRange(win, exactAdt);
         });
       };
@@ -7941,7 +7889,7 @@ var table = (function (domGlobals) {
         return win.innerHeight;
       };
       var getScrollY = function () {
-        var pos = get$c(Element.fromDom(win.document));
+        var pos = get$b(Element.fromDom(win.document));
         return pos.top();
       };
       var scrollBy = function (x, y) {
@@ -8418,7 +8366,7 @@ var table = (function (domGlobals) {
     };
     var gatherer = function (cand, gather, isRoot) {
       return gather(cand, isRoot).bind(function (target) {
-        return isText(target) && get$3(target).trim().length === 0 ? gatherer(target, gather, isRoot) : Option.some(target);
+        return isText(target) && get$2(target).trim().length === 0 ? gatherer(target, gather, isRoot) : Option.some(target);
       });
     };
     var handleBr = function (isRoot, element, direction) {
@@ -8836,7 +8784,7 @@ var table = (function (domGlobals) {
     };
 
     var hasInternalTarget = function (e) {
-      return has$2(Element.fromDom(e.target), 'ephox-snooker-resizer-bar') === false;
+      return has$1(Element.fromDom(e.target), 'ephox-snooker-resizer-bar') === false;
     };
     function CellSelection$1 (editor, lazyResize) {
       var handlerStruct = MixedBag([
@@ -8996,198 +8944,100 @@ var table = (function (domGlobals) {
       return { get: get };
     };
 
-    var SelectionTargets = function (editor, selections) {
-      var targets = Cell(Option.none());
-      var changeHandlers = Cell([]);
-      var findTargets = function () {
-        return getSelectionStartCellOrCaption(editor).bind(function (cellOrCaption) {
-          var table = TableLookup.table(cellOrCaption);
-          return table.map(function (table) {
-            if (name(cellOrCaption) === 'caption') {
-              return TableTargets.notCell(cellOrCaption);
-            } else {
-              return TableTargets.forMenu(selections, table, cellOrCaption);
-            }
-          });
-        });
-      };
-      var resetTargets = function () {
-        targets.set(cached(findTargets)());
-        each(changeHandlers.get(), function (handler) {
-          return handler();
-        });
-      };
-      var onSetup = function (api, isDisabled) {
-        var handler = function () {
-          return targets.get().fold(function () {
-            api.setDisabled(true);
-          }, function (targets) {
-            api.setDisabled(isDisabled(targets));
-          });
-        };
-        handler();
-        changeHandlers.set(changeHandlers.get().concat([handler]));
-        return function () {
-          changeHandlers.set(filter(changeHandlers.get(), function (h) {
-            return h !== handler;
-          }));
-        };
-      };
-      var onSetupTable = function (api) {
-        return onSetup(api, function (_) {
-          return false;
-        });
-      };
-      var onSetupCellOrRow = function (api) {
-        return onSetup(api, function (targets) {
-          return name(targets.element()) === 'caption';
-        });
-      };
-      var onSetupMergeable = function (api) {
-        return onSetup(api, function (targets) {
-          return targets.mergable().isNone();
-        });
-      };
-      var onSetupUnmergeable = function (api) {
-        return onSetup(api, function (targets) {
-          return targets.unmergable().isNone();
-        });
-      };
-      editor.on('nodechange', resetTargets);
-      return {
-        onSetupTable: onSetupTable,
-        onSetupCellOrRow: onSetupCellOrRow,
-        onSetupMergeable: onSetupMergeable,
-        onSetupUnmergeable: onSetupUnmergeable,
-        resetTargets: resetTargets,
-        targets: function () {
-          return targets.get();
-        }
-      };
-    };
-
-    var addButtons = function (editor, selectionTargets) {
-      editor.ui.registry.addMenuButton('table', {
-        tooltip: 'Table',
-        icon: 'table',
-        fetch: function (callback) {
-          return callback('inserttable tableprops deletetable | cell row column');
+    var each$4 = global$1.each;
+    var addButtons = function (editor) {
+      var menuItems = [];
+      each$4('inserttable tableprops deletetable | cell row column'.split(' '), function (name) {
+        if (name === '|') {
+          menuItems.push({ text: '-' });
+        } else {
+          menuItems.push(editor.menuItems[name]);
         }
       });
-      var cmd = function (command) {
+      editor.addButton('table', {
+        type: 'menubutton',
+        title: 'Table',
+        menu: menuItems
+      });
+      function cmd(command) {
         return function () {
-          return editor.execCommand(command);
+          editor.execCommand(command);
         };
-      };
-      editor.ui.registry.addButton('tableprops', {
-        tooltip: 'Table properties',
-        onAction: cmd('mceTableProps'),
-        icon: 'table',
-        onSetup: selectionTargets.onSetupTable
+      }
+      editor.addButton('tableprops', {
+        title: 'Table properties',
+        onclick: cmd('mceTableProps'),
+        icon: 'table'
       });
-      editor.ui.registry.addButton('tabledelete', {
-        tooltip: 'Delete table',
-        onAction: cmd('mceTableDelete'),
-        icon: 'table-delete-table',
-        onSetup: selectionTargets.onSetupTable
+      editor.addButton('tabledelete', {
+        title: 'Delete table',
+        onclick: cmd('mceTableDelete')
       });
-      editor.ui.registry.addButton('tablecellprops', {
-        tooltip: 'Cell properties',
-        onAction: cmd('mceTableCellProps'),
-        icon: 'table-cell-properties',
-        onSetup: selectionTargets.onSetupCellOrRow
+      editor.addButton('tablecellprops', {
+        title: 'Cell properties',
+        onclick: cmd('mceTableCellProps')
       });
-      editor.ui.registry.addButton('tablemergecells', {
-        tooltip: 'Merge cells',
-        onAction: cmd('mceTableMergeCells'),
-        icon: 'table-merge-cells',
-        onSetup: selectionTargets.onSetupMergeable
+      editor.addButton('tablemergecells', {
+        title: 'Merge cells',
+        onclick: cmd('mceTableMergeCells')
       });
-      editor.ui.registry.addButton('tablesplitcells', {
-        tooltip: 'Split cell',
-        onAction: cmd('mceTableSplitCells'),
-        icon: 'table-split-cells',
-        onSetup: selectionTargets.onSetupUnmergeable
+      editor.addButton('tablesplitcells', {
+        title: 'Split cell',
+        onclick: cmd('mceTableSplitCells')
       });
-      editor.ui.registry.addButton('tableinsertrowbefore', {
-        tooltip: 'Insert row before',
-        onAction: cmd('mceTableInsertRowBefore'),
-        icon: 'table-insert-row-above',
-        onSetup: selectionTargets.onSetupCellOrRow
+      editor.addButton('tableinsertrowbefore', {
+        title: 'Insert row before',
+        onclick: cmd('mceTableInsertRowBefore')
       });
-      editor.ui.registry.addButton('tableinsertrowafter', {
-        tooltip: 'Insert row after',
-        onAction: cmd('mceTableInsertRowAfter'),
-        icon: 'table-insert-row-after',
-        onSetup: selectionTargets.onSetupCellOrRow
+      editor.addButton('tableinsertrowafter', {
+        title: 'Insert row after',
+        onclick: cmd('mceTableInsertRowAfter')
       });
-      editor.ui.registry.addButton('tabledeleterow', {
-        tooltip: 'Delete row',
-        onAction: cmd('mceTableDeleteRow'),
-        icon: 'table-delete-row',
-        onSetup: selectionTargets.onSetupCellOrRow
+      editor.addButton('tabledeleterow', {
+        title: 'Delete row',
+        onclick: cmd('mceTableDeleteRow')
       });
-      editor.ui.registry.addButton('tablerowprops', {
-        tooltip: 'Row properties',
-        onAction: cmd('mceTableRowProps'),
-        icon: 'table-row-properties',
-        onSetup: selectionTargets.onSetupCellOrRow
+      editor.addButton('tablerowprops', {
+        title: 'Row properties',
+        onclick: cmd('mceTableRowProps')
       });
-      editor.ui.registry.addButton('tableinsertcolbefore', {
-        tooltip: 'Insert column before',
-        onAction: cmd('mceTableInsertColBefore'),
-        icon: 'table-insert-column-before',
-        onSetup: selectionTargets.onSetupCellOrRow
+      editor.addButton('tablecutrow', {
+        title: 'Cut row',
+        onclick: cmd('mceTableCutRow')
       });
-      editor.ui.registry.addButton('tableinsertcolafter', {
-        tooltip: 'Insert column after',
-        onAction: cmd('mceTableInsertColAfter'),
-        icon: 'table-insert-column-after',
-        onSetup: selectionTargets.onSetupCellOrRow
+      editor.addButton('tablecopyrow', {
+        title: 'Copy row',
+        onclick: cmd('mceTableCopyRow')
       });
-      editor.ui.registry.addButton('tabledeletecol', {
-        tooltip: 'Delete column',
-        onAction: cmd('mceTableDeleteCol'),
-        icon: 'table-delete-column',
-        onSetup: selectionTargets.onSetupCellOrRow
+      editor.addButton('tablepasterowbefore', {
+        title: 'Paste row before',
+        onclick: cmd('mceTablePasteRowBefore')
       });
-      editor.ui.registry.addButton('tablecutrow', {
-        tooltip: 'Cut row',
-        onAction: cmd('mceTableCutRow'),
-        icon: 'temporary-placeholder',
-        onSetup: selectionTargets.onSetupCellOrRow
+      editor.addButton('tablepasterowafter', {
+        title: 'Paste row after',
+        onclick: cmd('mceTablePasteRowAfter')
       });
-      editor.ui.registry.addButton('tablecopyrow', {
-        tooltip: 'Copy row',
-        onAction: cmd('mceTableCopyRow'),
-        icon: 'temporary-placeholder',
-        onSetup: selectionTargets.onSetupCellOrRow
+      editor.addButton('tableinsertcolbefore', {
+        title: 'Insert column before',
+        onclick: cmd('mceTableInsertColBefore')
       });
-      editor.ui.registry.addButton('tablepasterowbefore', {
-        tooltip: 'Paste row before',
-        onAction: cmd('mceTablePasteRowBefore'),
-        icon: 'temporary-placeholder',
-        onSetup: selectionTargets.onSetupCellOrRow
+      editor.addButton('tableinsertcolafter', {
+        title: 'Insert column after',
+        onclick: cmd('mceTableInsertColAfter')
       });
-      editor.ui.registry.addButton('tablepasterowafter', {
-        tooltip: 'Paste row after',
-        onAction: cmd('mceTablePasteRowAfter'),
-        icon: 'temporary-placeholder',
-        onSetup: selectionTargets.onSetupCellOrRow
+      editor.addButton('tabledeletecol', {
+        title: 'Delete column',
+        onclick: cmd('mceTableDeleteCol')
       });
     };
     var addToolbars = function (editor) {
       var isTable = function (table) {
-        return editor.dom.is(table, 'table') && editor.getBody().contains(table);
+        var selectorMatched = editor.dom.is(table, 'table') && editor.getBody().contains(table);
+        return selectorMatched;
       };
       var toolbar = getToolbar(editor);
       if (toolbar.length > 0) {
-        editor.ui.registry.addContextToolbar('table', {
-          predicate: isTable,
-          items: toolbar,
-          scope: 'node',
-          position: 'node'
-        });
+        editor.addContextToolbar(isTable, toolbar.join(' '));
       }
     };
     var Buttons = {
@@ -9195,187 +9045,292 @@ var table = (function (domGlobals) {
       addToolbars: addToolbars
     };
 
-    var addMenuItems = function (editor, selectionTargets) {
-      var cmd = function (command) {
-        return function () {
-          return editor.execCommand(command);
-        };
+    var addMenuItems = function (editor, selections) {
+      var targets = Option.none();
+      var tableCtrls = [];
+      var cellCtrls = [];
+      var mergeCtrls = [];
+      var unmergeCtrls = [];
+      var noTargetDisable = function (ctrl) {
+        ctrl.disabled(true);
       };
-      var insertTableAction = function (_a) {
-        var numRows = _a.numRows, numColumns = _a.numColumns;
-        editor.undoManager.transact(function () {
-          InsertTable.insert(editor, numColumns, numRows);
+      var ctrlEnable = function (ctrl) {
+        ctrl.disabled(false);
+      };
+      var pushTable = function () {
+        var self = this;
+        tableCtrls.push(self);
+        targets.fold(function () {
+          noTargetDisable(self);
+        }, function (targets) {
+          ctrlEnable(self);
         });
-        editor.addVisual();
       };
+      var pushCell = function () {
+        var self = this;
+        cellCtrls.push(self);
+        targets.fold(function () {
+          noTargetDisable(self);
+        }, function (targets) {
+          ctrlEnable(self);
+        });
+      };
+      var pushMerge = function () {
+        var self = this;
+        mergeCtrls.push(self);
+        targets.fold(function () {
+          noTargetDisable(self);
+        }, function (targets) {
+          self.disabled(targets.mergable().isNone());
+        });
+      };
+      var pushUnmerge = function () {
+        var self = this;
+        unmergeCtrls.push(self);
+        targets.fold(function () {
+          noTargetDisable(self);
+        }, function (targets) {
+          self.disabled(targets.unmergable().isNone());
+        });
+      };
+      var setDisabledCtrls = function () {
+        targets.fold(function () {
+          each(tableCtrls, noTargetDisable);
+          each(cellCtrls, noTargetDisable);
+          each(mergeCtrls, noTargetDisable);
+          each(unmergeCtrls, noTargetDisable);
+        }, function (targets) {
+          each(tableCtrls, ctrlEnable);
+          each(cellCtrls, ctrlEnable);
+          each(mergeCtrls, function (mergeCtrl) {
+            mergeCtrl.disabled(targets.mergable().isNone());
+          });
+          each(unmergeCtrls, function (unmergeCtrl) {
+            unmergeCtrl.disabled(targets.unmergable().isNone());
+          });
+        });
+      };
+      editor.on('init', function () {
+        editor.on('nodechange', function (e) {
+          var cellOpt = Option.from(editor.dom.getParent(editor.selection.getStart(), 'th,td'));
+          targets = cellOpt.bind(function (cellDom) {
+            var cell = Element.fromDom(cellDom);
+            var table = TableLookup.table(cell);
+            return table.map(function (table) {
+              return TableTargets.forMenu(selections, table, cell);
+            });
+          });
+          setDisabledCtrls();
+        });
+      });
+      var generateTableGrid = function () {
+        var html = '';
+        html = '<table role="grid" class="mce-grid mce-grid-border" aria-readonly="true">';
+        for (var y = 0; y < 10; y++) {
+          html += '<tr>';
+          for (var x = 0; x < 10; x++) {
+            html += '<td role="gridcell" tabindex="-1"><a id="mcegrid' + (y * 10 + x) + '" href="#" ' + 'data-mce-x="' + x + '" data-mce-y="' + y + '"></a></td>';
+          }
+          html += '</tr>';
+        }
+        html += '</table>';
+        html += '<div class="mce-text-center" role="presentation">1 x 1</div>';
+        return html;
+      };
+      var selectGrid = function (editor, tx, ty, control) {
+        var table = control.getEl().getElementsByTagName('table')[0];
+        var x, y, focusCell, cell, active;
+        var rtl = control.isRtl() || control.parent().rel === 'tl-tr';
+        table.nextSibling.innerHTML = tx + 1 + ' x ' + (ty + 1);
+        if (rtl) {
+          tx = 9 - tx;
+        }
+        for (y = 0; y < 10; y++) {
+          for (x = 0; x < 10; x++) {
+            cell = table.rows[y].childNodes[x].firstChild;
+            active = (rtl ? x >= tx : x <= tx) && y <= ty;
+            editor.dom.toggleClass(cell, 'mce-active', active);
+            if (active) {
+              focusCell = cell;
+            }
+          }
+        }
+        return focusCell.parentNode;
+      };
+      var insertTable = hasTableGrid(editor) === false ? {
+        text: 'Table',
+        icon: 'table',
+        context: 'table',
+        onclick: cmd('mceInsertTable')
+      } : {
+        text: 'Table',
+        icon: 'table',
+        context: 'table',
+        ariaHideMenu: true,
+        onclick: function (e) {
+          if (e.aria) {
+            this.parent().hideAll();
+            e.stopImmediatePropagation();
+            editor.execCommand('mceInsertTable');
+          }
+        },
+        onshow: function () {
+          selectGrid(editor, 0, 0, this.menu.items()[0]);
+        },
+        onhide: function () {
+          var elements = this.menu.items()[0].getEl().getElementsByTagName('a');
+          editor.dom.removeClass(elements, 'mce-active');
+          editor.dom.addClass(elements[0], 'mce-active');
+        },
+        menu: [{
+            type: 'container',
+            html: generateTableGrid(),
+            onPostRender: function () {
+              this.lastX = this.lastY = 0;
+            },
+            onmousemove: function (e) {
+              var target = e.target;
+              var x, y;
+              if (target.tagName.toUpperCase() === 'A') {
+                x = parseInt(target.getAttribute('data-mce-x'), 10);
+                y = parseInt(target.getAttribute('data-mce-y'), 10);
+                if (this.isRtl() || this.parent().rel === 'tl-tr') {
+                  x = 9 - x;
+                }
+                if (x !== this.lastX || y !== this.lastY) {
+                  selectGrid(editor, x, y, e.control);
+                  this.lastX = x;
+                  this.lastY = y;
+                }
+              }
+            },
+            onclick: function (e) {
+              var self = this;
+              if (e.target.tagName.toUpperCase() === 'A') {
+                e.preventDefault();
+                e.stopPropagation();
+                self.parent().cancel();
+                editor.undoManager.transact(function () {
+                  InsertTable.insert(editor, self.lastX + 1, self.lastY + 1);
+                });
+                editor.addVisual();
+              }
+            }
+          }]
+      };
+      function cmd(command) {
+        return function () {
+          editor.execCommand(command);
+        };
+      }
       var tableProperties = {
         text: 'Table properties',
-        onSetup: selectionTargets.onSetupTable,
-        onAction: cmd('mceTableProps')
+        context: 'table',
+        onPostRender: pushTable,
+        onclick: cmd('mceTableProps')
       };
       var deleteTable = {
         text: 'Delete table',
-        icon: 'table-delete-table',
-        onSetup: selectionTargets.onSetupTable,
-        onAction: cmd('mceTableDelete')
+        context: 'table',
+        onPostRender: pushTable,
+        cmd: 'mceTableDelete'
       };
       var row = {
-        type: 'nestedmenuitem',
         text: 'Row',
-        getSubmenuItems: function () {
-          return [
-            {
-              type: 'menuitem',
-              text: 'Insert row before',
-              icon: 'table-insert-row-above',
-              onAction: cmd('mceTableInsertRowBefore'),
-              onSetup: selectionTargets.onSetupCellOrRow
-            },
-            {
-              type: 'menuitem',
-              text: 'Insert row after',
-              icon: 'table-insert-row-after',
-              onAction: cmd('mceTableInsertRowAfter'),
-              onSetup: selectionTargets.onSetupCellOrRow
-            },
-            {
-              type: 'menuitem',
-              text: 'Delete row',
-              icon: 'table-delete-row',
-              onAction: cmd('mceTableDeleteRow'),
-              onSetup: selectionTargets.onSetupCellOrRow
-            },
-            {
-              type: 'menuitem',
-              text: 'Row properties',
-              icon: 'table-row-properties',
-              onAction: cmd('mceTableRowProps'),
-              onSetup: selectionTargets.onSetupCellOrRow
-            },
-            { type: 'separator' },
-            {
-              type: 'menuitem',
-              text: 'Cut row',
-              onAction: cmd('mceTableCutRow'),
-              onSetup: selectionTargets.onSetupCellOrRow
-            },
-            {
-              type: 'menuitem',
-              text: 'Copy row',
-              onAction: cmd('mceTableCopyRow'),
-              onSetup: selectionTargets.onSetupCellOrRow
-            },
-            {
-              type: 'menuitem',
-              text: 'Paste row before',
-              onAction: cmd('mceTablePasteRowBefore'),
-              onSetup: selectionTargets.onSetupCellOrRow
-            },
-            {
-              type: 'menuitem',
-              text: 'Paste row after',
-              onAction: cmd('mceTablePasteRowAfter'),
-              onSetup: selectionTargets.onSetupCellOrRow
-            }
-          ];
-        }
+        context: 'table',
+        menu: [
+          {
+            text: 'Insert row before',
+            onclick: cmd('mceTableInsertRowBefore'),
+            onPostRender: pushCell
+          },
+          {
+            text: 'Insert row after',
+            onclick: cmd('mceTableInsertRowAfter'),
+            onPostRender: pushCell
+          },
+          {
+            text: 'Delete row',
+            onclick: cmd('mceTableDeleteRow'),
+            onPostRender: pushCell
+          },
+          {
+            text: 'Row properties',
+            onclick: cmd('mceTableRowProps'),
+            onPostRender: pushCell
+          },
+          { text: '-' },
+          {
+            text: 'Cut row',
+            onclick: cmd('mceTableCutRow'),
+            onPostRender: pushCell
+          },
+          {
+            text: 'Copy row',
+            onclick: cmd('mceTableCopyRow'),
+            onPostRender: pushCell
+          },
+          {
+            text: 'Paste row before',
+            onclick: cmd('mceTablePasteRowBefore'),
+            onPostRender: pushCell
+          },
+          {
+            text: 'Paste row after',
+            onclick: cmd('mceTablePasteRowAfter'),
+            onPostRender: pushCell
+          }
+        ]
       };
       var column = {
-        type: 'nestedmenuitem',
         text: 'Column',
-        getSubmenuItems: function () {
-          return [
-            {
-              type: 'menuitem',
-              text: 'Insert column before',
-              icon: 'table-insert-column-before',
-              onAction: cmd('mceTableInsertColBefore'),
-              onSetup: selectionTargets.onSetupCellOrRow
-            },
-            {
-              type: 'menuitem',
-              text: 'Insert column after',
-              icon: 'table-insert-column-after',
-              onAction: cmd('mceTableInsertColAfter'),
-              onSetup: selectionTargets.onSetupCellOrRow
-            },
-            {
-              type: 'menuitem',
-              text: 'Delete column',
-              icon: 'table-delete-column',
-              onAction: cmd('mceTableDeleteCol'),
-              onSetup: selectionTargets.onSetupCellOrRow
-            }
-          ];
-        }
+        context: 'table',
+        menu: [
+          {
+            text: 'Insert column before',
+            onclick: cmd('mceTableInsertColBefore'),
+            onPostRender: pushCell
+          },
+          {
+            text: 'Insert column after',
+            onclick: cmd('mceTableInsertColAfter'),
+            onPostRender: pushCell
+          },
+          {
+            text: 'Delete column',
+            onclick: cmd('mceTableDeleteCol'),
+            onPostRender: pushCell
+          }
+        ]
       };
       var cell = {
-        type: 'nestedmenuitem',
+        separator: 'before',
         text: 'Cell',
-        getSubmenuItems: function () {
-          return [
-            {
-              type: 'menuitem',
-              text: 'Cell properties',
-              icon: 'table-cell-properties',
-              onAction: cmd('mceTableCellProps'),
-              onSetup: selectionTargets.onSetupCellOrRow
-            },
-            {
-              type: 'menuitem',
-              text: 'Merge cells',
-              icon: 'table-merge-cells',
-              onAction: cmd('mceTableMergeCells'),
-              onSetup: selectionTargets.onSetupMergeable
-            },
-            {
-              type: 'menuitem',
-              text: 'Split cell',
-              icon: 'table-split-cells',
-              onAction: cmd('mceTableSplitCells'),
-              onSetup: selectionTargets.onSetupUnmergeable
-            }
-          ];
-        }
-      };
-      if (hasTableGrid(editor) === false) {
-        editor.ui.registry.addMenuItem('inserttable', {
-          text: 'Table',
-          icon: 'table',
-          onAction: cmd('mceInsertTable')
-        });
-      } else {
-        editor.ui.registry.addNestedMenuItem('inserttable', {
-          text: 'Table',
-          icon: 'table',
-          getSubmenuItems: function () {
-            return [{
-                type: 'fancymenuitem',
-                fancytype: 'inserttable',
-                onAction: insertTableAction
-              }];
+        context: 'table',
+        menu: [
+          {
+            text: 'Cell properties',
+            onclick: cmd('mceTableCellProps'),
+            onPostRender: pushCell
+          },
+          {
+            text: 'Merge cells',
+            onclick: cmd('mceTableMergeCells'),
+            onPostRender: pushMerge
+          },
+          {
+            text: 'Split cell',
+            onclick: cmd('mceTableSplitCells'),
+            onPostRender: pushUnmerge
           }
-        });
-      }
-      editor.ui.registry.addMenuItem('tableprops', tableProperties);
-      editor.ui.registry.addMenuItem('deletetable', deleteTable);
-      editor.ui.registry.addNestedMenuItem('row', row);
-      editor.ui.registry.addNestedMenuItem('column', column);
-      editor.ui.registry.addNestedMenuItem('cell', cell);
-      editor.ui.registry.addContextMenu('table', {
-        update: function () {
-          selectionTargets.resetTargets();
-          return selectionTargets.targets().fold(function () {
-            return '';
-          }, function (targets) {
-            if (name(targets.element()) === 'caption') {
-              return 'tableprops deletetable';
-            } else {
-              return 'cell row column | tableprops deletetable';
-            }
-          });
-        }
-      });
+        ]
+      };
+      editor.addMenuItem('inserttable', insertTable);
+      editor.addMenuItem('tableprops', tableProperties);
+      editor.addMenuItem('deletetable', deleteTable);
+      editor.addMenuItem('row', row);
+      editor.addMenuItem('column', column);
+      editor.addMenuItem('cell', cell);
     };
     var MenuItems = { addMenuItems: addMenuItems };
 
@@ -9411,12 +9366,11 @@ var table = (function (domGlobals) {
       var cellSelection = CellSelection$1(editor, resizeHandler.lazyResize);
       var actions = TableActions(editor, resizeHandler.lazyWire);
       var selections = Selections(editor);
-      var selectionTargets = SelectionTargets(editor, selections);
       var clipboardRows = Cell(Option.none());
       Commands.registerCommands(editor, actions, cellSelection, selections, clipboardRows);
       Clipboard.registerEvents(editor, selections, actions, cellSelection);
-      MenuItems.addMenuItems(editor, selectionTargets);
-      Buttons.addButtons(editor, selectionTargets);
+      MenuItems.addMenuItems(editor, selections);
+      Buttons.addButtons(editor);
       Buttons.addToolbars(editor);
       editor.on('PreInit', function () {
         editor.serializer.addTempAttr(Ephemera.firstSelected());

@@ -1,11 +1,3 @@
-/**
- * Copyright (c) Tiny Technologies, Inc. All rights reserved.
- * Licensed under the LGPL or a commercial license.
- * For LGPL see License.txt in the project root for license information.
- * For commercial licenses see https://www.tiny.cloud/
- *
- * Version: 5.0.3 (2019-03-19)
- */
 (function () {
 var paste = (function (domGlobals) {
     'use strict';
@@ -77,21 +69,98 @@ var paste = (function (domGlobals) {
       firePaste: firePaste
     };
 
-    var togglePlainTextPaste = function (editor, clipboard) {
+    var shouldPlainTextInform = function (editor) {
+      return editor.getParam('paste_plaintext_inform', true);
+    };
+    var shouldBlockDrop = function (editor) {
+      return editor.getParam('paste_block_drop', false);
+    };
+    var shouldPasteDataImages = function (editor) {
+      return editor.getParam('paste_data_images', false);
+    };
+    var shouldFilterDrop = function (editor) {
+      return editor.getParam('paste_filter_drop', true);
+    };
+    var getPreProcess = function (editor) {
+      return editor.getParam('paste_preprocess');
+    };
+    var getPostProcess = function (editor) {
+      return editor.getParam('paste_postprocess');
+    };
+    var getWebkitStyles = function (editor) {
+      return editor.getParam('paste_webkit_styles');
+    };
+    var shouldRemoveWebKitStyles = function (editor) {
+      return editor.getParam('paste_remove_styles_if_webkit', true);
+    };
+    var shouldMergeFormats = function (editor) {
+      return editor.getParam('paste_merge_formats', true);
+    };
+    var isSmartPasteEnabled = function (editor) {
+      return editor.getParam('smart_paste', true);
+    };
+    var isPasteAsTextEnabled = function (editor) {
+      return editor.getParam('paste_as_text', false);
+    };
+    var getRetainStyleProps = function (editor) {
+      return editor.getParam('paste_retain_style_properties');
+    };
+    var getWordValidElements = function (editor) {
+      var defaultValidElements = '-strong/b,-em/i,-u,-span,-p,-ol,-ul,-li,-h1,-h2,-h3,-h4,-h5,-h6,' + '-p/div,-a[href|name],sub,sup,strike,br,del,table[width],tr,' + 'td[colspan|rowspan|width],th[colspan|rowspan|width],thead,tfoot,tbody';
+      return editor.getParam('paste_word_valid_elements', defaultValidElements);
+    };
+    var shouldConvertWordFakeLists = function (editor) {
+      return editor.getParam('paste_convert_word_fake_lists', true);
+    };
+    var shouldUseDefaultFilters = function (editor) {
+      return editor.getParam('paste_enable_default_filters', true);
+    };
+    var Settings = {
+      shouldPlainTextInform: shouldPlainTextInform,
+      shouldBlockDrop: shouldBlockDrop,
+      shouldPasteDataImages: shouldPasteDataImages,
+      shouldFilterDrop: shouldFilterDrop,
+      getPreProcess: getPreProcess,
+      getPostProcess: getPostProcess,
+      getWebkitStyles: getWebkitStyles,
+      shouldRemoveWebKitStyles: shouldRemoveWebKitStyles,
+      shouldMergeFormats: shouldMergeFormats,
+      isSmartPasteEnabled: isSmartPasteEnabled,
+      isPasteAsTextEnabled: isPasteAsTextEnabled,
+      getRetainStyleProps: getRetainStyleProps,
+      getWordValidElements: getWordValidElements,
+      shouldConvertWordFakeLists: shouldConvertWordFakeLists,
+      shouldUseDefaultFilters: shouldUseDefaultFilters
+    };
+
+    var shouldInformUserAboutPlainText = function (editor, userIsInformedState) {
+      return userIsInformedState.get() === false && Settings.shouldPlainTextInform(editor);
+    };
+    var displayNotification = function (editor, message) {
+      editor.notificationManager.open({
+        text: editor.translate(message),
+        type: 'info'
+      });
+    };
+    var togglePlainTextPaste = function (editor, clipboard, userIsInformedState) {
       if (clipboard.pasteFormat.get() === 'text') {
         clipboard.pasteFormat.set('html');
         Events.firePastePlainTextToggle(editor, false);
       } else {
         clipboard.pasteFormat.set('text');
         Events.firePastePlainTextToggle(editor, true);
+        if (shouldInformUserAboutPlainText(editor, userIsInformedState)) {
+          displayNotification(editor, 'Paste is now in plain text mode. Contents will now be pasted as plain text until you toggle this option off.');
+          userIsInformedState.set(true);
+        }
       }
       editor.focus();
     };
     var Actions = { togglePlainTextPaste: togglePlainTextPaste };
 
-    var register = function (editor, clipboard) {
+    var register = function (editor, clipboard, userIsInformedState) {
       editor.addCommand('mceTogglePlainTextPaste', function () {
-        Actions.togglePlainTextPaste(editor, clipboard);
+        Actions.togglePlainTextPaste(editor, clipboard, userIsInformedState);
       });
       editor.addCommand('mceInsertClipboardContent', function (ui, value) {
         if (value.content) {
@@ -185,66 +254,6 @@ var paste = (function (domGlobals) {
     var global$8 = tinymce.util.Tools.resolve('tinymce.html.Schema');
 
     var global$9 = tinymce.util.Tools.resolve('tinymce.html.Serializer');
-
-    var shouldBlockDrop = function (editor) {
-      return editor.getParam('paste_block_drop', false);
-    };
-    var shouldPasteDataImages = function (editor) {
-      return editor.getParam('paste_data_images', false);
-    };
-    var shouldFilterDrop = function (editor) {
-      return editor.getParam('paste_filter_drop', true);
-    };
-    var getPreProcess = function (editor) {
-      return editor.getParam('paste_preprocess');
-    };
-    var getPostProcess = function (editor) {
-      return editor.getParam('paste_postprocess');
-    };
-    var getWebkitStyles = function (editor) {
-      return editor.getParam('paste_webkit_styles');
-    };
-    var shouldRemoveWebKitStyles = function (editor) {
-      return editor.getParam('paste_remove_styles_if_webkit', true);
-    };
-    var shouldMergeFormats = function (editor) {
-      return editor.getParam('paste_merge_formats', true);
-    };
-    var isSmartPasteEnabled = function (editor) {
-      return editor.getParam('smart_paste', true);
-    };
-    var isPasteAsTextEnabled = function (editor) {
-      return editor.getParam('paste_as_text', false);
-    };
-    var getRetainStyleProps = function (editor) {
-      return editor.getParam('paste_retain_style_properties');
-    };
-    var getWordValidElements = function (editor) {
-      var defaultValidElements = '-strong/b,-em/i,-u,-span,-p,-ol,-ul,-li,-h1,-h2,-h3,-h4,-h5,-h6,' + '-p/div,-a[href|name],sub,sup,strike,br,del,table[width],tr,' + 'td[colspan|rowspan|width],th[colspan|rowspan|width],thead,tfoot,tbody';
-      return editor.getParam('paste_word_valid_elements', defaultValidElements);
-    };
-    var shouldConvertWordFakeLists = function (editor) {
-      return editor.getParam('paste_convert_word_fake_lists', true);
-    };
-    var shouldUseDefaultFilters = function (editor) {
-      return editor.getParam('paste_enable_default_filters', true);
-    };
-    var Settings = {
-      shouldBlockDrop: shouldBlockDrop,
-      shouldPasteDataImages: shouldPasteDataImages,
-      shouldFilterDrop: shouldFilterDrop,
-      getPreProcess: getPreProcess,
-      getPostProcess: getPostProcess,
-      getWebkitStyles: getWebkitStyles,
-      shouldRemoveWebKitStyles: shouldRemoveWebKitStyles,
-      shouldMergeFormats: shouldMergeFormats,
-      isSmartPasteEnabled: isSmartPasteEnabled,
-      isPasteAsTextEnabled: isPasteAsTextEnabled,
-      getRetainStyleProps: getRetainStyleProps,
-      getWordValidElements: getWordValidElements,
-      shouldConvertWordFakeLists: shouldConvertWordFakeLists,
-      shouldUseDefaultFilters: shouldUseDefaultFilters
-    };
 
     function filter(content, items) {
       global$3.each(items, function (v) {
@@ -750,6 +759,20 @@ var paste = (function (domGlobals) {
         return value;
       };
     };
+    function curry(fn) {
+      var initialArgs = [];
+      for (var _i = 1; _i < arguments.length; _i++) {
+        initialArgs[_i - 1] = arguments[_i];
+      }
+      return function () {
+        var restArgs = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+          restArgs[_i] = arguments[_i];
+        }
+        var all = initialArgs.concat(restArgs);
+        return fn.apply(null, all);
+      };
+    }
     var never = constant(false);
     var always = constant(true);
 
@@ -1551,7 +1574,7 @@ var paste = (function (domGlobals) {
         var offscreenRange = editor.dom.createRng();
         offscreenRange.selectNodeContents(inner);
         editor.selection.setRng(offscreenRange);
-        global$2.setTimeout(function () {
+        setTimeout(function () {
           editor.selection.setRng(range);
           outer.parentNode.removeChild(outer);
           done();
@@ -1574,7 +1597,7 @@ var paste = (function (domGlobals) {
       return function (evt) {
         if (hasSelectedContent(editor)) {
           setClipboardData(evt, getData(editor), fallback(editor), function () {
-            global$2.setTimeout(function () {
+            setTimeout(function () {
               editor.execCommand('Delete');
             }, 0);
           });
@@ -1785,46 +1808,41 @@ var paste = (function (domGlobals) {
     };
     var Quirks = { setup: setup$2 };
 
-    var makeSetupHandler = function (editor, clipboard) {
-      return function (api) {
-        api.setActive(clipboard.pasteFormat.get() === 'text');
-        var pastePlainTextToggleHandler = function (e) {
-          return api.setActive(e.state);
-        };
-        editor.on('PastePlainTextToggle', pastePlainTextToggleHandler);
-        return function () {
-          return editor.off('PastePlainTextToggle', pastePlainTextToggleHandler);
-        };
-      };
+    var stateChange = function (editor, clipboard, e) {
+      var ctrl = e.control;
+      ctrl.active(clipboard.pasteFormat.get() === 'text');
+      editor.on('PastePlainTextToggle', function (e) {
+        ctrl.active(e.state);
+      });
     };
     var register$2 = function (editor, clipboard) {
-      editor.ui.registry.addToggleButton('pastetext', {
+      var postRender = curry(stateChange, editor, clipboard);
+      editor.addButton('pastetext', {
         active: false,
-        icon: 'paste-text',
+        icon: 'pastetext',
         tooltip: 'Paste as text',
-        onAction: function () {
-          return editor.execCommand('mceTogglePlainTextPaste');
-        },
-        onSetup: makeSetupHandler(editor, clipboard)
+        cmd: 'mceTogglePlainTextPaste',
+        onPostRender: postRender
       });
-      editor.ui.registry.addToggleMenuItem('pastetext', {
+      editor.addMenuItem('pastetext', {
         text: 'Paste as text',
-        onAction: function () {
-          return editor.execCommand('mceTogglePlainTextPaste');
-        },
-        onSetup: makeSetupHandler(editor, clipboard)
+        selectable: true,
+        active: clipboard.pasteFormat,
+        cmd: 'mceTogglePlainTextPaste',
+        onPostRender: postRender
       });
     };
     var Buttons = { register: register$2 };
 
     global.add('paste', function (editor) {
       if (DetectProPlugin.hasProPlugin(editor) === false) {
+        var userIsInformedState = Cell(false);
         var draggingInternallyState = Cell(false);
         var pasteFormat = Cell(Settings.isPasteAsTextEnabled(editor) ? 'text' : 'html');
         var clipboard = Clipboard(editor, pasteFormat);
         var quirks = Quirks.setup(editor);
         Buttons.register(editor, clipboard);
-        Commands.register(editor, clipboard);
+        Commands.register(editor, clipboard, userIsInformedState);
         PrePostProcess.setup(editor);
         CutCopy.register(editor);
         DragDrop.setup(editor, clipboard, draggingInternallyState);

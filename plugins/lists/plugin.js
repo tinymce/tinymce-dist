@@ -1,11 +1,3 @@
-/**
- * Copyright (c) Tiny Technologies, Inc. All rights reserved.
- * Licensed under the LGPL or a commercial license.
- * For LGPL see License.txt in the project root for license information.
- * For commercial licenses see https://www.tiny.cloud/
- *
- * Version: 5.0.3 (2019-03-19)
- */
 (function () {
 var lists = (function (domGlobals) {
     'use strict';
@@ -1459,13 +1451,6 @@ var lists = (function (domGlobals) {
       return fragment;
     };
 
-    var fireListEvent = function (editor, action, element) {
-      return editor.fire('ListMutation', {
-        action: action,
-        element: element
-      });
-    };
-
     var outdentedComposer = function (editor, entries) {
       return map(entries, function (entry) {
         var content = fromElements(entry.content);
@@ -1503,11 +1488,7 @@ var lists = (function (domGlobals) {
       var entrySets = parseLists(lists, getItemSelection(editor));
       each(entrySets, function (entrySet) {
         indentSelectedEntries(entrySet.entries, indentation);
-        var composedLists = composeEntries(editor, entrySet.entries);
-        each(composedLists, function (composedList) {
-          fireListEvent(editor, indentation === 'Indent' ? 'IndentList' : 'OutdentList', composedList.dom());
-        });
-        before$1(entrySet.sourceList, composedLists);
+        before$1(entrySet.sourceList, composeEntries(editor, entrySet.entries));
         remove(entrySet.sourceList);
       });
     };
@@ -1594,21 +1575,6 @@ var lists = (function (domGlobals) {
     };
     var flattenListSelection = function (editor) {
       return selectionIndentation(editor, 'Flatten');
-    };
-
-    var isCustomList = function (list) {
-      return /\btox\-/.test(list.className);
-    };
-
-    var listToggleActionFromListName = function (listName) {
-      switch (listName) {
-      case 'UL':
-        return 'ToggleUlList';
-      case 'OL':
-        return 'ToggleOlList';
-      case 'DL':
-        return 'ToggleDLList';
-      }
     };
 
     var updateListStyle = function (dom, el, detail) {
@@ -1782,14 +1748,12 @@ var lists = (function (domGlobals) {
         dom.remove(sibling);
       }
     };
-    var updateList = function (editor, list, listName, detail) {
+    var updateList = function (dom, list, listName, detail) {
       if (list.nodeName !== listName) {
-        var newList = editor.dom.rename(list, listName);
-        updateListWithDetails(editor.dom, newList, detail);
-        fireListEvent(editor, listToggleActionFromListName(listName), newList);
+        var newList = dom.rename(list, listName);
+        updateListWithDetails(dom, newList, detail);
       } else {
-        updateListWithDetails(editor.dom, list, detail);
-        fireListEvent(editor, listToggleActionFromListName(listName), list);
+        updateListWithDetails(dom, list, detail);
       }
     };
     var toggleMultipleLists = function (editor, parentList, lists, listName, detail) {
@@ -1798,7 +1762,7 @@ var lists = (function (domGlobals) {
       } else {
         var bookmark = Bookmark.createBookmark(editor.selection.getRng(true));
         global$5.each([parentList].concat(lists), function (elm) {
-          updateList(editor, elm, listName, detail);
+          updateList(editor.dom, elm, listName, detail);
         });
         editor.selection.setRng(Bookmark.resolveBookmark(bookmark));
       }
@@ -1811,19 +1775,16 @@ var lists = (function (domGlobals) {
         return;
       }
       if (parentList) {
-        if (parentList.nodeName === listName && !hasListStyleDetail(detail) && !isCustomList(parentList)) {
+        if (parentList.nodeName === listName && !hasListStyleDetail(detail)) {
           flattenListSelection(editor);
         } else {
           var bookmark = Bookmark.createBookmark(editor.selection.getRng(true));
           updateListWithDetails(editor.dom, parentList, detail);
-          var newList = editor.dom.rename(parentList, listName);
-          mergeWithAdjacentLists(editor.dom, newList);
+          mergeWithAdjacentLists(editor.dom, editor.dom.rename(parentList, listName));
           editor.selection.setRng(Bookmark.resolveBookmark(bookmark));
-          fireListEvent(editor, listToggleActionFromListName(listName), newList);
         }
       } else {
         applyList(editor, listName, detail);
-        fireListEvent(editor, listToggleActionFromListName(listName), parentList);
       }
     };
     var toggleList = function (editor, listName, detail) {
@@ -2146,17 +2107,14 @@ var lists = (function (domGlobals) {
       return -1;
     };
     var listState = function (editor, listName) {
-      return function (buttonApi) {
-        var nodeChangeHandler = function (e) {
+      return function (e) {
+        var ctrl = e.control;
+        editor.on('NodeChange', function (e) {
           var tableCellIndex = findIndex(e.parents, NodeType.isTableCellNode);
           var parents = tableCellIndex !== -1 ? e.parents.slice(0, tableCellIndex) : e.parents;
           var lists = global$5.grep(parents, NodeType.isListNode);
-          buttonApi.setActive(lists.length > 0 && lists[0].nodeName === listName && !isCustomList(lists[0]));
-        };
-        editor.on('NodeChange', nodeChangeHandler);
-        return function () {
-          return editor.off('NodeChange', nodeChangeHandler);
-        };
+          ctrl.active(lists.length > 0 && lists[0].nodeName === listName);
+        });
       };
     };
     var register$1 = function (editor) {
@@ -2164,27 +2122,25 @@ var lists = (function (domGlobals) {
         var plugins = editor.settings.plugins ? editor.settings.plugins : '';
         return global$5.inArray(plugins.split(/[ ,]/), plugin) !== -1;
       };
-      var exec = function (command) {
-        return function () {
-          return editor.execCommand(command);
-        };
-      };
       if (!hasPlugin(editor, 'advlist')) {
-        editor.ui.registry.addToggleButton('numlist', {
-          icon: 'ordered-list',
+        editor.addButton('numlist', {
           active: false,
-          tooltip: 'Numbered list',
-          onAction: exec('InsertOrderedList'),
-          onSetup: listState(editor, 'OL')
+          title: 'Numbered list',
+          cmd: 'InsertOrderedList',
+          onPostRender: listState(editor, 'OL')
         });
-        editor.ui.registry.addToggleButton('bullist', {
-          icon: 'unordered-list',
+        editor.addButton('bullist', {
           active: false,
-          tooltip: 'Bullet list',
-          onAction: exec('InsertUnorderedList'),
-          onSetup: listState(editor, 'UL')
+          title: 'Bullet list',
+          cmd: 'InsertUnorderedList',
+          onPostRender: listState(editor, 'UL')
         });
       }
+      editor.addButton('indent', {
+        icon: 'indent',
+        title: 'Increase indent',
+        cmd: 'Indent'
+      });
     };
     var Buttons = { register: register$1 };
 

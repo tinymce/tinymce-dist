@@ -1,11 +1,3 @@
-/**
- * Copyright (c) Tiny Technologies, Inc. All rights reserved.
- * Licensed under the LGPL or a commercial license.
- * For LGPL see License.txt in the project root for license information.
- * For commercial licenses see https://www.tiny.cloud/
- *
- * Version: 5.0.3 (2019-03-19)
- */
 (function () {
 var autosave = (function (domGlobals) {
     'use strict';
@@ -30,11 +22,9 @@ var autosave = (function (domGlobals) {
 
     var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
-    var global$1 = tinymce.util.Tools.resolve('tinymce.util.Delay');
+    var global$1 = tinymce.util.Tools.resolve('tinymce.util.LocalStorage');
 
-    var global$2 = tinymce.util.Tools.resolve('tinymce.util.LocalStorage');
-
-    var global$3 = tinymce.util.Tools.resolve('tinymce.util.Tools');
+    var global$2 = tinymce.util.Tools.resolve('tinymce.util.Tools');
 
     var fireRestoreDraft = function (editor) {
       return editor.fire('RestoreDraft');
@@ -79,11 +69,11 @@ var autosave = (function (domGlobals) {
 
     var isEmpty = function (editor, html) {
       var forcedRootBlockName = editor.settings.forced_root_block;
-      html = global$3.trim(typeof html === 'undefined' ? editor.getBody().innerHTML : html);
+      html = global$2.trim(typeof html === 'undefined' ? editor.getBody().innerHTML : html);
       return html === '' || new RegExp('^<' + forcedRootBlockName + '[^>]*>((\xA0|&nbsp;|[ \t]|<br[^>]*>)+?|)</' + forcedRootBlockName + '>|<br>$', 'i').test(html);
     };
     var hasDraft = function (editor) {
-      var time = parseInt(global$2.getItem(getAutoSavePrefix(editor) + 'time'), 10) || 0;
+      var time = parseInt(global$1.getItem(getAutoSavePrefix(editor) + 'time'), 10) || 0;
       if (new Date().getTime() - time > getAutoSaveRetention(editor)) {
         removeDraft(editor, false);
         return false;
@@ -92,8 +82,8 @@ var autosave = (function (domGlobals) {
     };
     var removeDraft = function (editor, fire) {
       var prefix = getAutoSavePrefix(editor);
-      global$2.removeItem(prefix + 'draft');
-      global$2.removeItem(prefix + 'time');
+      global$1.removeItem(prefix + 'draft');
+      global$1.removeItem(prefix + 'time');
       if (fire !== false) {
         fireRemoveDraft(editor);
       }
@@ -101,25 +91,25 @@ var autosave = (function (domGlobals) {
     var storeDraft = function (editor) {
       var prefix = getAutoSavePrefix(editor);
       if (!isEmpty(editor) && editor.isDirty()) {
-        global$2.setItem(prefix + 'draft', editor.getContent({
+        global$1.setItem(prefix + 'draft', editor.getContent({
           format: 'raw',
           no_events: true
         }));
-        global$2.setItem(prefix + 'time', new Date().getTime().toString());
+        global$1.setItem(prefix + 'time', new Date().getTime().toString());
         fireStoreDraft(editor);
       }
     };
     var restoreDraft = function (editor) {
       var prefix = getAutoSavePrefix(editor);
       if (hasDraft(editor)) {
-        editor.setContent(global$2.getItem(prefix + 'draft'), { format: 'raw' });
+        editor.setContent(global$1.getItem(prefix + 'draft'), { format: 'raw' });
         fireRestoreDraft(editor);
       }
     };
     var startStoreDraft = function (editor, started) {
       var interval = getAutoSaveInterval(editor);
       if (!started.get()) {
-        global$1.setInterval(function () {
+        setInterval(function () {
           if (!editor.removed) {
             storeDraft(editor);
           }
@@ -160,11 +150,11 @@ var autosave = (function (domGlobals) {
       };
     };
 
-    var global$4 = tinymce.util.Tools.resolve('tinymce.EditorManager');
+    var global$3 = tinymce.util.Tools.resolve('tinymce.EditorManager');
 
-    global$4._beforeUnloadHandler = function () {
+    global$3._beforeUnloadHandler = function () {
       var msg;
-      global$3.each(global$4.get(), function (editor) {
+      global$2.each(global$3.get(), function (editor) {
         if (editor.plugins.autosave) {
           editor.plugins.autosave.storeDraft();
         }
@@ -175,38 +165,34 @@ var autosave = (function (domGlobals) {
       return msg;
     };
     var setup = function (editor) {
-      domGlobals.window.onbeforeunload = global$4._beforeUnloadHandler;
+      domGlobals.window.onbeforeunload = global$3._beforeUnloadHandler;
     };
 
-    var makeSetupHandler = function (editor, started) {
-      return function (api) {
-        api.setDisabled(!hasDraft(editor));
-        var editorEventCallback = function () {
-          return api.setDisabled(!hasDraft(editor));
-        };
-        editor.on('StoreDraft RestoreDraft RemoveDraft', editorEventCallback);
-        return function () {
-          return editor.off('StoreDraft RestoreDraft RemoveDraft', editorEventCallback);
-        };
+    var postRender = function (editor, started) {
+      return function (e) {
+        var ctrl = e.control;
+        ctrl.disabled(!hasDraft(editor));
+        editor.on('StoreDraft RestoreDraft RemoveDraft', function () {
+          ctrl.disabled(!hasDraft(editor));
+        });
+        startStoreDraft(editor, started);
       };
     };
     var register = function (editor, started) {
-      startStoreDraft(editor, started);
-      editor.ui.registry.addButton('restoredraft', {
-        tooltip: 'Restore last draft',
-        icon: 'restore-draft',
-        onAction: function () {
+      editor.addButton('restoredraft', {
+        title: 'Restore last draft',
+        onclick: function () {
           restoreLastDraft(editor);
         },
-        onSetup: makeSetupHandler(editor, started)
+        onPostRender: postRender(editor, started)
       });
-      editor.ui.registry.addMenuItem('restoredraft', {
+      editor.addMenuItem('restoredraft', {
         text: 'Restore last draft',
-        icon: 'restore-draft',
-        onAction: function () {
+        onclick: function () {
           restoreLastDraft(editor);
         },
-        onSetup: makeSetupHandler(editor, started)
+        onPostRender: postRender(editor, started),
+        context: 'file'
       });
     };
 

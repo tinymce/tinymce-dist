@@ -1,11 +1,3 @@
-/**
- * Copyright (c) Tiny Technologies, Inc. All rights reserved.
- * Licensed under the LGPL or a commercial license.
- * For LGPL see License.txt in the project root for license information.
- * For commercial licenses see https://www.tiny.cloud/
- *
- * Version: 5.0.3 (2019-03-19)
- */
 (function () {
 var spellchecker = (function (domGlobals) {
     'use strict';
@@ -517,8 +509,13 @@ var spellchecker = (function (domGlobals) {
       return spans;
     };
     var markErrors = function (editor, startedState, textMatcherState, lastSuggestionsState, data) {
-      var hasDictionarySupport = !!data.dictionary;
-      var suggestions = data.words;
+      var suggestions, hasDictionarySupport;
+      if (typeof data !== 'string' && data.words) {
+        hasDictionarySupport = !!data.dictionary;
+        suggestions = data.words;
+      } else {
+        suggestions = data;
+      }
       editor.setProgressState(false);
       if (isEmpty(suggestions)) {
         var message = editor.translate('No misspellings found.');
@@ -539,7 +536,6 @@ var spellchecker = (function (domGlobals) {
       }).wrap(function (match) {
         return editor.dom.create('span', {
           'class': 'mce-spellchecker-word',
-          'aria-invalid': 'spelling',
           'data-mce-bogus': 1,
           'data-mce-word': match.text
         });
@@ -587,31 +583,6 @@ var spellchecker = (function (domGlobals) {
     };
     var Commands = { register: register };
 
-    var hasOwnProperty = Object.prototype.hasOwnProperty;
-    var shallow = function (old, nu) {
-      return nu;
-    };
-    var baseMerge = function (merger) {
-      return function () {
-        var objects = new Array(arguments.length);
-        for (var i = 0; i < objects.length; i++)
-          objects[i] = arguments[i];
-        if (objects.length === 0)
-          throw new Error('Can\'t merge zero objects');
-        var ret = {};
-        for (var j = 0; j < objects.length; j++) {
-          var curObject = objects[j];
-          for (var key in curObject)
-            if (hasOwnProperty.call(curObject, key)) {
-              ret[key] = merger(ret[key], curObject[key]);
-            }
-        }
-        return ret;
-      };
-    };
-    var merge = baseMerge(shallow);
-
-    var spellcheckerEvents = 'SpellcheckStart SpellcheckEnd';
     var buildMenuItems = function (listName, languageValues) {
       var items = [];
       global$1.each(languageValues, function (languageValue) {
@@ -622,6 +593,14 @@ var spellchecker = (function (domGlobals) {
         });
       });
       return items;
+    };
+    var updateSelection = function (editor, currentLanguageState) {
+      return function (e) {
+        var selectedLanguage = currentLanguageState.get();
+        e.control.items().each(function (ctrl) {
+          ctrl.active(ctrl.settings.data === selectedLanguage);
+        });
+      };
     };
     var getItems = function (editor) {
       return global$1.map(Settings.getLanguages(editor).split(','), function (langPair) {
@@ -639,115 +618,123 @@ var spellchecker = (function (domGlobals) {
       };
       var buttonArgs = {
         tooltip: 'Spellcheck',
-        onAction: startSpellchecking,
-        icon: 'spell-check',
-        onSetup: function (buttonApi) {
-          var setButtonState = function () {
-            buttonApi.setActive(startedState.get());
-          };
-          editor.on(spellcheckerEvents, setButtonState);
-          return function () {
-            editor.off(spellcheckerEvents, setButtonState);
-          };
+        onclick: startSpellchecking,
+        onPostRender: function (e) {
+          var ctrl = e.control;
+          editor.on('SpellcheckStart SpellcheckEnd', function () {
+            ctrl.active(startedState.get());
+          });
         }
       };
-      var getSplitButtonArgs = function () {
-        return {
-          type: 'splitbutton',
-          menu: languageMenuItems,
-          select: function (value) {
-            return value === currentLanguageState.get();
-          },
-          fetch: function (callback) {
-            var items = global$1.map(languageMenuItems, function (languageItem) {
-              return {
-                type: 'choiceitem',
-                value: languageItem.data,
-                text: languageItem.text
-              };
-            });
-            callback(items);
-          },
-          onItemAction: function (splitButtonApi, value) {
-            currentLanguageState.set(value);
-          }
+      if (languageMenuItems.length > 1) {
+        buttonArgs.type = 'splitbutton';
+        buttonArgs.menu = languageMenuItems;
+        buttonArgs.onshow = updateSelection(editor, currentLanguageState);
+        buttonArgs.onselect = function (e) {
+          currentLanguageState.set(e.control.settings.data);
         };
-      };
-      editor.ui.registry.addButton('spellchecker', merge(buttonArgs, languageMenuItems.length > 1 ? getSplitButtonArgs() : { type: 'togglebutton' }));
-      editor.ui.registry.addToggleMenuItem('spellchecker', {
+      }
+      editor.addButton('spellchecker', buttonArgs);
+      editor.addMenuItem('spellchecker', {
         text: 'Spellcheck',
-        onSetup: function (menuApi) {
-          menuApi.setActive(startedState.get());
-          var setMenuItemCheck = function () {
-            menuApi.setActive(startedState.get());
-          };
-          editor.on(spellcheckerEvents, setMenuItemCheck);
-          return function () {
-            editor.off(spellcheckerEvents, setMenuItemCheck);
-          };
-        },
-        onAction: startSpellchecking
+        context: 'tools',
+        onclick: startSpellchecking,
+        selectable: true,
+        onPostRender: function () {
+          var self = this;
+          self.active(startedState.get());
+          editor.on('SpellcheckStart SpellcheckEnd', function () {
+            self.active(startedState.get());
+          });
+        }
       });
     };
     var Buttons = { register: register$1 };
 
-    var ignoreAll = true;
-    var getSuggestions = function (editor, pluginUrl, lastSuggestionsState, startedState, textMatcherState, currentLanguageState, word, spans) {
+    var global$4 = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
+
+    var global$5 = tinymce.util.Tools.resolve('tinymce.ui.Factory');
+
+    var suggestionsMenu;
+    var showSuggestions = function (editor, pluginUrl, lastSuggestionsState, startedState, textMatcherState, currentLanguageState, word, spans) {
       var items = [], suggestions = lastSuggestionsState.get().suggestions[word];
       global$1.each(suggestions, function (suggestion) {
         items.push({
           text: suggestion,
-          onAction: function () {
+          onclick: function () {
             editor.insertContent(editor.dom.encode(suggestion));
             editor.dom.remove(spans);
             Actions.checkIfFinished(editor, startedState, textMatcherState);
           }
         });
       });
+      items.push({ text: '-' });
       var hasDictionarySupport = lastSuggestionsState.get().hasDictionarySupport;
       if (hasDictionarySupport) {
-        items.push({ type: 'separator' });
         items.push({
-          text: 'Add to dictionary',
-          onAction: function () {
+          text: 'Add to Dictionary',
+          onclick: function () {
             Actions.addToDictionary(editor, pluginUrl, startedState, textMatcherState, currentLanguageState, word, spans);
           }
         });
       }
       items.push.apply(items, [
-        { type: 'separator' },
         {
           text: 'Ignore',
-          onAction: function () {
+          onclick: function () {
             Actions.ignoreWord(editor, startedState, textMatcherState, word, spans);
           }
         },
         {
           text: 'Ignore all',
-          onAction: function () {
-            Actions.ignoreWord(editor, startedState, textMatcherState, word, spans, ignoreAll);
+          onclick: function () {
+            Actions.ignoreWord(editor, startedState, textMatcherState, word, spans, true);
           }
         }
       ]);
-      return items;
+      suggestionsMenu = global$5.create('menu', {
+        items: items,
+        context: 'contextmenu',
+        onautohide: function (e) {
+          if (e.target.className.indexOf('spellchecker') !== -1) {
+            e.preventDefault();
+          }
+        },
+        onhide: function () {
+          suggestionsMenu.remove();
+          suggestionsMenu = null;
+        }
+      });
+      suggestionsMenu.renderTo(domGlobals.document.body);
+      var pos = global$4.DOM.getPos(editor.getContentAreaContainer());
+      var targetPos = editor.dom.getPos(spans[0]);
+      var root = editor.dom.getRoot();
+      if (root.nodeName === 'BODY') {
+        targetPos.x -= root.ownerDocument.documentElement.scrollLeft || root.scrollLeft;
+        targetPos.y -= root.ownerDocument.documentElement.scrollTop || root.scrollTop;
+      } else {
+        targetPos.x -= root.scrollLeft;
+        targetPos.y -= root.scrollTop;
+      }
+      pos.x += targetPos.x;
+      pos.y += targetPos.y;
+      suggestionsMenu.moveTo(pos.x, pos.y + spans[0].offsetHeight);
     };
     var setup = function (editor, pluginUrl, lastSuggestionsState, startedState, textMatcherState, currentLanguageState) {
-      var update = function (element) {
-        var target = element;
+      editor.on('click', function (e) {
+        var target = e.target;
         if (target.className === 'mce-spellchecker-word') {
+          e.preventDefault();
           var spans = Actions.findSpansByIndex(editor, Actions.getElmIndex(target));
           if (spans.length > 0) {
             var rng = editor.dom.createRng();
             rng.setStartBefore(spans[0]);
             rng.setEndAfter(spans[spans.length - 1]);
             editor.selection.setRng(rng);
-            return getSuggestions(editor, pluginUrl, lastSuggestionsState, startedState, textMatcherState, currentLanguageState, target.getAttribute('data-mce-word'), spans);
+            showSuggestions(editor, pluginUrl, lastSuggestionsState, startedState, textMatcherState, currentLanguageState, target.getAttribute('data-mce-word'), spans);
           }
-        } else {
-          return [];
         }
-      };
-      editor.ui.registry.addContextMenu('spellchecker', { update: update });
+      });
     };
     var SuggestionsMenu = { setup: setup };
 

@@ -1,16 +1,21 @@
-/**
- * Copyright (c) Tiny Technologies, Inc. All rights reserved.
- * Licensed under the LGPL or a commercial license.
- * For LGPL see License.txt in the project root for license information.
- * For commercial licenses see https://www.tiny.cloud/
- *
- * Version: 5.0.3 (2019-03-19)
- */
 (function () {
 var code = (function () {
     'use strict';
 
     var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
+
+    var global$1 = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
+
+    var getMinWidth = function (editor) {
+      return editor.getParam('code_dialog_width', 600);
+    };
+    var getMinHeight = function (editor) {
+      return editor.getParam('code_dialog_height', Math.min(global$1.DOM.getViewPort().h - 200, 500));
+    };
+    var Settings = {
+      getMinWidth: getMinWidth,
+      getMinHeight: getMinHeight
+    };
 
     var setContent = function (editor, html) {
       editor.focus();
@@ -29,36 +34,24 @@ var code = (function () {
     };
 
     var open = function (editor) {
-      var editorContent = Content.getContent(editor);
-      editor.windowManager.open({
-        title: 'Source Code',
-        size: 'large',
+      var minWidth = Settings.getMinWidth(editor);
+      var minHeight = Settings.getMinHeight(editor);
+      var win = editor.windowManager.open({
+        title: 'Source code',
         body: {
-          type: 'panel',
-          items: [{
-              type: 'textarea',
-              name: 'code'
-            }]
+          type: 'textbox',
+          name: 'code',
+          multiline: true,
+          minWidth: minWidth,
+          minHeight: minHeight,
+          spellcheck: false,
+          style: 'direction: ltr; text-align: left'
         },
-        buttons: [
-          {
-            type: 'cancel',
-            name: 'cancel',
-            text: 'Cancel'
-          },
-          {
-            type: 'submit',
-            name: 'save',
-            text: 'Save',
-            primary: true
-          }
-        ],
-        initialData: { code: editorContent },
-        onSubmit: function (api) {
-          Content.setContent(editor, api.getData().code);
-          api.close();
+        onSubmit: function (e) {
+          Content.setContent(editor, e.data.code);
         }
       });
+      win.find('#code').value(Content.getContent(editor));
     };
     var Dialog = { open: open };
 
@@ -70,18 +63,18 @@ var code = (function () {
     var Commands = { register: register };
 
     var register$1 = function (editor) {
-      editor.ui.registry.addButton('code', {
-        icon: 'sourcecode',
+      editor.addButton('code', {
+        icon: 'code',
         tooltip: 'Source code',
-        onAction: function () {
-          return Dialog.open(editor);
+        onclick: function () {
+          Dialog.open(editor);
         }
       });
-      editor.ui.registry.addMenuItem('code', {
-        icon: 'sourcecode',
+      editor.addMenuItem('code', {
+        icon: 'code',
         text: 'Source code',
-        onAction: function () {
-          return Dialog.open(editor);
+        onclick: function () {
+          Dialog.open(editor);
         }
       });
     };
