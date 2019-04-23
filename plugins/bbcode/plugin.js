@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) Tiny Technologies, Inc. All rights reserved.
+ * Licensed under the LGPL or a commercial license.
+ * For LGPL see License.txt in the project root for license information.
+ * For commercial licenses see https://www.tiny.cloud/
+ *
+ * Version: 5.0.4 (2019-04-23)
+ */
 (function () {
 var bbcode = (function () {
     'use strict';
@@ -78,10 +86,10 @@ var bbcode = (function () {
     global.add('bbcode', function () {
       return {
         init: function (editor) {
-          editor.on('beforeSetContent', function (e) {
+          editor.on('BeforeSetContent', function (e) {
             e.content = Convert.bbcode2html(e.content);
           });
-          editor.on('postProcess', function (e) {
+          editor.on('PostProcess', function (e) {
             if (e.set) {
               e.content = Convert.bbcode2html(e.content);
             }
