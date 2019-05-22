@@ -37,6 +37,7 @@
   content: '';
   cursor: pointer;
   height: 1em;
+  margin-left: -1.5em;
   margin-top: 0.125em;
   position: absolute;
   width: 1em;
@@ -44,10 +45,8 @@
 .tox-checklist li:not(.tox-checklist--hidden).tox-checklist--checked::before {
   background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%3E%3Cg%20id%3D%22checklist-checked%22%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Crect%20id%3D%22Rectangle%22%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%234099FF%22%20fill-rule%3D%22nonzero%22%20rx%3D%222%22%2F%3E%3Cpath%20id%3D%22Path%22%20fill%3D%22%23FFF%22%20fill-rule%3D%22nonzero%22%20d%3D%22M11.5703186%2C3.14417309%20C11.8516238%2C2.73724603%2012.4164781%2C2.62829933%2012.83558%2C2.89774797%20C13.260121%2C3.17069355%2013.3759736%2C3.72932262%2013.0909105%2C4.14168582%20L7.7580587%2C11.8560195%20C7.43776896%2C12.3193404%206.76483983%2C12.3852142%206.35607322%2C11.9948725%20L3.02491697%2C8.8138662%20C2.66090143%2C8.46625845%202.65798871%2C7.89594698%203.01850234%2C7.54483354%20C3.373942%2C7.19866177%203.94940006%2C7.19592841%204.30829608%2C7.5386474%20L6.85276923%2C9.9684299%20L11.5703186%2C3.14417309%20Z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E%0A");
 }
-.mce-content-body:not([dir=rtl]) .tox-checklist > li:not(.tox-checklist--hidden)::before {
-  margin-left: -1.5em;
-}
-.mce-content-body[dir=rtl] .tox-checklist > li:not(.tox-checklist--hidden)::before {
+[dir=rtl] .tox-checklist > li:not(.tox-checklist--hidden)::before {
+  margin-left: 0;
   margin-right: -1.5em;
 }
 /* stylelint-disable */
@@ -63,8 +62,6 @@ pre[class*="language-"] {
   text-shadow: 0 1px white;
   font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
   font-size: 0.875rem;
-  direction: ltr;
-  text-align: left;
   white-space: pre;
   word-spacing: normal;
   word-break: normal;
@@ -171,6 +168,16 @@ pre[class*="language-"] {
 }
 .token.entity {
   cursor: help;
+}
+:not([dir=rtl]) code[class*="language-"],
+:not([dir=rtl]) pre[class*="language-"] {
+  direction: ltr;
+  text-align: left;
+}
+[dir=rtl] code[class*="language-"],
+[dir=rtl] pre[class*="language-"] {
+  direction: rtl;
+  text-align: right;
 }
 /* stylelint-enable */
 .mce-content-body {
@@ -546,6 +553,51 @@ pre[class*="language-"] {
 }
 .mce-visualblocks dl {
   background-image: url(data:image/gif;base64,R0lGODlhDQAKAIABALu7u////yH5BAEAAAEALAAAAAANAAoAAAIXjI8GybEOnmOvUoWznTqeuEjNSCqeGRUAOw==);
+}
+.mce-visualblocks:not([dir=rtl]) p,
+.mce-visualblocks:not([dir=rtl]) h1,
+.mce-visualblocks:not([dir=rtl]) h2,
+.mce-visualblocks:not([dir=rtl]) h3,
+.mce-visualblocks:not([dir=rtl]) h4,
+.mce-visualblocks:not([dir=rtl]) h5,
+.mce-visualblocks:not([dir=rtl]) h6,
+.mce-visualblocks:not([dir=rtl]) div:not([data-mce-bogus]),
+.mce-visualblocks:not([dir=rtl]) section,
+.mce-visualblocks:not([dir=rtl]) article,
+.mce-visualblocks:not([dir=rtl]) blockquote,
+.mce-visualblocks:not([dir=rtl]) address,
+.mce-visualblocks:not([dir=rtl]) pre,
+.mce-visualblocks:not([dir=rtl]) figure,
+.mce-visualblocks:not([dir=rtl]) figcaption,
+.mce-visualblocks:not([dir=rtl]) hgroup,
+.mce-visualblocks:not([dir=rtl]) aside,
+.mce-visualblocks:not([dir=rtl]) ul,
+.mce-visualblocks:not([dir=rtl]) ol,
+.mce-visualblocks:not([dir=rtl]) dl {
+  margin-left: 3px;
+}
+.mce-visualblocks[dir=rtl] p,
+.mce-visualblocks[dir=rtl] h1,
+.mce-visualblocks[dir=rtl] h2,
+.mce-visualblocks[dir=rtl] h3,
+.mce-visualblocks[dir=rtl] h4,
+.mce-visualblocks[dir=rtl] h5,
+.mce-visualblocks[dir=rtl] h6,
+.mce-visualblocks[dir=rtl] div:not([data-mce-bogus]),
+.mce-visualblocks[dir=rtl] section,
+.mce-visualblocks[dir=rtl] article,
+.mce-visualblocks[dir=rtl] blockquote,
+.mce-visualblocks[dir=rtl] address,
+.mce-visualblocks[dir=rtl] pre,
+.mce-visualblocks[dir=rtl] figure,
+.mce-visualblocks[dir=rtl] figcaption,
+.mce-visualblocks[dir=rtl] hgroup,
+.mce-visualblocks[dir=rtl] aside,
+.mce-visualblocks[dir=rtl] ul,
+.mce-visualblocks[dir=rtl] ol,
+.mce-visualblocks[dir=rtl] dl {
+  background-position-x: right;
+  margin-right: 3px;
 }
 .mce-nbsp,
 .mce-shy {

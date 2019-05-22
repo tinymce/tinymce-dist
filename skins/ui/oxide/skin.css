@@ -299,9 +299,6 @@ button::-moz-focus-inner {
   display: none;
   fill: #207ab7;
 }
-.tox .tox-checkbox__label {
-  margin-left: 4px;
-}
 .tox input.tox-checkbox__input:checked + .tox-checkbox__icons .tox-checkbox-icon__unchecked svg {
   display: none;
 }
@@ -319,8 +316,17 @@ button::-moz-focus-inner {
   box-shadow: inset 0 0 0 1px #207ab7;
   padding: calc(4px - 1px);
 }
-.tox .tox-bar .tox-checkbox {
+.tox:not([dir=rtl]) .tox-checkbox__label {
   margin-left: 4px;
+}
+.tox:not([dir=rtl]) .tox-bar .tox-checkbox {
+  margin-left: 4px;
+}
+.tox[dir=rtl] .tox-checkbox__label {
+  margin-right: 4px;
+}
+.tox[dir=rtl] .tox-bar .tox-checkbox {
+  margin-right: 4px;
 }
 .tox .tox-collection--toolbar .tox-collection__group {
   display: flex;
@@ -547,7 +553,6 @@ button::-moz-focus-inner {
   border: 1px solid black;
   box-sizing: content-box;
   height: 4px;
-  margin-left: -1px;
   width: 100%;
 }
 .tox .tox-rgb-form {
@@ -580,6 +585,9 @@ button::-moz-focus-inner {
 .tox:not([dir=rtl]) .tox-hue-slider {
   margin-right: 15px;
 }
+.tox:not([dir=rtl]) .tox-hue-slider-thumb {
+  margin-left: -1px;
+}
 .tox:not([dir=rtl]) .tox-rgb-form label {
   margin-right: 0.5em;
 }
@@ -588,6 +596,9 @@ button::-moz-focus-inner {
 }
 .tox[dir=rtl] .tox-hue-slider {
   margin-left: 15px;
+}
+.tox[dir=rtl] .tox-hue-slider-thumb {
+  margin-right: -1px;
 }
 .tox[dir=rtl] .tox-rgb-form label {
   margin-left: 0.5em;
@@ -702,9 +713,6 @@ button::-moz-focus-inner {
   padding-top: 16px;
   text-align: center;
 }
-.tox .tox-comment__buttonspacing > *:last-child {
-  margin-left: 8px;
-}
 .tox .tox-comment-thread__overlay::after {
   background: #fff;
   bottom: 0;
@@ -732,11 +740,7 @@ button::-moz-focus-inner {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
-  margin-left: 8px;
   margin-top: 16px;
-}
-.tox .tox-comment__edit > *:last-child {
-  margin-left: 8px;
 }
 .tox .tox-comment__gradient::after {
   background: linear-gradient(rgba(255, 255, 255, 0), #fff);
@@ -813,9 +817,19 @@ button::-moz-focus-inner {
 .tox .tox-conversations {
   margin: 8px;
 }
+.tox:not([dir=rtl]) .tox-comment__edit {
+  margin-left: 8px;
+}
+.tox:not([dir=rtl]) .tox-comment__buttonspacing > *:last-child,
+.tox:not([dir=rtl]) .tox-comment__edit > *:last-child,
 .tox:not([dir=rtl]) .tox-comment__reply > *:last-child {
   margin-left: 8px;
 }
+.tox[dir=rtl] .tox-comment__edit {
+  margin-right: 8px;
+}
+.tox[dir=rtl] .tox-comment__buttonspacing > *:last-child,
+.tox[dir=rtl] .tox-comment__edit > *:last-child,
 .tox[dir=rtl] .tox-comment__reply > *:last-child {
   margin-right: 8px;
 }
@@ -1052,6 +1066,12 @@ button::-moz-focus-inner {
 body.tox-dialog__disable-scroll {
   overflow: hidden;
 }
+.tox.tox-platform-ie {
+  /* IE11 CSS styles go here */
+}
+.tox.tox-platform-ie .tox-dialog-wrap {
+  position: -ms-device-fixed;
+}
 .tox:not([dir=rtl]) .tox-dialog__body-nav {
   margin-right: 32px;
 }
@@ -1274,31 +1294,10 @@ body.tox-dialog__disable-scroll {
 .tox .tox-lock:not(.tox-locked) .tox-lock-icon__lock {
   display: none;
 }
-.tox .tox-selectfield {
-  cursor: pointer;
-  position: relative;
-}
-.tox .tox-selectfield select {
-  padding-right: 24px;
-}
-.tox .tox-selectfield select::-ms-expand {
-  display: none;
-}
-.tox .tox-selectfield svg {
-  pointer-events: none;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-}
-.tox:not([dir=rtl]) .tox-selectfield svg {
-  right: 8px;
-}
-.tox[dir=rtl] .tox-selectfield svg {
-  left: 8px;
-}
 .tox .tox-textfield,
-.tox .tox-selectfield select,
 .tox .tox-toolbar-textfield,
+.tox:not([dir=rtl]) .tox-selectfield select,
+.tox[dir=rtl] .tox-selectfield select,
 .tox .tox-textarea {
   -webkit-appearance: none;
      -moz-appearance: none;
@@ -1333,9 +1332,6 @@ body.tox-dialog__disable-scroll {
   margin-top: 2px;
   max-width: 250px;
 }
-.tox .tox-toolbar-textfield + * {
-  margin-left: 4px;
-}
 .tox .tox-naked-btn {
   background-color: transparent;
   border: 0;
@@ -1350,6 +1346,37 @@ body.tox-dialog__disable-scroll {
 .tox .tox-naked-btn svg {
   display: block;
   fill: #222f3e;
+}
+.tox:not([dir=rtl]) .tox-toolbar-textfield + * {
+  margin-left: 4px;
+}
+.tox[dir=rtl] .tox-toolbar-textfield + * {
+  margin-right: 4px;
+}
+.tox .tox-selectfield {
+  cursor: pointer;
+  position: relative;
+}
+.tox .tox-selectfield select::-ms-expand {
+  display: none;
+}
+.tox .tox-selectfield svg {
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.tox:not([dir=rtl]) .tox-selectfield select {
+  padding-right: 24px;
+}
+.tox:not([dir=rtl]) .tox-selectfield svg {
+  right: 8px;
+}
+.tox[dir=rtl] .tox-selectfield select {
+  padding-left: 24px;
+}
+.tox[dir=rtl] .tox-selectfield svg {
+  left: 8px;
 }
 .tox .tox-textarea {
   -webkit-appearance: textarea;
@@ -1881,9 +1908,6 @@ body.tox-dialog__disable-scroll {
 .tox .tox-spinner > div:nth-child(2) {
   animation-delay: -0.16s;
 }
-.tox .tox-spinner > div:not(:first-child) {
-  margin-left: 4px;
-}
 @keyframes tam-bouncing-dots {
   0%,
   80%,
@@ -1893,6 +1917,12 @@ body.tox-dialog__disable-scroll {
   40% {
     transform: scale(1);
   }
+}
+.tox:not([dir=rtl]) .tox-spinner > div:not(:first-child) {
+  margin-left: 4px;
+}
+.tox[dir=rtl] .tox-spinner > div:not(:first-child) {
+  margin-right: 4px;
 }
 .tox .tox-statusbar {
   align-items: center;
@@ -1931,7 +1961,6 @@ body.tox-dialog__disable-scroll {
 }
 .tox .tox-statusbar__path > * {
   display: inline;
-  margin-right: 4px;
   white-space: nowrap;
 }
 .tox .tox-statusbar__wordcount {
@@ -1953,11 +1982,17 @@ body.tox-dialog__disable-scroll {
   display: block;
   fill: rgba(34, 47, 62, 0.7);
 }
+.tox:not([dir=rtl]) .tox-statusbar__path > * {
+  margin-right: 4px;
+}
 .tox:not([dir=rtl]) .tox-statusbar__branding {
   margin-left: 1ch;
 }
 .tox[dir=rtl] .tox-statusbar {
   flex-direction: row-reverse;
+}
+.tox[dir=rtl] .tox-statusbar__path > * {
+  margin-left: 4px;
 }
 .tox .tox-throbber {
   z-index: 1400;
@@ -2002,9 +2037,6 @@ body.tox-dialog__disable-scroll {
   padding-left: 5px;
   padding-right: 5px;
   width: inherit;
-}
-.tox .tox-tbtn + .tox-tbtn {
-  margin-left: 0;
 }
 .tox .tox-tbtn--enabled {
   background: #c8cbcf;
@@ -2164,7 +2196,15 @@ body.tox-dialog__disable-scroll {
   padding: 0 0;
 }
 .tox .tox-toolbar__overflow.tox-toolbar__overflow--closed {
-  display: none;
+  height: 0;
+  opacity: 0;
+  visibility: hidden;
+}
+.tox .tox-toolbar__overflow--growing {
+  transition: height 0.3s ease, opacity 0.2s linear 0.1s;
+}
+.tox .tox-toolbar__overflow--shrinking {
+  transition: opacity 0.3s ease, height 0.2s linear 0.1s, visibility 0s linear 0.3s;
 }
 .tox .tox-pop .tox-toolbar {
   border-width: 0;
@@ -2177,10 +2217,15 @@ body.tox-dialog__disable-scroll {
   border: 1px solid #cccccc;
   border-radius: 3px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+.tox.tox-tinymce-aux:not([dir=rtl]) .tox-toolbar__overflow {
   margin-left: 4px;
 }
-.tox[dir=rtl] .tox-tbtn__icon-rtl .tox-tbtn__icon-wrap svg {
+.tox[dir=rtl] .tox-tbtn__icon-rtl svg {
   transform: rotateY(180deg);
+}
+.tox[dir=rtl].tox-tinymce-aux .tox-toolbar__overflow {
+  margin-right: 4px;
 }
 .tox .tox-toolbar__group {
   align-items: center;
@@ -2189,11 +2234,14 @@ body.tox-dialog__disable-scroll {
   margin: 0 0;
   padding: 0 4px;
 }
-.tox .tox-toolbar__group:not(:last-of-type) {
-  border-right: 1px solid #cccccc;
-}
 .tox .tox-toolbar__group--pull-right {
   margin-left: auto;
+}
+.tox:not([dir=rtl]) .tox-toolbar__group:not(:last-of-type) {
+  border-right: 1px solid #cccccc;
+}
+.tox[dir=rtl] .tox-toolbar__group:not(:last-of-type) {
+  border-left: 1px solid #cccccc;
 }
 .tox .tox-tooltip {
   display: inline-block;

@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.0.5 (2019-05-09)
+ * Version: 5.0.6 (2019-05-22)
  */
 (function () {
 (function (domGlobals) {
@@ -564,7 +564,6 @@
       ceFalse: ie === false || ie > 8,
       cacheSuffix: null,
       container: null,
-      overrideViewPort: null,
       experimentalShadowDom: false,
       canHaveCSP: ie === false || ie > 11,
       desktop: !phone && !tablet,
@@ -11306,7 +11305,7 @@
       return editor.getParam('end_container_on_empty_block', false);
     };
     var getFontStyleValues = function (editor) {
-      return Tools.explode(editor.getParam('font_size_style_values', ''));
+      return Tools.explode(editor.getParam('font_size_style_values', 'xx-small,x-small,small,medium,large,x-large,xx-large'));
     };
     var getFontSizeClasses = function (editor) {
       return Tools.explode(editor.getParam('font_size_classes', ''));
@@ -11322,6 +11321,12 @@
     };
     var shouldReplaceBlobUris = function (editor) {
       return editor.getParam('images_replace_blob_uris', true, 'boolean');
+    };
+    var getIconPackName = function (editor) {
+      return editor.getParam('icons', '', 'string');
+    };
+    var getIconsUrl = function (editor) {
+      return editor.getParam('icons_url', '', 'string');
     };
     var getImageUploadUrl = function (editor) {
       return editor.getParam('images_upload_url', '', 'string');
@@ -11381,6 +11386,8 @@
       shouldEndContainerOnEmptyBlock: shouldEndContainerOnEmptyBlock,
       getFontStyleValues: getFontStyleValues,
       getFontSizeClasses: getFontSizeClasses,
+      getIconPackName: getIconPackName,
+      getIconsUrl: getIconsUrl,
       getImagesDataImgFilter: getImagesDataImgFilter,
       isAutomaticUploadsEnabled: isAutomaticUploadsEnabled,
       shouldReuseFileName: shouldReuseFileName,
@@ -12191,7 +12198,6 @@
       return {
         id: id,
         theme: 'silver',
-        popup_css: '',
         plugins: '',
         document_base_url: documentBaseUrl,
         add_form_submit_trigger: true,
@@ -12203,11 +12209,9 @@
         object_resizing: true,
         doctype: '<!DOCTYPE html>',
         visual: true,
-        font_size_style_values: 'xx-small,x-small,small,medium,large,x-large,xx-large',
         font_size_legacy_values: 'xx-small,small,medium,large,x-large,xx-large,300%',
         forced_root_block: 'p',
         hidden_input: true,
-        render_ui: true,
         inline_styles: true,
         convert_fonts_to_spans: true,
         indent: true,
@@ -12215,8 +12219,7 @@
         indent_after: 'p,h1,h2,h3,h4,h5,h6,blockquote,div,title,style,pre,script,td,th,ul,ol,li,dl,dt,dd,area,table,thead,' + 'tfoot,tbody,tr,section,summary,article,hgroup,aside,figure,figcaption,option,optgroup,datalist',
         entity_encoding: 'named',
         url_converter: editor.convertURL,
-        url_converter_scope: editor,
-        ie7_compat: true
+        url_converter_scope: editor
       };
     };
     var getExternalPlugins = function (overrideSettings, settings) {
@@ -12536,27 +12539,6 @@
       };
     };
 
-    var PluginManager = AddOnManager$1.PluginManager;
-    var resolvePluginName = function (targetUrl, suffix) {
-      for (var name in PluginManager.urls) {
-        var matchUrl = PluginManager.urls[name] + '/plugin' + suffix + '.js';
-        if (matchUrl === targetUrl) {
-          return name;
-        }
-      }
-      return null;
-    };
-    var pluginUrlToMessage = function (editor, url) {
-      var plugin = resolvePluginName(url, editor.suffix);
-      return plugin ? I18n.translate([
-        'Failed to load plugin: {0} from url {1}',
-        plugin,
-        url
-      ]) : I18n.translate([
-        'Failed to load plugin url: {0}',
-        url
-      ]);
-    };
     var displayNotification = function (editor, message) {
       editor.notificationManager.open({
         type: 'error',
@@ -12578,8 +12560,20 @@
         message
       ]));
     };
-    var pluginLoadError = function (editor, url) {
-      displayError(editor, pluginUrlToMessage(editor, url));
+    var logError = function (msg) {
+      domGlobals.console.error(msg);
+    };
+    var createLoadError = function (type, url, name) {
+      return name ? 'Failed to load ' + type + ': ' + name + ' from url ' + url : 'Failed to load ' + type + ' url: ' + url;
+    };
+    var pluginLoadError = function (url, name) {
+      logError(createLoadError('plugin', url, name));
+    };
+    var iconsLoadError = function (url, name) {
+      logError(createLoadError('icons', url, name));
+    };
+    var languageLoadError = function (url, name) {
+      logError(createLoadError('language', url, name));
     };
     var pluginInitError = function (editor, name, err) {
       var message = I18n.translate([
@@ -12605,6 +12599,8 @@
     };
     var ErrorReporter = {
       pluginLoadError: pluginLoadError,
+      iconsLoadError: iconsLoadError,
+      languageLoadError: languageLoadError,
       pluginInitError: pluginInitError,
       uploadError: uploadError,
       displayError: displayError,
@@ -12791,7 +12787,7 @@
     };
     var IconManager = CreateIconManager();
 
-    var PluginManager$1 = AddOnManager$1.PluginManager;
+    var PluginManager = AddOnManager$1.PluginManager;
 
     var ThemeManager = AddOnManager$1.ThemeManager;
 
@@ -22946,7 +22942,6 @@
     var isPreValue = function (value) {
       return contains([
         'pre',
-        'pre-line',
         'pre-wrap'
       ], value);
     };
@@ -23816,11 +23811,10 @@
           DOM$2.setAttrib(bodyEl, 'contentEditable', null);
         });
         DOM$2.addClass(targetElm, 'mce-content-body');
-        editor.contentDocument = doc = settings.content_document || domGlobals.document;
-        editor.contentWindow = settings.content_window || domGlobals.window;
+        editor.contentDocument = doc = domGlobals.document;
+        editor.contentWindow = domGlobals.window;
         editor.bodyElement = targetElm;
         editor.contentAreaContainer = targetElm;
-        settings.content_document = settings.content_window = null;
         settings.root_name = targetElm.nodeName.toLowerCase();
       }
       body = editor.getBody();
@@ -24003,11 +23997,11 @@
 
     var DOM$4 = DOMUtils$1.DOM;
     var initPlugin = function (editor, initializedPlugins, plugin) {
-      var Plugin = PluginManager$1.get(plugin);
-      var pluginUrl = PluginManager$1.urls[plugin] || editor.documentBaseUrl.replace(/\/$/, '');
+      var Plugin = PluginManager.get(plugin);
+      var pluginUrl = PluginManager.urls[plugin] || editor.documentBaseUrl.replace(/\/$/, '');
       plugin = Tools.trim(plugin);
       if (Plugin && Tools.inArray(initializedPlugins, plugin) === -1) {
-        Tools.each(PluginManager$1.dependencies(plugin), function (dep) {
+        Tools.each(PluginManager.dependencies(plugin), function (dep) {
           initPlugin(editor, initializedPlugins, dep);
         });
         if (editor.plugins[plugin]) {
@@ -24124,11 +24118,10 @@
       var languageCode = Settings.getLanguageCode(editor);
       var languageUrl = Settings.getLanguageUrl(editor);
       if (I18n.hasCode(languageCode) === false && languageCode !== 'en') {
-        if (languageUrl !== '') {
-          scriptLoader.add(languageUrl);
-        } else {
-          scriptLoader.add(editor.editorManager.baseURL + '/langs/' + languageCode + '.js');
-        }
+        var url_1 = languageUrl !== '' ? languageUrl : editor.editorManager.baseURL + '/langs/' + languageCode + '.js';
+        scriptLoader.add(url_1, noop, undefined, function () {
+          ErrorReporter.languageLoadError(url_1, languageCode);
+        });
       }
     };
     var loadTheme = function (scriptLoader, editor, suffix, callback) {
@@ -24149,41 +24142,70 @@
         callback();
       }
     };
-    var loadIcons = function (editor) {
-      var iconPackName = Tools.trim(editor.getParam('icons', '', 'string'));
-      if (iconPackName.length > 0 && !IconManager.has(iconPackName)) {
-        var urlString = editor.editorManager.baseURL + '/icons/' + iconPackName + '/icons.js';
-        ScriptLoader.ScriptLoader.add(urlString);
-      }
+    var getIconsUrlMetaFromUrl = function (editor) {
+      return Option.from(Settings.getIconsUrl(editor)).filter(function (url) {
+        return url.length > 0;
+      }).map(function (url) {
+        return {
+          url: url,
+          name: Option.none()
+        };
+      });
+    };
+    var getIconsUrlMetaFromName = function (editor) {
+      return Option.from(Settings.getIconPackName(editor)).filter(function (name) {
+        return name.length > 0 && !IconManager.has(name);
+      }).map(function (name) {
+        return {
+          url: editor.editorManager.baseURL + '/icons/' + name + '/icons.js',
+          name: Option.some(name)
+        };
+      });
+    };
+    var loadIcons = function (scriptLoader, editor) {
+      getIconsUrlMetaFromUrl(editor).orThunk(function () {
+        return getIconsUrlMetaFromName(editor);
+      }).each(function (urlMeta) {
+        scriptLoader.add(urlMeta.url, noop, undefined, function () {
+          ErrorReporter.iconsLoadError(urlMeta.url, urlMeta.name.getOrUndefined());
+        });
+      });
     };
     var loadPlugins = function (settings, suffix) {
-      if (Tools.isArray(settings.plugins)) {
+      if (isArray(settings.plugins)) {
         settings.plugins = settings.plugins.join(' ');
       }
       Tools.each(settings.external_plugins, function (url, name) {
-        PluginManager$1.load(name, url);
+        PluginManager.load(name, url, noop, undefined, function () {
+          ErrorReporter.pluginLoadError(name, url);
+        });
         settings.plugins += ' ' + name;
       });
       Tools.each(settings.plugins.split(/[ ,]/), function (plugin) {
         plugin = Tools.trim(plugin);
-        if (plugin && !PluginManager$1.urls[plugin]) {
+        if (plugin && !PluginManager.urls[plugin]) {
           if (hasSkipLoadPrefix(plugin)) {
             plugin = plugin.substr(1, plugin.length);
-            var dependencies = PluginManager$1.dependencies(plugin);
+            var dependencies = PluginManager.dependencies(plugin);
             Tools.each(dependencies, function (dep) {
               var defaultSettings = {
                 prefix: 'plugins/',
                 resource: dep,
                 suffix: '/plugin' + suffix + '.js'
               };
-              dep = PluginManager$1.createUrl(defaultSettings, dep);
-              PluginManager$1.load(dep.resource, dep);
+              dep = PluginManager.createUrl(defaultSettings, dep);
+              PluginManager.load(dep.resource, dep, noop, undefined, function () {
+                ErrorReporter.pluginLoadError(dep.prefix + dep.resource + dep.suffix, dep.resource);
+              });
             });
           } else {
-            PluginManager$1.load(plugin, {
+            var url_2 = {
               prefix: 'plugins/',
               resource: plugin,
               suffix: '/plugin' + suffix + '.js'
+            };
+            PluginManager.load(plugin, url_2, noop, undefined, function () {
+              ErrorReporter.pluginLoadError(url_2.prefix + url_2.resource + url_2.suffix, plugin);
             });
           }
         }
@@ -24193,14 +24215,13 @@
       var scriptLoader = ScriptLoader.ScriptLoader;
       loadTheme(scriptLoader, editor, suffix, function () {
         loadLanguage(scriptLoader, editor);
-        loadIcons(editor);
+        loadIcons(scriptLoader, editor);
         loadPlugins(editor.settings, suffix);
         scriptLoader.loadQueue(function () {
           if (!editor.removed) {
             Init.init(editor);
           }
-        }, editor, function (urls) {
-          ErrorReporter.pluginLoadError(editor, urls[0]);
+        }, editor, function () {
           if (!editor.removed) {
             Init.init(editor);
           }
@@ -24289,6 +24310,7 @@
     };
     var Render = { render: render };
 
+    var internalContentEditableAttr = 'data-mce-contenteditable';
     var toggleClass = function (elm, cls, state) {
       if (has$2(elm, cls) && state === false) {
         remove$4(elm, cls);
@@ -24296,13 +24318,160 @@
         add$3(elm, cls);
       }
     };
+    var setEditorCommandState = function (editor, cmd, state) {
+      try {
+        editor.getDoc().execCommand(cmd, false, state);
+      } catch (ex) {
+      }
+    };
+    var setContentEditable = function (elm, state) {
+      elm.dom().contentEditable = state ? 'true' : 'false';
+    };
+    var switchOffContentEditableTrue = function (elm) {
+      each(descendants$1(elm, '*[contenteditable="true"]'), function (elm) {
+        set(elm, internalContentEditableAttr, 'true');
+        setContentEditable(elm, false);
+      });
+    };
+    var switchOnContentEditableTrue = function (elm) {
+      each(descendants$1(elm, '*[' + internalContentEditableAttr + '="true"]'), function (elm) {
+        remove(elm, internalContentEditableAttr);
+        setContentEditable(elm, true);
+      });
+    };
+    var removeFakeSelection = function (editor) {
+      Option.from(editor.selection.getNode()).each(function (elm) {
+        elm.removeAttribute('data-mce-selected');
+      });
+    };
+    var restoreFakeSelection = function (editor) {
+      editor.selection.setRng(editor.selection.getRng());
+    };
+    var toggleReadOnly = function (editor, state) {
+      var body = Element.fromDom(editor.getBody());
+      toggleClass(body, 'mce-content-readonly', state);
+      if (state) {
+        editor.selection.controlSelection.hideResizeRect();
+        editor._selectionOverrides.hideFakeCaret();
+        removeFakeSelection(editor);
+        editor.readonly = true;
+        setContentEditable(body, false);
+        switchOffContentEditableTrue(body);
+      } else {
+        editor.readonly = false;
+        setContentEditable(body, true);
+        switchOnContentEditableTrue(body);
+        setEditorCommandState(editor, 'StyleWithCSS', false);
+        setEditorCommandState(editor, 'enableInlineTableEditing', false);
+        setEditorCommandState(editor, 'enableObjectResizing', false);
+        editor.focus();
+        restoreFakeSelection(editor);
+        editor.nodeChanged();
+      }
+    };
+    var isReadOnly = function (editor) {
+      return editor.readonly === true;
+    };
+    var registerFilters = function (editor) {
+      editor.parser.addAttributeFilter('contenteditable', function (nodes) {
+        if (isReadOnly(editor)) {
+          each(nodes, function (node) {
+            node.attr(internalContentEditableAttr, node.attr('contenteditable'));
+            node.attr('contenteditable', 'false');
+          });
+        }
+      });
+      editor.serializer.addAttributeFilter(internalContentEditableAttr, function (nodes) {
+        if (isReadOnly(editor)) {
+          each(nodes, function (node) {
+            node.attr('contenteditable', node.attr(internalContentEditableAttr));
+          });
+        }
+      });
+      editor.serializer.addTempAttr(internalContentEditableAttr);
+    };
+    var registerReadOnlyContentFilters = function (editor) {
+      if (editor.serializer) {
+        registerFilters(editor);
+      } else {
+        editor.on('PreInit', function () {
+          registerFilters(editor);
+        });
+      }
+    };
+    var preventReadOnlyEvents = function (e) {
+      var target = e.target;
+      if (e.type === 'click' && target.tagName === 'A') {
+        e.preventDefault();
+      }
+    };
+    var registerReadOnlySelectionBlockers = function (editor) {
+      editor.on('ShowCaret', function (e) {
+        if (isReadOnly(editor)) {
+          e.preventDefault();
+        }
+      });
+      editor.on('ObjectSelected', function (e) {
+        if (isReadOnly(editor)) {
+          e.preventDefault();
+        }
+      });
+    };
+
+    var defaultModes = [
+      'design',
+      'readonly'
+    ];
+    var switchToMode = function (editor, activeMode, availableModes, mode) {
+      var oldMode = availableModes[activeMode.get()];
+      var newMode = availableModes[mode];
+      try {
+        newMode.activate();
+      } catch (e) {
+        domGlobals.console.error('problem while activating editor mode ' + mode + ':', e);
+        return;
+      }
+      oldMode.deactivate();
+      if (oldMode.editorReadOnly !== newMode.editorReadOnly) {
+        toggleReadOnly(editor, newMode.editorReadOnly);
+      }
+      activeMode.set(mode);
+      Events.fireSwitchMode(editor, mode);
+    };
+    var setMode = function (editor, availableModes, activeMode, mode) {
+      if (mode === activeMode.get()) {
+        return;
+      } else if (!has(availableModes, mode)) {
+        throw new Error('Editor mode \'' + mode + '\' is invalid');
+      }
+      if (editor.initialized) {
+        switchToMode(editor, activeMode, availableModes, mode);
+      } else {
+        editor.on('init', function () {
+          return switchToMode(editor, activeMode, availableModes, mode);
+        });
+      }
+    };
+    var registerMode = function (availableModes, mode, api) {
+      var _a;
+      if (contains(defaultModes, mode)) {
+        throw new Error('Cannot override default mode ' + mode);
+      }
+      return __assign({}, availableModes, (_a = {}, _a[mode] = __assign({}, api, {
+        deactivate: function () {
+          try {
+            api.deactivate();
+          } catch (e) {
+            domGlobals.console.error('problem while deactivating editor mode ' + mode + ':');
+            domGlobals.console.error(e);
+          }
+        }
+      }), _a));
+    };
+
     var create$3 = function (editor) {
-      var activeMode = 'design';
-      var defaultModes = [
-        'design',
-        'readonly'
-      ];
-      var availableModes = {
+      var activeMode = Cell('design');
+      var availableModes = Cell({
         design: {
           activate: noop,
           deactivate: noop,
@@ -24313,85 +24482,22 @@
           deactivate: noop,
           editorReadOnly: true
         }
-      };
-      var setEditorCommandState = function (cmd, state) {
-        try {
-          editor.getDoc().execCommand(cmd, false, state);
-        } catch (ex) {
-        }
-      };
-      var toggleReadOnly = function (state) {
-        toggleClass(Element.fromDom(editor.getBody()), 'mce-content-readonly', state);
-        if (state) {
-          editor.selection.controlSelection.hideResizeRect();
-          editor.readonly = true;
-          editor.getBody().contentEditable = 'false';
-        } else {
-          editor.readonly = false;
-          editor.getBody().contentEditable = 'true';
-          setEditorCommandState('StyleWithCSS', false);
-          setEditorCommandState('enableInlineTableEditing', false);
-          setEditorCommandState('enableObjectResizing', false);
-          editor.focus();
-          editor.nodeChanged();
-        }
-      };
-      var switchToMode = function (mode) {
-        var oldMode = availableModes[activeMode];
-        var newMode = availableModes[mode];
-        try {
-          newMode.activate();
-        } catch (e) {
-          domGlobals.console.error('problem while activating editor mode ' + mode + ':', e);
-          return;
-        }
-        oldMode.deactivate();
-        if (oldMode.editorReadOnly !== newMode.editorReadOnly) {
-          toggleReadOnly(newMode.editorReadOnly);
-        }
-        activeMode = mode;
-        Events.fireSwitchMode(editor, mode);
-      };
-      var set = function (mode) {
-        if (mode === activeMode) {
-          return;
-        } else if (!has(availableModes, mode)) {
-          throw new Error('Editor mode \'' + mode + '\' is invalid');
-        }
-        if (editor.initialized) {
-          switchToMode(mode);
-        } else {
-          editor.on('init', function () {
-            return switchToMode(mode);
-          });
-        }
-      };
-      var get = function () {
-        return activeMode;
-      };
-      var isReadOnly = function () {
-        return editor.readonly === true;
-      };
-      var register = function (mode, api) {
-        if (contains(defaultModes, mode)) {
-          throw new Error('Cannot override default mode ' + mode);
-        }
-        availableModes[mode] = __assign({}, api, {
-          deactivate: function () {
-            try {
-              api.deactivate();
-            } catch (e) {
-              domGlobals.console.error('problem while deactivating editor mode ' + mode + ':');
-              domGlobals.console.error(e);
-            }
-          }
-        });
-      };
+      });
+      registerReadOnlyContentFilters(editor);
+      registerReadOnlySelectionBlockers(editor);
       return {
-        isReadOnly: isReadOnly,
-        set: set,
-        get: get,
-        register: register
+        isReadOnly: function () {
+          return isReadOnly(editor);
+        },
+        set: function (mode) {
+          return setMode(editor, availableModes.get(), activeMode, mode);
+        },
+        get: function () {
+          return activeMode.get();
+        },
+        register: function (mode, api) {
+          availableModes.set(registerMode(availableModes.get(), mode, api));
+        }
       };
     };
 
@@ -25375,7 +25481,7 @@
               value = { href: value };
             }
             anchor = editor.dom.getParent(editor.selection.getNode(), 'a');
-            value.href = value.href.replace(' ', '%20');
+            value.href = value.href.replace(/ /g, '%20');
             if (!anchor || !value.href) {
               editor.formatter.remove('link');
             }
@@ -25652,13 +25758,13 @@
       return editor.getBody();
     };
     var isListening = function (editor) {
-      return !editor.hidden && !editor.readonly;
+      return !editor.hidden && !isReadOnly(editor);
     };
     var fireEvent = function (editor, eventName, e) {
       if (isListening(editor)) {
         editor.fire(eventName, e);
-      } else if (editor.readonly) {
-        e.preventDefault();
+      } else if (isReadOnly(editor)) {
+        preventReadOnlyEvents(e);
       }
     };
     var bindEventDelegate = function (editor, eventName) {
@@ -26251,9 +26357,6 @@
         if (this.settings.cache_suffix) {
           Env.cacheSuffix = this.settings.cache_suffix.replace(/^[\?\&]+/, '');
         }
-        if (this.settings.override_viewport === false) {
-          Env.overrideViewPort = false;
-        }
         this.ui = { registry: registry() };
         var self = this;
         var modeInstance = create$3(self);
@@ -26795,8 +26898,8 @@
       suffix: null,
       $: DomQuery,
       majorVersion: '5',
-      minorVersion: '0.5',
-      releaseDate: '2019-05-09',
+      minorVersion: '0.6',
+      releaseDate: '2019-05-22',
       editors: legacyEditors,
       i18n: I18n,
       activeEditor: null,
