@@ -280,10 +280,13 @@ button::-moz-focus-inner {
   width: 1px;
 }
 .tox .tox-checkbox__icons {
+  align-items: center;
   border-radius: 3px;
   box-shadow: 0 0 0 2px transparent;
   box-sizing: content-box;
+  display: flex;
   height: 24px;
+  justify-content: center;
   padding: calc(4px - 1px);
   width: 24px;
 }
@@ -895,6 +898,13 @@ button::-moz-focus-inner {
   width: 95vw;
   z-index: 1102;
 }
+@media only screen and (max-width:767px) {
+  .tox .tox-dialog {
+    align-self: flex-start;
+    margin: 8px auto;
+    width: calc(100vw - 16px);
+  }
+}
 .tox .tox-dialog__header {
   align-items: center;
   background-color: #fff;
@@ -947,10 +957,23 @@ button::-moz-focus-inner {
   text-align: left;
   text-transform: normal;
 }
+@media only screen and (max-width:767px) {
+  .tox .tox-dialog__body {
+    flex-direction: column;
+  }
+}
 .tox .tox-dialog__body-nav {
   align-items: flex-start;
   display: flex;
   flex-direction: column;
+}
+@media only screen and (max-width:767px) {
+  .tox .tox-dialog__body-nav {
+    flex-direction: row;
+    margin-bottom: 8px;
+    -webkit-overflow-scrolling: touch;
+    overflow-x: auto;
+  }
 }
 .tox .tox-dialog__body-nav-item {
   border-bottom: 2px solid transparent;
@@ -960,6 +983,7 @@ button::-moz-focus-inner {
   line-height: 1.3;
   margin-bottom: 8px;
   text-decoration: none;
+  white-space: nowrap;
 }
 .tox .tox-dialog__body-nav-item--active {
   border-bottom: 2px solid #207ab7;
@@ -972,6 +996,7 @@ button::-moz-focus-inner {
   -ms-flex-preferred-size: auto;
   max-height: 650px;
   overflow: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .tox .tox-dialog__body-content > * {
   margin-bottom: 0;
@@ -1075,6 +1100,19 @@ body.tox-dialog__disable-scroll {
 .tox:not([dir=rtl]) .tox-dialog__body-nav {
   margin-right: 32px;
 }
+@media only screen and (max-width:767px) {
+  .tox:not([dir=rtl]) .tox-dialog__body-nav {
+    margin-right: 0;
+  }
+}
+@media only screen and (max-width:767px) {
+  .tox:not([dir=rtl]) .tox-dialog__body-nav-item {
+    /* stylelint-disable-line */
+  }
+  .tox:not([dir=rtl]) .tox-dialog__body-nav-item:not(:first-child) {
+    margin-left: 8px;
+  }
+}
 .tox:not([dir=rtl]) .tox-dialog__footer .tox-dialog__footer-start > *,
 .tox:not([dir=rtl]) .tox-dialog__footer .tox-dialog__footer-end > * {
   margin-left: 8px;
@@ -1084,6 +1122,19 @@ body.tox-dialog__disable-scroll {
 }
 .tox[dir=rtl] .tox-dialog__body-nav {
   margin-left: 32px;
+}
+@media only screen and (max-width:767px) {
+  .tox[dir=rtl] .tox-dialog__body-nav {
+    margin-left: 0;
+  }
+}
+@media only screen and (max-width:767px) {
+  .tox[dir=rtl] .tox-dialog__body-nav-item {
+    /* stylelint-disable-line */
+  }
+  .tox[dir=rtl] .tox-dialog__body-nav-item:not(:first-child) {
+    margin-right: 8px;
+  }
 }
 .tox[dir=rtl] .tox-dialog__footer .tox-dialog__footer-start > *,
 .tox[dir=rtl] .tox-dialog__footer .tox-dialog__footer-end > * {
@@ -1178,6 +1229,9 @@ body.tox-dialog__disable-scroll {
 }
 .tox .tox-autocompleter .tox-menu {
   max-width: 25em;
+}
+.tox .tox-autocompleter .tox-autocompleter-highlight {
+  font-weight: bold;
 }
 .tox .tox-color-input {
   display: flex;
@@ -1932,18 +1986,12 @@ body.tox-dialog__disable-scroll {
   display: flex;
   flex: 0 0 auto;
   font-size: 12px;
+  font-weight: normal;
   height: 18px;
   overflow: hidden;
   padding: 0 8px;
   position: relative;
   text-transform: uppercase;
-}
-.tox .tox-statusbar a {
-  color: rgba(34, 47, 62, 0.7);
-  text-decoration: none;
-}
-.tox .tox-statusbar a:hover {
-  text-decoration: underline;
 }
 .tox .tox-statusbar__text-container {
   display: flex;
@@ -1966,6 +2014,21 @@ body.tox-dialog__disable-scroll {
 .tox .tox-statusbar__wordcount {
   flex: 0 0 auto;
   margin-left: 1ch;
+}
+.tox .tox-statusbar a,
+.tox .tox-statusbar__path-item,
+.tox .tox-statusbar__wordcount {
+  color: rgba(34, 47, 62, 0.7);
+  text-decoration: none;
+}
+.tox .tox-statusbar a:hover,
+.tox .tox-statusbar__path-item:hover,
+.tox .tox-statusbar__wordcount:hover,
+.tox .tox-statusbar a:focus,
+.tox .tox-statusbar__path-item:focus,
+.tox .tox-statusbar__wordcount:focus {
+  cursor: pointer;
+  text-decoration: underline;
 }
 .tox .tox-statusbar__resize-handle {
   align-items: flex-end;

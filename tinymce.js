@@ -4,24 +4,16 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.0.6 (2019-05-22)
+ * Version: 5.0.7 (2019-06-05)
  */
 (function () {
 (function (domGlobals) {
     'use strict';
 
     var noop = function () {
-      var args = [];
-      for (var _i = 0; _i < arguments.length; _i++) {
-        args[_i] = arguments[_i];
-      }
     };
     var noarg = function (f) {
       return function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-          args[_i] = arguments[_i];
-        }
         return f();
       };
     };
@@ -250,6 +242,7 @@
     var isFunction = isType('function');
     var isNumber = isType('number');
 
+    var slice = Array.prototype.slice;
     var rawIndexOf = function () {
       var pIndexOf = Array.prototype.indexOf;
       var fastIndex = function (xs, x) {
@@ -280,7 +273,7 @@
     var chunk = function (array, size) {
       var r = [];
       for (var i = 0; i < array.length; i += size) {
-        var s = array.slice(i, i + size);
+        var s = slice.call(array, i, i + size);
         r.push(s);
       }
       return r;
@@ -418,7 +411,6 @@
         return x === a2[i];
       });
     };
-    var slice = Array.prototype.slice;
     var reverse = function (xs) {
       var r = slice.call(xs, 0);
       r.reverse();
@@ -4043,6 +4035,9 @@
         return 0;
       }
     };
+    var hasChild = function (elm, child) {
+      return elm.children && contains(elm.children, child);
+    };
     var getPos = function (body, elm, rootElm) {
       var x = 0, y = 0, offsetParent;
       var doc = body.ownerDocument;
@@ -4059,13 +4054,13 @@
           };
         }
         offsetParent = elm;
-        while (offsetParent && offsetParent !== rootElm && offsetParent.nodeType) {
+        while (offsetParent && offsetParent !== rootElm && offsetParent.nodeType && !hasChild(offsetParent, rootElm)) {
           x += offsetParent.offsetLeft || 0;
           y += offsetParent.offsetTop || 0;
           offsetParent = offsetParent.offsetParent;
         }
         offsetParent = elm.parentNode;
-        while (offsetParent && offsetParent !== rootElm && offsetParent.nodeType) {
+        while (offsetParent && offsetParent !== rootElm && offsetParent.nodeType && !hasChild(offsetParent, rootElm)) {
           x -= offsetParent.scrollLeft || 0;
           y -= offsetParent.scrollTop || 0;
           offsetParent = offsetParent.parentNode;
@@ -4496,6 +4491,9 @@
         return !!node && node.nodeType === type;
       };
     };
+    var isRestrictedNode = function (node) {
+      return !!node && !Object.getPrototypeOf(node);
+    };
     var isElement$1 = isNodeType(1);
     var matchNodeNames = function (names) {
       var items = names.toLowerCase().split(' ');
@@ -4581,6 +4579,7 @@
       isBr: isBr,
       isContentEditableTrue: isContentEditableTrue,
       isContentEditableFalse: isContentEditableFalse,
+      isRestrictedNode: isRestrictedNode,
       matchNodeNames: matchNodeNames,
       hasPropValue: hasPropValue,
       hasAttribute: hasAttribute,
@@ -11370,6 +11369,9 @@
     var getDirectionality = function (editor) {
       return editor.getParam('directionality', I18n.isRtl() ? 'rtl' : undefined);
     };
+    var getInlineBoundarySelector = function (editor) {
+      return editor.getParam('inline_boundaries_selector', 'a[href],code,.mce-annotation', 'string');
+    };
     var Settings = {
       getIframeAttrs: getIframeAttrs,
       getDocType: getDocType,
@@ -11402,7 +11404,8 @@
       shouldIndentUseMargin: shouldIndentUseMargin,
       getIndentation: getIndentation,
       getContentCss: getContentCss,
-      getDirectionality: getDirectionality
+      getDirectionality: getDirectionality,
+      getInlineBoundarySelector: getInlineBoundarySelector
     };
 
     var defaultFormat = 'html';
@@ -11810,7 +11813,7 @@
       return range$1(rng.start(), clamp(rng.soffset(), rng.start()), rng.finish(), clamp(rng.foffset(), rng.finish()));
     };
     var isOrContains = function (root, elm) {
-      return contains$3(root, elm) || eq(root, elm);
+      return !NodeType.isRestrictedNode(elm.dom()) && (contains$3(root, elm) || eq(root, elm));
     };
     var isRngInRoot = function (root) {
       return function (rng) {
@@ -12259,7 +12262,6 @@
     var getFiltered = function (predicate, editor, name) {
       return Option.from(editor.settings[name]).filter(predicate);
     };
-    var getString = curry(getFiltered, isString);
     var getParamObject = function (value) {
       var output = {};
       if (typeof value === 'string') {
@@ -19869,7 +19871,7 @@
           }
         }
         try {
-          if (selection = getSel()) {
+          if ((selection = getSel()) && !NodeType.isRestrictedNode(selection.anchorNode)) {
             if (selection.rangeCount > 0) {
               rng = selection.getRangeAt(0);
             } else {
@@ -20170,8 +20172,7 @@
     };
 
     var isInlineTarget = function (editor, elm) {
-      var selector = getString(editor, 'inline_boundaries_selector').getOr('a[href],code');
-      return is$1(Element.fromDom(elm), selector);
+      return is$1(Element.fromDom(elm), Settings.getInlineBoundarySelector(editor));
     };
     var isRtl$1 = function (element) {
       return DOMUtils$1.DOM.getStyle(element, 'direction', true) === 'rtl' || hasStrongRtl(element.textContent);
@@ -25558,18 +25559,12 @@
     }();
 
     var nativeEvents = Tools.makeMap('focus blur focusin focusout click dblclick mousedown mouseup mousemove mouseover beforepaste paste cut copy selectionchange ' + 'mouseout mouseenter mouseleave wheel keydown keypress keyup input contextmenu dragstart dragend dragover ' + 'draggesture dragdrop drop drag submit ' + 'compositionstart compositionend compositionupdate touchstart touchmove touchend', ' ');
-    var returnFalse$1 = function () {
-      return false;
-    };
-    var returnTrue$1 = function () {
-      return true;
-    };
     var EventDispatcher = function () {
       function EventDispatcher(settings) {
         this.bindings = {};
         this.settings = settings || {};
         this.scope = this.settings.scope || this;
-        this.toggleEvent = this.settings.toggleEvent || returnFalse$1;
+        this.toggleEvent = this.settings.toggleEvent || never;
       }
       EventDispatcher.isNative = function (name) {
         return !!nativeEvents[name.toLowerCase()];
@@ -25584,17 +25579,17 @@
         }
         if (!args.preventDefault) {
           args.preventDefault = function () {
-            args.isDefaultPrevented = returnTrue$1;
+            args.isDefaultPrevented = always;
           };
           args.stopPropagation = function () {
-            args.isPropagationStopped = returnTrue$1;
+            args.isPropagationStopped = always;
           };
           args.stopImmediatePropagation = function () {
-            args.isImmediatePropagationStopped = returnTrue$1;
+            args.isImmediatePropagationStopped = always;
           };
-          args.isDefaultPrevented = returnFalse$1;
-          args.isPropagationStopped = returnFalse$1;
-          args.isImmediatePropagationStopped = returnFalse$1;
+          args.isDefaultPrevented = never;
+          args.isPropagationStopped = never;
+          args.isImmediatePropagationStopped = never;
         }
         if (this.settings.beforeFire) {
           this.settings.beforeFire(args);
@@ -25621,7 +25616,7 @@
       EventDispatcher.prototype.on = function (name, callback, prepend, extra) {
         var handlers, names, i;
         if (callback === false) {
-          callback = returnFalse$1;
+          callback = never;
         }
         if (callback) {
           var wrappedCallback = { func: callback };
@@ -26830,7 +26825,8 @@
 
     var DOM$9 = DOMUtils$1.DOM;
     var explode$4 = Tools.explode, each$k = Tools.each, extend$4 = Tools.extend;
-    var instanceCounter = 0, beforeUnloadDelegate, boundGlobalEvents = false;
+    var instanceCounter = 0, boundGlobalEvents = false;
+    var beforeUnloadDelegate;
     var legacyEditors = [];
     var editors = [];
     var isValidLegacyKey = function (id) {
@@ -26890,7 +26886,6 @@
       return editor;
     };
     var EditorManager = __assign({}, Observable, {
-      _beforeUnloadHandler: null,
       baseURI: null,
       baseURL: null,
       defaultSettings: {},
@@ -26898,8 +26893,8 @@
       suffix: null,
       $: DomQuery,
       majorVersion: '5',
-      minorVersion: '0.6',
-      releaseDate: '2019-05-22',
+      minorVersion: '0.7',
+      releaseDate: '2019-06-05',
       editors: legacyEditors,
       i18n: I18n,
       activeEditor: null,
@@ -27139,10 +27134,15 @@
         self.activeEditor = editor;
         self.fire('AddEditor', { editor: editor });
         if (!beforeUnloadDelegate) {
-          beforeUnloadDelegate = function () {
-            self.fire('BeforeUnload');
+          beforeUnloadDelegate = function (e) {
+            var event = self.fire('BeforeUnload');
+            if (event.returnValue) {
+              e.preventDefault();
+              e.returnValue = event.returnValue;
+              return event.returnValue;
+            }
           };
-          DOM$9.bind(window, 'beforeunload', beforeUnloadDelegate);
+          window.addEventListener('beforeunload', beforeUnloadDelegate);
         }
         return editor;
       },
@@ -27175,7 +27175,7 @@
           self.fire('RemoveEditor', { editor: editor });
         }
         if (editors.length === 0) {
-          DOM$9.unbind(window, 'beforeunload', beforeUnloadDelegate);
+          window.removeEventListener('beforeunload', beforeUnloadDelegate);
         }
         editor.remove();
         toggleGlobalEvents(editors.length > 0);
