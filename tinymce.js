@@ -4,9 +4,8 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.0.7 (2019-06-05)
+ * Version: 5.0.8 (2019-06-18)
  */
-(function () {
 (function (domGlobals) {
     'use strict';
 
@@ -475,6 +474,363 @@
         head: head,
         last: last,
         from: from$1
+    });
+
+    var extendStatics = function (d, b) {
+      extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function (d, b) {
+        d.__proto__ = b;
+      } || function (d, b) {
+        for (var p in b)
+          if (b.hasOwnProperty(p))
+            d[p] = b[p];
+      };
+      return extendStatics(d, b);
+    };
+    function __extends(d, b) {
+      extendStatics(d, b);
+      function __() {
+        this.constructor = d;
+      }
+      d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    }
+    var __assign = function () {
+      __assign = Object.assign || function __assign(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+          s = arguments[i];
+          for (var p in s)
+            if (Object.prototype.hasOwnProperty.call(s, p))
+              t[p] = s[p];
+        }
+        return t;
+      };
+      return __assign.apply(this, arguments);
+    };
+    function __rest(s, e) {
+      var t = {};
+      for (var p in s)
+        if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+          t[p] = s[p];
+      if (s != null && typeof Object.getOwnPropertySymbols === 'function')
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++)
+          if (e.indexOf(p[i]) < 0)
+            t[p[i]] = s[p[i]];
+      return t;
+    }
+    function __decorate(decorators, target, key, desc) {
+      var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+      if (typeof Reflect === 'object' && typeof Reflect.decorate === 'function')
+        r = Reflect.decorate(decorators, target, key, desc);
+      else
+        for (var i = decorators.length - 1; i >= 0; i--)
+          if (d = decorators[i])
+            r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+      return c > 3 && r && Object.defineProperty(target, key, r), r;
+    }
+    function __param(paramIndex, decorator) {
+      return function (target, key) {
+        decorator(target, key, paramIndex);
+      };
+    }
+    function __metadata(metadataKey, metadataValue) {
+      if (typeof Reflect === 'object' && typeof Reflect.metadata === 'function')
+        return Reflect.metadata(metadataKey, metadataValue);
+    }
+    function __awaiter(thisArg, _arguments, P, generator) {
+      return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) {
+          try {
+            step(generator.next(value));
+          } catch (e) {
+            reject(e);
+          }
+        }
+        function rejected(value) {
+          try {
+            step(generator['throw'](value));
+          } catch (e) {
+            reject(e);
+          }
+        }
+        function step(result) {
+          result.done ? resolve(result.value) : new P(function (resolve) {
+            resolve(result.value);
+          }).then(fulfilled, rejected);
+        }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+      });
+    }
+    function __generator(thisArg, body) {
+      var _ = {
+          label: 0,
+          sent: function () {
+            if (t[0] & 1)
+              throw t[1];
+            return t[1];
+          },
+          trys: [],
+          ops: []
+        }, f, y, t, g;
+      return g = {
+        next: verb(0),
+        'throw': verb(1),
+        'return': verb(2)
+      }, typeof Symbol === 'function' && (g[Symbol.iterator] = function () {
+        return this;
+      }), g;
+      function verb(n) {
+        return function (v) {
+          return step([
+            n,
+            v
+          ]);
+        };
+      }
+      function step(op) {
+        if (f)
+          throw new TypeError('Generator is already executing.');
+        while (_)
+          try {
+            if (f = 1, y && (t = op[0] & 2 ? y['return'] : op[0] ? y['throw'] || ((t = y['return']) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done)
+              return t;
+            if (y = 0, t)
+              op = [
+                op[0] & 2,
+                t.value
+              ];
+            switch (op[0]) {
+            case 0:
+            case 1:
+              t = op;
+              break;
+            case 4:
+              _.label++;
+              return {
+                value: op[1],
+                done: false
+              };
+            case 5:
+              _.label++;
+              y = op[1];
+              op = [0];
+              continue;
+            case 7:
+              op = _.ops.pop();
+              _.trys.pop();
+              continue;
+            default:
+              if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) {
+                _ = 0;
+                continue;
+              }
+              if (op[0] === 3 && (!t || op[1] > t[0] && op[1] < t[3])) {
+                _.label = op[1];
+                break;
+              }
+              if (op[0] === 6 && _.label < t[1]) {
+                _.label = t[1];
+                t = op;
+                break;
+              }
+              if (t && _.label < t[2]) {
+                _.label = t[2];
+                _.ops.push(op);
+                break;
+              }
+              if (t[2])
+                _.ops.pop();
+              _.trys.pop();
+              continue;
+            }
+            op = body.call(thisArg, _);
+          } catch (e) {
+            op = [
+              6,
+              e
+            ];
+            y = 0;
+          } finally {
+            f = t = 0;
+          }
+        if (op[0] & 5)
+          throw op[1];
+        return {
+          value: op[0] ? op[1] : void 0,
+          done: true
+        };
+      }
+    }
+    function __exportStar(m, exports) {
+      for (var p in m)
+        if (!exports.hasOwnProperty(p))
+          exports[p] = m[p];
+    }
+    function __values(o) {
+      var m = typeof Symbol === 'function' && o[Symbol.iterator], i = 0;
+      if (m)
+        return m.call(o);
+      return {
+        next: function () {
+          if (o && i >= o.length)
+            o = void 0;
+          return {
+            value: o && o[i++],
+            done: !o
+          };
+        }
+      };
+    }
+    function __read(o, n) {
+      var m = typeof Symbol === 'function' && o[Symbol.iterator];
+      if (!m)
+        return o;
+      var i = m.call(o), r, ar = [], e;
+      try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+          ar.push(r.value);
+      } catch (error) {
+        e = { error: error };
+      } finally {
+        try {
+          if (r && !r.done && (m = i['return']))
+            m.call(i);
+        } finally {
+          if (e)
+            throw e.error;
+        }
+      }
+      return ar;
+    }
+    function __spread() {
+      for (var ar = [], i = 0; i < arguments.length; i++)
+        ar = ar.concat(__read(arguments[i]));
+      return ar;
+    }
+    function __await(v) {
+      return this instanceof __await ? (this.v = v, this) : new __await(v);
+    }
+    function __asyncGenerator(thisArg, _arguments, generator) {
+      if (!Symbol.asyncIterator)
+        throw new TypeError('Symbol.asyncIterator is not defined.');
+      var g = generator.apply(thisArg, _arguments || []), i, q = [];
+      return i = {}, verb('next'), verb('throw'), verb('return'), i[Symbol.asyncIterator] = function () {
+        return this;
+      }, i;
+      function verb(n) {
+        if (g[n])
+          i[n] = function (v) {
+            return new Promise(function (a, b) {
+              q.push([
+                n,
+                v,
+                a,
+                b
+              ]) > 1 || resume(n, v);
+            });
+          };
+      }
+      function resume(n, v) {
+        try {
+          step(g[n](v));
+        } catch (e) {
+          settle(q[0][3], e);
+        }
+      }
+      function step(r) {
+        r.value instanceof __await ? Promise.resolve(r.value.v).then(fulfill, reject) : settle(q[0][2], r);
+      }
+      function fulfill(value) {
+        resume('next', value);
+      }
+      function reject(value) {
+        resume('throw', value);
+      }
+      function settle(f, v) {
+        if (f(v), q.shift(), q.length)
+          resume(q[0][0], q[0][1]);
+      }
+    }
+    function __asyncDelegator(o) {
+      var i, p;
+      return i = {}, verb('next'), verb('throw', function (e) {
+        throw e;
+      }), verb('return'), i[Symbol.iterator] = function () {
+        return this;
+      }, i;
+      function verb(n, f) {
+        i[n] = o[n] ? function (v) {
+          return (p = !p) ? {
+            value: __await(o[n](v)),
+            done: n === 'return'
+          } : f ? f(v) : v;
+        } : f;
+      }
+    }
+    function __asyncValues(o) {
+      if (!Symbol.asyncIterator)
+        throw new TypeError('Symbol.asyncIterator is not defined.');
+      var m = o[Symbol.asyncIterator], i;
+      return m ? m.call(o) : (o = typeof __values === 'function' ? __values(o) : o[Symbol.iterator](), i = {}, verb('next'), verb('throw'), verb('return'), i[Symbol.asyncIterator] = function () {
+        return this;
+      }, i);
+      function verb(n) {
+        i[n] = o[n] && function (v) {
+          return new Promise(function (resolve, reject) {
+            v = o[n](v), settle(resolve, reject, v.done, v.value);
+          });
+        };
+      }
+      function settle(resolve, reject, d, v) {
+        Promise.resolve(v).then(function (v) {
+          resolve({
+            value: v,
+            done: d
+          });
+        }, reject);
+      }
+    }
+    function __makeTemplateObject(cooked, raw) {
+      if (Object.defineProperty) {
+        Object.defineProperty(cooked, 'raw', { value: raw });
+      } else {
+        cooked.raw = raw;
+      }
+      return cooked;
+    }
+    function __importStar(mod) {
+      if (mod && mod.__esModule)
+        return mod;
+      var result = {};
+      if (mod != null)
+        for (var k in mod)
+          if (Object.hasOwnProperty.call(mod, k))
+            result[k] = mod[k];
+      result.default = mod;
+      return result;
+    }
+    function __importDefault(mod) {
+      return mod && mod.__esModule ? mod : { default: mod };
+    }
+
+    var tslib_1 = /*#__PURE__*/Object.freeze({
+        __extends: __extends,
+        get __assign () { return __assign; },
+        __rest: __rest,
+        __decorate: __decorate,
+        __param: __param,
+        __metadata: __metadata,
+        __awaiter: __awaiter,
+        __generator: __generator,
+        __exportStar: __exportStar,
+        __values: __values,
+        __read: __read,
+        __spread: __spread,
+        __await: __await,
+        __asyncGenerator: __asyncGenerator,
+        __asyncDelegator: __asyncDelegator,
+        __asyncValues: __asyncValues,
+        __makeTemplateObject: __makeTemplateObject,
+        __importStar: __importStar,
+        __importDefault: __importDefault
     });
 
     var Global = typeof domGlobals.window !== 'undefined' ? domGlobals.window : Function('return this;')();
@@ -3744,6 +4100,7 @@
     };
     var isElement = isType$1(ELEMENT);
     var isText = isType$1(TEXT);
+    var isDocument = isType$1(DOCUMENT);
 
     var keys = Object.keys;
     var hasOwnProperty$1 = Object.hasOwnProperty;
@@ -3844,6 +4201,9 @@
       return Option.from(raw).filter(function (r) {
         return r.length > 0;
       });
+    };
+    var reflow = function (e) {
+      return e.dom().offsetWidth;
     };
 
     var Immutable = function () {
@@ -4565,7 +4925,7 @@
     };
     var isText$1 = isNodeType(3);
     var isComment = isNodeType(8);
-    var isDocument = isNodeType(9);
+    var isDocument$1 = isNodeType(9);
     var isDocumentFragment = isNodeType(11);
     var isBr = matchNodeNames('br');
     var isContentEditableTrue = hasContentEditableState('true');
@@ -4574,7 +4934,7 @@
       isText: isText$1,
       isElement: isElement$1,
       isComment: isComment,
-      isDocument: isDocument,
+      isDocument: isDocument$1,
       isDocumentFragment: isDocumentFragment,
       isBr: isBr,
       isContentEditableTrue: isContentEditableTrue,
@@ -6397,10 +6757,11 @@
             return;
           }
           files[url] = true;
-          link = create('link', {
+          link = create('link', __assign({
             rel: 'stylesheet',
+            type: 'text/css',
             href: url
-          });
+          }, settings.contentCssCors ? { crossOrigin: 'anonymous' } : {}));
           head.appendChild(link);
         });
       };
@@ -6898,363 +7259,6 @@
       ScriptLoader.ScriptLoader = new ScriptLoader();
       return ScriptLoader;
     }();
-
-    var extendStatics = function (d, b) {
-      extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function (d, b) {
-        d.__proto__ = b;
-      } || function (d, b) {
-        for (var p in b)
-          if (b.hasOwnProperty(p))
-            d[p] = b[p];
-      };
-      return extendStatics(d, b);
-    };
-    function __extends(d, b) {
-      extendStatics(d, b);
-      function __() {
-        this.constructor = d;
-      }
-      d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    }
-    var __assign = function () {
-      __assign = Object.assign || function __assign(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-          s = arguments[i];
-          for (var p in s)
-            if (Object.prototype.hasOwnProperty.call(s, p))
-              t[p] = s[p];
-        }
-        return t;
-      };
-      return __assign.apply(this, arguments);
-    };
-    function __rest(s, e) {
-      var t = {};
-      for (var p in s)
-        if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-          t[p] = s[p];
-      if (s != null && typeof Object.getOwnPropertySymbols === 'function')
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++)
-          if (e.indexOf(p[i]) < 0)
-            t[p[i]] = s[p[i]];
-      return t;
-    }
-    function __decorate(decorators, target, key, desc) {
-      var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-      if (typeof Reflect === 'object' && typeof Reflect.decorate === 'function')
-        r = Reflect.decorate(decorators, target, key, desc);
-      else
-        for (var i = decorators.length - 1; i >= 0; i--)
-          if (d = decorators[i])
-            r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-      return c > 3 && r && Object.defineProperty(target, key, r), r;
-    }
-    function __param(paramIndex, decorator) {
-      return function (target, key) {
-        decorator(target, key, paramIndex);
-      };
-    }
-    function __metadata(metadataKey, metadataValue) {
-      if (typeof Reflect === 'object' && typeof Reflect.metadata === 'function')
-        return Reflect.metadata(metadataKey, metadataValue);
-    }
-    function __awaiter(thisArg, _arguments, P, generator) {
-      return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) {
-          try {
-            step(generator.next(value));
-          } catch (e) {
-            reject(e);
-          }
-        }
-        function rejected(value) {
-          try {
-            step(generator['throw'](value));
-          } catch (e) {
-            reject(e);
-          }
-        }
-        function step(result) {
-          result.done ? resolve(result.value) : new P(function (resolve) {
-            resolve(result.value);
-          }).then(fulfilled, rejected);
-        }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-      });
-    }
-    function __generator(thisArg, body) {
-      var _ = {
-          label: 0,
-          sent: function () {
-            if (t[0] & 1)
-              throw t[1];
-            return t[1];
-          },
-          trys: [],
-          ops: []
-        }, f, y, t, g;
-      return g = {
-        next: verb(0),
-        'throw': verb(1),
-        'return': verb(2)
-      }, typeof Symbol === 'function' && (g[Symbol.iterator] = function () {
-        return this;
-      }), g;
-      function verb(n) {
-        return function (v) {
-          return step([
-            n,
-            v
-          ]);
-        };
-      }
-      function step(op) {
-        if (f)
-          throw new TypeError('Generator is already executing.');
-        while (_)
-          try {
-            if (f = 1, y && (t = op[0] & 2 ? y['return'] : op[0] ? y['throw'] || ((t = y['return']) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done)
-              return t;
-            if (y = 0, t)
-              op = [
-                op[0] & 2,
-                t.value
-              ];
-            switch (op[0]) {
-            case 0:
-            case 1:
-              t = op;
-              break;
-            case 4:
-              _.label++;
-              return {
-                value: op[1],
-                done: false
-              };
-            case 5:
-              _.label++;
-              y = op[1];
-              op = [0];
-              continue;
-            case 7:
-              op = _.ops.pop();
-              _.trys.pop();
-              continue;
-            default:
-              if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) {
-                _ = 0;
-                continue;
-              }
-              if (op[0] === 3 && (!t || op[1] > t[0] && op[1] < t[3])) {
-                _.label = op[1];
-                break;
-              }
-              if (op[0] === 6 && _.label < t[1]) {
-                _.label = t[1];
-                t = op;
-                break;
-              }
-              if (t && _.label < t[2]) {
-                _.label = t[2];
-                _.ops.push(op);
-                break;
-              }
-              if (t[2])
-                _.ops.pop();
-              _.trys.pop();
-              continue;
-            }
-            op = body.call(thisArg, _);
-          } catch (e) {
-            op = [
-              6,
-              e
-            ];
-            y = 0;
-          } finally {
-            f = t = 0;
-          }
-        if (op[0] & 5)
-          throw op[1];
-        return {
-          value: op[0] ? op[1] : void 0,
-          done: true
-        };
-      }
-    }
-    function __exportStar(m, exports) {
-      for (var p in m)
-        if (!exports.hasOwnProperty(p))
-          exports[p] = m[p];
-    }
-    function __values(o) {
-      var m = typeof Symbol === 'function' && o[Symbol.iterator], i = 0;
-      if (m)
-        return m.call(o);
-      return {
-        next: function () {
-          if (o && i >= o.length)
-            o = void 0;
-          return {
-            value: o && o[i++],
-            done: !o
-          };
-        }
-      };
-    }
-    function __read(o, n) {
-      var m = typeof Symbol === 'function' && o[Symbol.iterator];
-      if (!m)
-        return o;
-      var i = m.call(o), r, ar = [], e;
-      try {
-        while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
-          ar.push(r.value);
-      } catch (error) {
-        e = { error: error };
-      } finally {
-        try {
-          if (r && !r.done && (m = i['return']))
-            m.call(i);
-        } finally {
-          if (e)
-            throw e.error;
-        }
-      }
-      return ar;
-    }
-    function __spread() {
-      for (var ar = [], i = 0; i < arguments.length; i++)
-        ar = ar.concat(__read(arguments[i]));
-      return ar;
-    }
-    function __await(v) {
-      return this instanceof __await ? (this.v = v, this) : new __await(v);
-    }
-    function __asyncGenerator(thisArg, _arguments, generator) {
-      if (!Symbol.asyncIterator)
-        throw new TypeError('Symbol.asyncIterator is not defined.');
-      var g = generator.apply(thisArg, _arguments || []), i, q = [];
-      return i = {}, verb('next'), verb('throw'), verb('return'), i[Symbol.asyncIterator] = function () {
-        return this;
-      }, i;
-      function verb(n) {
-        if (g[n])
-          i[n] = function (v) {
-            return new Promise(function (a, b) {
-              q.push([
-                n,
-                v,
-                a,
-                b
-              ]) > 1 || resume(n, v);
-            });
-          };
-      }
-      function resume(n, v) {
-        try {
-          step(g[n](v));
-        } catch (e) {
-          settle(q[0][3], e);
-        }
-      }
-      function step(r) {
-        r.value instanceof __await ? Promise.resolve(r.value.v).then(fulfill, reject) : settle(q[0][2], r);
-      }
-      function fulfill(value) {
-        resume('next', value);
-      }
-      function reject(value) {
-        resume('throw', value);
-      }
-      function settle(f, v) {
-        if (f(v), q.shift(), q.length)
-          resume(q[0][0], q[0][1]);
-      }
-    }
-    function __asyncDelegator(o) {
-      var i, p;
-      return i = {}, verb('next'), verb('throw', function (e) {
-        throw e;
-      }), verb('return'), i[Symbol.iterator] = function () {
-        return this;
-      }, i;
-      function verb(n, f) {
-        i[n] = o[n] ? function (v) {
-          return (p = !p) ? {
-            value: __await(o[n](v)),
-            done: n === 'return'
-          } : f ? f(v) : v;
-        } : f;
-      }
-    }
-    function __asyncValues(o) {
-      if (!Symbol.asyncIterator)
-        throw new TypeError('Symbol.asyncIterator is not defined.');
-      var m = o[Symbol.asyncIterator], i;
-      return m ? m.call(o) : (o = typeof __values === 'function' ? __values(o) : o[Symbol.iterator](), i = {}, verb('next'), verb('throw'), verb('return'), i[Symbol.asyncIterator] = function () {
-        return this;
-      }, i);
-      function verb(n) {
-        i[n] = o[n] && function (v) {
-          return new Promise(function (resolve, reject) {
-            v = o[n](v), settle(resolve, reject, v.done, v.value);
-          });
-        };
-      }
-      function settle(resolve, reject, d, v) {
-        Promise.resolve(v).then(function (v) {
-          resolve({
-            value: v,
-            done: d
-          });
-        }, reject);
-      }
-    }
-    function __makeTemplateObject(cooked, raw) {
-      if (Object.defineProperty) {
-        Object.defineProperty(cooked, 'raw', { value: raw });
-      } else {
-        cooked.raw = raw;
-      }
-      return cooked;
-    }
-    function __importStar(mod) {
-      if (mod && mod.__esModule)
-        return mod;
-      var result = {};
-      if (mod != null)
-        for (var k in mod)
-          if (Object.hasOwnProperty.call(mod, k))
-            result[k] = mod[k];
-      result.default = mod;
-      return result;
-    }
-    function __importDefault(mod) {
-      return mod && mod.__esModule ? mod : { default: mod };
-    }
-
-    var tslib_1 = /*#__PURE__*/Object.freeze({
-        __extends: __extends,
-        get __assign () { return __assign; },
-        __rest: __rest,
-        __decorate: __decorate,
-        __param: __param,
-        __metadata: __metadata,
-        __awaiter: __awaiter,
-        __generator: __generator,
-        __exportStar: __exportStar,
-        __values: __values,
-        __read: __read,
-        __spread: __spread,
-        __await: __await,
-        __asyncGenerator: __asyncGenerator,
-        __asyncDelegator: __asyncDelegator,
-        __asyncValues: __asyncValues,
-        __makeTemplateObject: __makeTemplateObject,
-        __importStar: __importStar,
-        __importDefault: __importDefault
-    });
 
     var Cell = function (initial) {
       var value = initial;
@@ -8274,26 +8278,6 @@
     };
     var containsXY = function (rect, clientX, clientY) {
       return clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom;
-    };
-    var overflowX = function (outer, inner) {
-      if (inner.left > outer.left && inner.right < outer.right) {
-        return 0;
-      } else {
-        return inner.left < outer.left ? inner.left - outer.left : inner.right - outer.right;
-      }
-    };
-    var overflowY = function (outer, inner) {
-      if (inner.top > outer.top && inner.bottom < outer.bottom) {
-        return 0;
-      } else {
-        return inner.top < outer.top ? inner.top - outer.top : inner.bottom - outer.bottom;
-      }
-    };
-    var getOverflow = function (outer, inner) {
-      return {
-        x: overflowX(outer, inner),
-        y: overflowY(outer, inner)
-      };
     };
 
     var getSelectedNode = function (range) {
@@ -11769,6 +11753,9 @@
     };
     var Adt = { generate: generate$1 };
 
+    var create$3 = Immutable('start', 'soffset', 'finish', 'foffset');
+    var SimRange = { create: create$3 };
+
     var adt = Adt.generate([
       { before: ['element'] },
       {
@@ -11779,8 +11766,24 @@
       },
       { after: ['element'] }
     ]);
+    var cata = function (subject, onBefore, onOn, onAfter) {
+      return subject.fold(onBefore, onOn, onAfter);
+    };
+    var getStart = function (situ) {
+      return situ.fold(identity, identity, identity);
+    };
+    var before$3 = adt.before;
+    var on = adt.on;
+    var after$2 = adt.after;
+    var Situ = {
+      before: before$3,
+      on: on,
+      after: after$2,
+      cata: cata,
+      getStart: getStart
+    };
 
-    var type$1 = Adt.generate([
+    var adt$1 = Adt.generate([
       { domRange: ['rng'] },
       {
         relative: [
@@ -11797,7 +11800,38 @@
         ]
       }
     ]);
-    var range$1 = Immutable('start', 'soffset', 'finish', 'foffset');
+    var exactFromRange = function (simRange) {
+      return adt$1.exact(simRange.start(), simRange.soffset(), simRange.finish(), simRange.foffset());
+    };
+    var getStart$1 = function (selection) {
+      return selection.match({
+        domRange: function (rng) {
+          return Element.fromDom(rng.startContainer);
+        },
+        relative: function (startSitu, finishSitu) {
+          return Situ.getStart(startSitu);
+        },
+        exact: function (start, soffset, finish, foffset) {
+          return start;
+        }
+      });
+    };
+    var domRange = adt$1.domRange;
+    var relative = adt$1.relative;
+    var exact = adt$1.exact;
+    var getWin = function (selection) {
+      var start = getStart$1(selection);
+      return defaultView(start);
+    };
+    var range$1 = SimRange.create;
+    var Selection = {
+      domRange: domRange,
+      relative: relative,
+      exact: exact,
+      exactFromRange: exactFromRange,
+      getWin: getWin,
+      range: range$1
+    };
 
     var browser$3 = PlatformDetection$1.detect().browser;
     var clamp = function (offset, element) {
@@ -11810,7 +11844,7 @@
       return offset;
     };
     var normalizeRng = function (rng) {
-      return range$1(rng.start(), clamp(rng.soffset(), rng.start()), rng.finish(), clamp(rng.foffset(), rng.finish()));
+      return Selection.range(rng.start(), clamp(rng.soffset(), rng.start()), rng.finish(), clamp(rng.foffset(), rng.finish()));
     };
     var isOrContains = function (root, elm) {
       return !NodeType.isRestrictedNode(elm.dom()) && (contains$3(root, elm) || eq(root, elm));
@@ -11824,7 +11858,7 @@
       return editor.inline === true || browser$3.isIE();
     };
     var nativeRangeToSelectionRange = function (r) {
-      return range$1(Element.fromDom(r.startContainer), r.startOffset, Element.fromDom(r.endContainer), r.endOffset);
+      return Selection.range(Element.fromDom(r.startContainer), r.startOffset, Element.fromDom(r.endContainer), r.endOffset);
     };
     var readRange = function (win) {
       var selection = win.getSelection();
@@ -14253,9 +14287,17 @@
       if (range.collapsed) {
         return false;
       }
-      return foldl(range.getClientRects(), function (state, rect) {
-        return state || containsXY(rect, clientX, clientY);
-      }, false);
+      if (Env.ie <= 11 && range.startOffset === range.endOffset - 1 && range.startContainer === range.endContainer) {
+        var elm = range.startContainer.childNodes[range.startOffset];
+        if (NodeType.isElement(elm)) {
+          return exists(elm.getClientRects(), function (rect) {
+            return containsXY(rect, clientX, clientY);
+          });
+        }
+      }
+      return exists(range.getClientRects(), function (rect) {
+        return containsXY(rect, clientX, clientY);
+      });
     };
     var RangePoint = { isXYWithinRange: isXYWithinRange };
 
@@ -14666,7 +14708,7 @@
         if (startContainer.nodeType !== 1) {
           return null;
         }
-        if (endOffset === startOffset + 1) {
+        if (endOffset === startOffset + 1 && startContainer === range.endContainer) {
           node = startContainer.childNodes[startOffset];
         }
         if (!isContentEditableFalse$9(node)) {
@@ -16176,7 +16218,7 @@
             name = value;
             compareNode = 0;
           }
-          if (!compareNode || isEq$4(dom.getAttrib(compareNode, name), value)) {
+          if (format.remove_similar || (!compareNode || isEq$4(dom.getAttrib(compareNode, name), value))) {
             if (name === 'class') {
               value = dom.getAttrib(node, name);
               if (value) {
@@ -18581,7 +18623,6 @@
       var contextMenuSelectImage = function (evt) {
         var target = evt.target;
         if (isEventOnImageOutsideRange(evt, editor.selection.getRng()) && !evt.isDefaultPrevented()) {
-          evt.preventDefault();
           editor.selection.select(target);
         }
       };
@@ -18876,7 +18917,7 @@
           }
         });
         editor.on('hide blur', hideResizeRect);
-        editor.on('contextmenu', contextMenuSelectImage);
+        editor.on('contextmenu', contextMenuSelectImage, true);
       });
       editor.on('remove', unbindResizeHandleEvents);
       var destroy = function () {
@@ -18891,97 +18932,332 @@
       };
     };
 
-    var getPos$1 = function (elm) {
-      var x = 0, y = 0;
-      var offsetParent = elm;
-      while (offsetParent && offsetParent.nodeType) {
-        x += offsetParent.offsetLeft || 0;
-        y += offsetParent.offsetTop || 0;
-        offsetParent = offsetParent.offsetParent;
-      }
-      return {
-        x: x,
-        y: y
-      };
-    };
-    var fireScrollIntoViewEvent = function (editor, elm, alignToTop) {
-      var scrollEvent = {
-        elm: elm,
-        alignToTop: alignToTop
-      };
-      editor.fire('ScrollIntoView', scrollEvent);
-      return scrollEvent.isDefaultPrevented();
-    };
-    var scrollElementIntoView = function (editor, elm, alignToTop) {
-      var y, viewPort;
-      var dom = editor.dom;
-      var root = dom.getRoot();
-      var viewPortY, viewPortH, offsetY = 0;
-      if (fireScrollIntoViewEvent(editor, elm, alignToTop)) {
-        return;
-      }
-      if (!NodeType.isElement(elm)) {
-        return;
-      }
-      if (alignToTop === false) {
-        offsetY = elm.offsetHeight;
-      }
-      if (root.nodeName !== 'BODY') {
-        var scrollContainer = editor.selection.getScrollContainer();
-        if (scrollContainer) {
-          y = getPos$1(elm).y - getPos$1(scrollContainer).y + offsetY;
-          viewPortH = scrollContainer.clientHeight;
-          viewPortY = scrollContainer.scrollTop;
-          if (y < viewPortY || y + 25 > viewPortY + viewPortH) {
-            scrollContainer.scrollTop = y < viewPortY ? y : y - viewPortH + 25;
-          }
-          return;
+    function Dimension (name, getOffset) {
+      var set = function (element, h) {
+        if (!isNumber(h) && !h.match(/^[0-9]+$/)) {
+          throw new Error(name + '.set accepts only positive integer values. Value was ' + h);
         }
-      }
-      viewPort = dom.getViewPort(editor.getWin());
-      y = dom.getPos(elm).y + offsetY;
-      viewPortY = viewPort.y;
-      viewPortH = viewPort.h;
-      if (y < viewPort.y || y + 25 > viewPortY + viewPortH) {
-        editor.getWin().scrollTo(0, y < viewPortY ? y : y - viewPortH + 25);
-      }
+        var dom = element.dom();
+        if (isSupported(dom)) {
+          dom.style[name] = h + 'px';
+        }
+      };
+      var get = function (element) {
+        var r = getOffset(element);
+        if (r <= 0 || r === null) {
+          var css = get$2(element, name);
+          return parseFloat(css) || 0;
+        }
+        return r;
+      };
+      var getOuter = get;
+      var aggregate = function (element, properties) {
+        return foldl(properties, function (acc, property) {
+          var val = get$2(element, property);
+          var value = val === undefined ? 0 : parseInt(val, 10);
+          return isNaN(value) ? acc : acc + value;
+        }, 0);
+      };
+      var max = function (element, value, properties) {
+        var cumulativeInclusions = aggregate(element, properties);
+        var absoluteMax = value > cumulativeInclusions ? value - cumulativeInclusions : 0;
+        return absoluteMax;
+      };
+      return {
+        set: set,
+        get: get,
+        getOuter: getOuter,
+        aggregate: aggregate,
+        max: max
+      };
+    }
+
+    var api$1 = Dimension('height', function (element) {
+      var dom = element.dom();
+      return inBody(element) ? dom.getBoundingClientRect().height : dom.offsetHeight;
+    });
+    var get$7 = function (element) {
+      return api$1.get(element);
     };
-    var getViewPortRect = function (editor) {
-      if (editor.inline) {
-        return editor.getBody().getBoundingClientRect();
+
+    var attached = function (element, scope) {
+      var doc = scope || Element.fromDom(domGlobals.document.documentElement);
+      return ancestor(element, curry(eq, doc)).isSome();
+    };
+    var windowOf = function (element) {
+      var dom = element.dom();
+      if (dom === dom.window && element instanceof domGlobals.Window) {
+        return element;
+      }
+      return isDocument(element) ? dom.defaultView || dom.parentWindow : null;
+    };
+
+    var r = function (left, top) {
+      var translate = function (x, y) {
+        return r(left + x, top + y);
+      };
+      return {
+        left: constant(left),
+        top: constant(top),
+        translate: translate
+      };
+    };
+    var Position$1 = r;
+
+    var boxPosition = function (dom) {
+      var box = dom.getBoundingClientRect();
+      return Position$1(box.left, box.top);
+    };
+    var firstDefinedOrZero = function (a, b) {
+      return a !== undefined ? a : b !== undefined ? b : 0;
+    };
+    var absolute = function (element) {
+      var doc = element.dom().ownerDocument;
+      var body = doc.body;
+      var win = windowOf(Element.fromDom(doc));
+      var html = doc.documentElement;
+      var scrollTop = firstDefinedOrZero(win.pageYOffset, html.scrollTop);
+      var scrollLeft = firstDefinedOrZero(win.pageXOffset, html.scrollLeft);
+      var clientTop = firstDefinedOrZero(html.clientTop, body.clientTop);
+      var clientLeft = firstDefinedOrZero(html.clientLeft, body.clientLeft);
+      return viewport(element).translate(scrollLeft - clientLeft, scrollTop - clientTop);
+    };
+    var viewport = function (element) {
+      var dom = element.dom();
+      var doc = dom.ownerDocument;
+      var body = doc.body;
+      var html = Element.fromDom(doc.documentElement);
+      if (body === dom) {
+        return Position$1(body.offsetLeft, body.offsetTop);
+      }
+      if (!attached(element, html)) {
+        return Position$1(0, 0);
+      }
+      return boxPosition(dom);
+    };
+
+    var isSafari = PlatformDetection$1.detect().browser.isSafari();
+    var get$8 = function (_DOC) {
+      var doc = _DOC !== undefined ? _DOC.dom() : domGlobals.document;
+      var x = doc.body.scrollLeft || doc.documentElement.scrollLeft;
+      var y = doc.body.scrollTop || doc.documentElement.scrollTop;
+      return Position$1(x, y);
+    };
+    var to = function (x, y, _DOC) {
+      var doc = _DOC !== undefined ? _DOC.dom() : domGlobals.document;
+      var win = doc.defaultView;
+      win.scrollTo(x, y);
+    };
+    var intoView = function (element, alignToTop) {
+      if (isSafari && isFunction(element.dom().scrollIntoViewIfNeeded)) {
+        element.dom().scrollIntoViewIfNeeded(false);
       } else {
-        var win = editor.getWin();
-        return {
-          left: 0,
-          right: win.innerWidth,
-          top: 0,
-          bottom: win.innerHeight,
-          width: win.innerWidth,
-          height: win.innerHeight
-        };
+        element.dom().scrollIntoView(alignToTop);
       }
     };
-    var scrollBy = function (editor, dx, dy) {
-      if (editor.inline) {
-        editor.getBody().scrollLeft += dx;
-        editor.getBody().scrollTop += dy;
-      } else {
-        editor.getWin().scrollBy(dx, dy);
-      }
-    };
-    var scrollRangeIntoView = function (editor, rng) {
-      head(CaretPosition.fromRangeStart(rng).getClientRects()).each(function (rngRect) {
-        var bodyRect = getViewPortRect(editor);
-        var overflow = getOverflow(bodyRect, rngRect);
-        var margin = 4;
-        var dx = overflow.x > 0 ? overflow.x + margin : overflow.x - margin;
-        var dy = overflow.y > 0 ? overflow.y + margin : overflow.y - margin;
-        scrollBy(editor, overflow.x !== 0 ? dx : 0, overflow.y !== 0 ? dy : 0);
+
+    var walkUp = function (navigation, doc) {
+      var frame = navigation.view(doc);
+      return frame.fold(constant([]), function (f) {
+        var parent = navigation.owner(f);
+        var rest = walkUp(navigation, parent);
+        return [f].concat(rest);
       });
     };
+    var pathTo = function (element, navigation) {
+      var d = navigation.owner(element);
+      return walkUp(navigation, d);
+    };
+
+    var view = function (doc) {
+      var element = doc.dom() === domGlobals.document ? Option.none() : Option.from(doc.dom().defaultView.frameElement);
+      return element.map(Element.fromDom);
+    };
+    var owner$1 = function (element) {
+      return owner(element);
+    };
+
+    var Navigation = /*#__PURE__*/Object.freeze({
+        view: view,
+        owner: owner$1
+    });
+
+    var find$4 = function (element) {
+      var doc = Element.fromDom(domGlobals.document);
+      var scroll = get$8(doc);
+      var frames = pathTo(element, Navigation);
+      var offset = viewport(element);
+      var r = foldr(frames, function (b, a) {
+        var loc = viewport(a);
+        return {
+          left: b.left + loc.left(),
+          top: b.top + loc.top()
+        };
+      }, {
+        left: 0,
+        top: 0
+      });
+      return Position$1(r.left + offset.left() + scroll.left(), r.top + offset.top() + scroll.top());
+    };
+
+    var excludeFromDescend = function (element) {
+      return name(element) === 'textarea';
+    };
+    var descend = function (element, offset) {
+      var children$1 = children(element);
+      if (children$1.length === 0 || excludeFromDescend(element)) {
+        return {
+          element: element,
+          offset: offset
+        };
+      } else if (offset < children$1.length && !excludeFromDescend(children$1[offset])) {
+        return {
+          element: children$1[offset],
+          offset: 0
+        };
+      } else {
+        var last = children$1[children$1.length - 1];
+        if (excludeFromDescend(last)) {
+          return {
+            element: element,
+            offset: offset
+          };
+        } else {
+          if (name(last) === 'img') {
+            return {
+              element: last,
+              offset: 1
+            };
+          } else if (isText(last)) {
+            return {
+              element: last,
+              offset: get$5(last).length
+            };
+          } else {
+            return {
+              element: last,
+              offset: children(last).length
+            };
+          }
+        }
+      }
+    };
+    var markerInfo = function (element, cleanupFun) {
+      var pos = absolute(element);
+      var height = get$7(element);
+      return {
+        element: element,
+        bottom: pos.top() + height,
+        pos: pos,
+        cleanup: cleanupFun
+      };
+    };
+    var createMarker = function (element, offset) {
+      var startPoint = descend(element, offset);
+      var span = Element.fromHtml('<span data-mce-bogus="all">' + Zwsp.ZWSP + '</span>');
+      before(startPoint.element, span);
+      return markerInfo(span, function () {
+        return remove$1(span);
+      });
+    };
+    var elementMarker = function (element) {
+      return markerInfo(Element.fromDom(element), noop);
+    };
+    var withMarker = function (editor, f, rng, alignToTop) {
+      preserveWith(editor, function (_s, _e) {
+        return applyWithMarker(editor, f, rng, alignToTop);
+      }, rng);
+    };
+    var applyWithMarker = function (editor, f, rng, alignToTop) {
+      var body = Element.fromDom(editor.getBody());
+      var doc = Element.fromDom(editor.getDoc());
+      reflow(body);
+      var scrollTop = get$8(doc).top();
+      var marker = createMarker(Element.fromDom(rng.startContainer), rng.startOffset);
+      f(doc, scrollTop, marker, alignToTop);
+      marker.cleanup();
+    };
+    var withElement = function (editor, element, f, alignToTop) {
+      var doc = Element.fromDom(editor.getDoc());
+      var scrollTop = get$8(doc).top();
+      f(doc, scrollTop, element, alignToTop);
+    };
+    var preserveWith = function (editor, f, rng) {
+      var startElement = rng.startContainer;
+      var startOffset = rng.startOffset;
+      var endElement = rng.endContainer;
+      var endOffset = rng.endOffset;
+      f(Element.fromDom(startElement), Element.fromDom(endElement));
+      var newRng = editor.dom.createRng();
+      newRng.setStart(startElement, startOffset);
+      newRng.setEnd(endElement, endOffset);
+      editor.selection.setRng(rng);
+    };
+    var fireScrollIntoViewEvent = function (editor, elm, alignToTop) {
+      var scrollEvent = editor.fire('ScrollIntoView', {
+        elm: elm,
+        alignToTop: alignToTop
+      });
+      return scrollEvent.isDefaultPrevented();
+    };
+    var scrollTo = function (marker, viewHeight, alignToTop, doc) {
+      var pos = marker.pos;
+      if (alignToTop) {
+        to(pos.left(), pos.top(), doc);
+      } else {
+        var y = pos.top() - viewHeight + (marker.bottom - pos.top());
+        to(pos.left(), y, doc);
+      }
+    };
+    var intoWindowIfNeeded = function (doc, scrollTop, viewHeight, marker, alignToTop) {
+      if (marker.pos.top() < scrollTop) {
+        scrollTo(marker, viewHeight, alignToTop !== false, doc);
+      } else if (marker.bottom > viewHeight + scrollTop) {
+        scrollTo(marker, viewHeight, alignToTop === true, doc);
+      }
+    };
+    var intoWindow = function (doc, scrollTop, marker, alignToTop) {
+      var viewHeight = doc.dom().defaultView.innerHeight;
+      intoWindowIfNeeded(doc, scrollTop, viewHeight, marker, alignToTop);
+    };
+    var intoFrame = function (editor, doc, scrollTop, marker, alignToTop) {
+      var frameViewHeight = doc.dom().defaultView.innerHeight;
+      intoWindowIfNeeded(doc, scrollTop, frameViewHeight, marker, alignToTop);
+      var op = find$4(marker.element);
+      var viewTop = get$8().top();
+      var viewBot = domGlobals.window.innerHeight + viewTop;
+      if (op.top() < viewTop) {
+        intoView(marker.element, alignToTop !== false);
+      } else if (op.top() > viewBot) {
+        intoView(marker.element, alignToTop === true);
+      }
+    };
+    var rangeIntoWindow = function (editor, rng, alignToTop) {
+      return withMarker(editor, curry(intoWindow), rng, alignToTop);
+    };
+    var elementIntoWindow = function (editor, element, alignToTop) {
+      return withElement(editor, elementMarker(element), curry(intoWindow), alignToTop);
+    };
+    var rangeIntoFrame = function (editor, rng, alignToTop) {
+      return withMarker(editor, curry(intoFrame, editor), rng, alignToTop);
+    };
+    var elementIntoFrame = function (editor, element, alignToTop) {
+      return withElement(editor, elementMarker(element), curry(intoFrame, editor), alignToTop);
+    };
+    var elementIntoView = function (editor, element, alignToTop) {
+      if (fireScrollIntoViewEvent(editor, element, alignToTop)) {
+        return;
+      }
+      var scroller = editor.inline ? elementIntoWindow : elementIntoFrame;
+      scroller(editor, element, alignToTop);
+    };
+    var rangeIntoView = function (editor, rng, alignToTop) {
+      var scroller = editor.inline ? rangeIntoWindow : rangeIntoFrame;
+      scroller(editor, rng, alignToTop);
+    };
     var ScrollIntoView = {
-      scrollElementIntoView: scrollElementIntoView,
-      scrollRangeIntoView: scrollRangeIntoView
+      scrollElementIntoView: elementIntoView,
+      scrollRangeIntoView: rangeIntoView
     };
 
     var hasCeProperty = function (node) {
@@ -19615,7 +19891,7 @@
         return elm.dom();
       }).getOr(root);
     };
-    var getStart = function (root, rng, real) {
+    var getStart$2 = function (root, rng, real) {
       return getEndpointElement(root, rng, true, real, function (elm, offset) {
         return Math.min(childNodesCount(elm), offset);
       });
@@ -19675,7 +19951,7 @@
       var node, root;
       var selectedBlocks = [];
       root = dom.getRoot();
-      startElm = dom.getParent(startElm || getStart(root, rng, rng.collapsed), dom.isBlock);
+      startElm = dom.getParent(startElm || getStart$2(root, rng, rng.collapsed), dom.isBlock);
       endElm = dom.getParent(endElm || getEnd(root, rng, rng.collapsed), dom.isBlock);
       if (startElm && startElm !== root) {
         selectedBlocks.push(startElm);
@@ -19790,7 +20066,7 @@
         return isAttachedToDom(rng.startContainer) && isAttachedToDom(rng.endContainer);
       }
     };
-    var Selection = function (dom, win, serializer, editor) {
+    var Selection$1 = function (dom, win, serializer, editor) {
       var bookmarkManager, controlSelection;
       var selectedRange, explicitRange;
       var selectorChangedWithUnbind = SelectorChanged(dom, editor).selectorChangedWithUnbind;
@@ -19812,8 +20088,8 @@
       var setContent = function (content, args) {
         return SetSelectionContent.setContent(editor, content, args);
       };
-      var getStart$1 = function (real) {
-        return getStart(editor.getBody(), getRng(), real);
+      var getStart = function (real) {
+        return getStart$2(editor.getBody(), getRng(), real);
       };
       var getEnd$1 = function (real) {
         return getEnd(editor.getBody(), getRng(), real);
@@ -20037,7 +20313,7 @@
         getSel: getSel,
         setRng: setRng,
         getRng: getRng,
-        getStart: getStart$1,
+        getStart: getStart,
         getEnd: getEnd$1,
         getSelectedBlocks: getSelectedBlocks$1,
         normalize: normalize,
@@ -20253,7 +20529,7 @@
       var parentBlock = getParentBlock(node, rootNode);
       return parentBlock ? parentBlock : rootNode;
     };
-    var before$3 = function (isInlineTarget, rootNode, pos) {
+    var before$4 = function (isInlineTarget, rootNode, pos) {
       var nPos = InlineUtils.normalizeForwards(pos);
       var scope = rescope(rootNode, nPos.container());
       return InlineUtils.findRootInline(isInlineTarget, scope, nPos).fold(function () {
@@ -20282,7 +20558,7 @@
         return nextPos.isNone() ? Option.some(Location.end(inline)) : Option.none();
       });
     };
-    var after$2 = function (isInlineTarget, rootNode, pos) {
+    var after$3 = function (isInlineTarget, rootNode, pos) {
       var nPos = InlineUtils.normalizeBackwards(pos);
       var scope = rescope(rootNode, nPos.container());
       return InlineUtils.findRootInline(isInlineTarget, scope, nPos).fold(function () {
@@ -20296,10 +20572,10 @@
     };
     var readLocation = function (isInlineTarget, rootNode, pos) {
       var location = LazyEvaluator.evaluateUntil([
-        before$3,
+        before$4,
         start$1,
         end,
-        after$2
+        after$3
       ], [
         isInlineTarget,
         rootNode,
@@ -22905,9 +23181,20 @@
     var navigateIgnoreEmptyTextNodes = function (forward, root, from) {
       return CaretFinder.navigateIgnore(forward, root, from, isEmptyText);
     };
+    var getClosestBlock = function (root, pos) {
+      return find(Parents.parentsAndSelf(Element.fromDom(pos.container()), root), isBlock);
+    };
+    var isAtBeforeAfterBlockBoundary = function (forward, root, pos) {
+      return navigateIgnoreEmptyTextNodes(forward, root.dom(), pos).forall(function (newPos) {
+        return getClosestBlock(root, pos).fold(function () {
+          return isInSameBlock(newPos, pos, root.dom()) === false;
+        }, function (fromBlock) {
+          return isInSameBlock(newPos, pos, root.dom()) === false && contains$3(fromBlock, Element.fromDom(newPos.container()));
+        });
+      });
+    };
     var isAtBlockBoundary = function (forward, root, pos) {
-      var parentBlocks = filter(Parents.parentsAndSelf(Element.fromDom(pos.container()), root), isBlock);
-      return head(parentBlocks).fold(function () {
+      return getClosestBlock(root, pos).fold(function () {
         return navigateIgnoreEmptyTextNodes(forward, root.dom(), pos).forall(function (newPos) {
           return isInSameBlock(newPos, pos, root.dom()) === false;
         });
@@ -22917,12 +23204,14 @@
     };
     var isAtStartOfBlock = curry(isAtBlockBoundary, false);
     var isAtEndOfBlock = curry(isAtBlockBoundary, true);
+    var isBeforeBlock = curry(isAtBeforeAfterBlockBoundary, false);
+    var isAfterBlock = curry(isAtBeforeAfterBlockBoundary, true);
 
     var nbsp = '\xA0';
     var isInMiddleOfText = function (pos) {
       return CaretPosition.isTextPosition(pos) && !pos.isAtStart() && !pos.isAtEnd();
     };
-    var getClosestBlock = function (root, pos) {
+    var getClosestBlock$1 = function (root, pos) {
       var parentBlocks = filter(Parents.parentsAndSelf(Element.fromDom(pos.container()), root), isBlock);
       return head(parentBlocks).getOr(root);
     };
@@ -22930,14 +23219,14 @@
       if (isInMiddleOfText(pos)) {
         return isAfterSpace(pos);
       } else {
-        return isAfterSpace(pos) || CaretFinder.prevPosition(getClosestBlock(root, pos).dom(), pos).exists(isAfterSpace);
+        return isAfterSpace(pos) || CaretFinder.prevPosition(getClosestBlock$1(root, pos).dom(), pos).exists(isAfterSpace);
       }
     };
     var hasSpaceAfter = function (root, pos) {
       if (isInMiddleOfText(pos)) {
         return isBeforeSpace(pos);
       } else {
-        return isBeforeSpace(pos) || CaretFinder.nextPosition(getClosestBlock(root, pos).dom(), pos).exists(isBeforeSpace);
+        return isBeforeSpace(pos) || CaretFinder.nextPosition(getClosestBlock$1(root, pos).dom(), pos).exists(isBeforeSpace);
       }
     };
     var isPreValue = function (value) {
@@ -22973,7 +23262,7 @@
       if (isInPre(pos)) {
         return false;
       } else {
-        return isAtStartOfBlock(root, pos) || isAfterBr(root, pos) || hasSpaceBefore(root, pos);
+        return isAtStartOfBlock(root, pos) || isBeforeBlock(root, pos) || isAfterBr(root, pos) || hasSpaceBefore(root, pos);
       }
     };
     var leanRight = function (pos) {
@@ -22990,7 +23279,7 @@
       if (isInPre(afterPos)) {
         return false;
       } else {
-        return isAtEndOfBlock(root, afterPos) || isBeforeBr(root, afterPos) || hasSpaceAfter(root, afterPos);
+        return isAtEndOfBlock(root, afterPos) || isAfterBlock(root, afterPos) || isBeforeBr(root, afterPos) || hasSpaceAfter(root, afterPos);
       }
     };
     var needsToBeNbsp = function (root, pos) {
@@ -23848,7 +24137,7 @@
       });
       editor.parser = createParser(editor);
       editor.serializer = Serializer$1(settings, editor);
-      editor.selection = Selection(editor.dom, editor.getWin(), editor.serializer, editor);
+      editor.selection = Selection$1(editor.dom, editor.getWin(), editor.serializer, editor);
       editor.annotator = Annotator(editor);
       editor.formatter = Formatter(editor);
       editor.undoManager = UndoManager(editor);
@@ -24470,7 +24759,7 @@
       }), _a));
     };
 
-    var create$3 = function (editor) {
+    var create$4 = function (editor) {
       var activeMode = Cell('design');
       var availableModes = Cell({
         design: {
@@ -26258,7 +26547,7 @@
       return URI;
     }();
 
-    var create$4 = function () {
+    var create$5 = function () {
       var buttons = {};
       var menuItems = {};
       var popups = {};
@@ -26303,7 +26592,7 @@
     };
 
     var registry = function () {
-      var bridge = create$4();
+      var bridge = create$5();
       return {
         addAutocompleter: bridge.addAutocompleter,
         addButton: bridge.addButton,
@@ -26336,9 +26625,16 @@
         this.isNotDirty = false;
         this.editorManager = editorManager;
         this.documentBaseUrl = editorManager.documentBaseURL;
-        this.baseUri = editorManager.baseURI;
         extend$3(this, EditorObservable);
         this.settings = getEditorSettings(this, id, this.documentBaseUrl, editorManager.defaultSettings, settings);
+        if (this.settings.suffix) {
+          editorManager.suffix = this.settings.suffix;
+        }
+        this.suffix = editorManager.suffix;
+        if (this.settings.base_url) {
+          editorManager._setBaseUrl(this.settings.base_url);
+        }
+        this.baseUri = editorManager.baseURI;
         AddOnManager$1.languageLoad = this.settings.language_load;
         AddOnManager$1.baseURL = editorManager.baseURL;
         this.id = id;
@@ -26346,7 +26642,6 @@
         this.documentBaseURI = new URI(this.settings.document_base_url, { base_uri: this.baseUri });
         this.baseURI = this.baseUri;
         this.inline = this.settings.inline;
-        this.suffix = editorManager.suffix;
         this.shortcuts = new Shortcuts(this);
         this.editorCommands = new EditorCommands(this);
         if (this.settings.cache_suffix) {
@@ -26354,7 +26649,7 @@
         }
         this.ui = { registry: registry() };
         var self = this;
-        var modeInstance = create$3(self);
+        var modeInstance = create$4(self);
         this.mode = modeInstance;
         this.setMode = modeInstance.set;
         editorManager.fire('SetupEditor', { editor: this });
@@ -26893,8 +27188,8 @@
       suffix: null,
       $: DomQuery,
       majorVersion: '5',
-      minorVersion: '0.7',
-      releaseDate: '2019-06-05',
+      minorVersion: '0.8',
+      releaseDate: '2019-06-18',
       editors: legacyEditors,
       i18n: I18n,
       activeEditor: null,
@@ -26945,8 +27240,7 @@
         var baseUrl, suffix;
         baseUrl = defaultSettings.base_url;
         if (baseUrl) {
-          this.baseURL = new URI(this.documentBaseURL).toAbsolute(baseUrl.replace(/\/+$/, ''));
-          this.baseURI = new URI(this.baseURL);
+          this._setBaseUrl(baseUrl);
         }
         suffix = defaultSettings.suffix;
         if (defaultSettings.suffix) {
@@ -27231,6 +27525,10 @@
           editor.fire('activate', { relatedTarget: activeEditor });
         }
         this.activeEditor = editor;
+      },
+      _setBaseUrl: function (baseUrl) {
+        this.baseURL = new URI(this.documentBaseURL).toAbsolute(baseUrl.replace(/\/+$/, ''));
+        this.baseURI = new URI(this.baseURL);
       }
     });
     EditorManager.setup();
@@ -27295,7 +27593,7 @@
       if (rel[4] === 'c') {
         x -= round$2(w / 2);
       }
-      return create$5(x, y, w, h);
+      return create$6(x, y, w, h);
     };
     var findBestRelativePosition = function (rect, targetRect, constrainRect, rels) {
       var pos, i;
@@ -27308,7 +27606,7 @@
       return null;
     };
     var inflate = function (rect, w, h) {
-      return create$5(rect.x - w, rect.y - h, rect.w + w * 2, rect.h + h * 2);
+      return create$6(rect.x - w, rect.y - h, rect.w + w * 2, rect.h + h * 2);
     };
     var intersect = function (rect, cropRect) {
       var x1, y1, x2, y2;
@@ -27319,7 +27617,7 @@
       if (x2 - x1 < 0 || y2 - y1 < 0) {
         return null;
       }
-      return create$5(x1, y1, x2 - x1, y2 - y1);
+      return create$6(x1, y1, x2 - x1, y2 - y1);
     };
     var clamp$1 = function (rect, clampRect, fixedSize) {
       var underflowX1, underflowY1, overflowX2, overflowY2, x1, y1, x2, y2, cx2, cy2;
@@ -27343,9 +27641,9 @@
       }
       x2 -= overflowX2;
       y2 -= overflowY2;
-      return create$5(x1, y1, x2 - x1, y2 - y1);
+      return create$6(x1, y1, x2 - x1, y2 - y1);
     };
-    var create$5 = function (x, y, w, h) {
+    var create$6 = function (x, y, w, h) {
       return {
         x: x,
         y: y,
@@ -27354,7 +27652,7 @@
       };
     };
     var fromClientRect = function (clientRect) {
-      return create$5(clientRect.left, clientRect.top, clientRect.width, clientRect.height);
+      return create$6(clientRect.left, clientRect.top, clientRect.width, clientRect.height);
     };
     var Rect = {
       inflate: inflate,
@@ -27362,7 +27660,7 @@
       findBestRelativePosition: findBestRelativePosition,
       intersect: intersect,
       clamp: clamp$1,
-      create: create$5,
+      create: create$6,
       fromClientRect: fromClientRect
     };
 
@@ -27736,7 +28034,7 @@
       return JSONRequest;
     }();
 
-    var create$6 = function () {
+    var create$7 = function () {
       return function () {
         var data = {};
         var keys = [];
@@ -27779,7 +28077,7 @@
     try {
       localStorage = domGlobals.window.localStorage;
     } catch (e) {
-      localStorage = create$6();
+      localStorage = create$7();
     }
     var LocalStorage = localStorage;
 
@@ -27813,7 +28111,7 @@
         Serializer: Serializer$1,
         ControlSelection: ControlSelection,
         BookmarkManager: BookmarkManager$1,
-        Selection: Selection,
+        Selection: Selection$1,
         Event: EventUtils.Event
       },
       html: {
@@ -27884,4 +28182,3 @@
     exportToModuleLoaders(tinymce);
 
 }(window));
-})();

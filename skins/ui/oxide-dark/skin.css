@@ -1350,8 +1350,7 @@ body.tox-dialog__disable-scroll {
 }
 .tox .tox-textfield,
 .tox .tox-toolbar-textfield,
-.tox:not([dir=rtl]) .tox-selectfield select,
-.tox[dir=rtl] .tox-selectfield select,
+.tox .tox-selectfield select,
 .tox .tox-textarea {
   -webkit-appearance: none;
      -moz-appearance: none;
@@ -1420,13 +1419,15 @@ body.tox-dialog__disable-scroll {
   top: 50%;
   transform: translateY(-50%);
 }
-.tox:not([dir=rtl]) .tox-selectfield select {
+.tox:not([dir=rtl]) .tox-selectfield select[size="0"],
+.tox:not([dir=rtl]) .tox-selectfield select[size="1"] {
   padding-right: 24px;
 }
 .tox:not([dir=rtl]) .tox-selectfield svg {
   right: 8px;
 }
-.tox[dir=rtl] .tox-selectfield select {
+.tox[dir=rtl] .tox-selectfield select[size="0"],
+.tox[dir=rtl] .tox-selectfield select[size="1"] {
   padding-left: 24px;
 }
 .tox[dir=rtl] .tox-selectfield svg {
@@ -1890,6 +1891,8 @@ body.tox-dialog__disable-scroll {
   min-height: 0;
 }
 .tox .tox-sidebar {
+  background-color: #222f3e;
+  border-top: 1px solid #000000;
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
@@ -2261,6 +2264,8 @@ body.tox-dialog__disable-scroll {
 .tox .tox-toolbar__overflow.tox-toolbar__overflow--closed {
   height: 0;
   opacity: 0;
+  padding-bottom: 0;
+  padding-top: 0;
   visibility: hidden;
 }
 .tox .tox-toolbar__overflow--growing {
