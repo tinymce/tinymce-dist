@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.0.8 (2019-06-18)
+ * Version: 5.0.9 (2019-06-26)
  */
 (function (domGlobals) {
     'use strict';
@@ -27188,8 +27188,8 @@
       suffix: null,
       $: DomQuery,
       majorVersion: '5',
-      minorVersion: '0.8',
-      releaseDate: '2019-06-18',
+      minorVersion: '0.9',
+      releaseDate: '2019-06-26',
       editors: legacyEditors,
       i18n: I18n,
       activeEditor: null,
