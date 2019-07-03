@@ -402,7 +402,7 @@ pre[class*="language-"] {
 }
 .mce-content-body td[data-mce-selected],
 .mce-content-body th[data-mce-selected] {
-  background-color: #b4d7ff !important;
+  background-color: initial !important;
 }
 .mce-content-body td[data-mce-selected]::-moz-selection,
 .mce-content-body th[data-mce-selected]::-moz-selection {

@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.0.9 (2019-06-26)
+ * Version: 5.0.10 (2019-07-02)
  */
 (function () {
     'use strict';
@@ -288,7 +288,7 @@
       if (styles.length > 0) {
         addSplitButton(editor, id, tooltip, cmd, nodeName, styles);
       } else {
-        addButton(editor, id, tooltip, cmd, nodeName, styles);
+        addButton(editor, id, tooltip, cmd, nodeName);
       }
     };
     var register$1 = function (editor) {

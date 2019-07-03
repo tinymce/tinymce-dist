@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.0.9 (2019-06-26)
+ * Version: 5.0.10 (2019-07-02)
  */
 (function (domGlobals) {
     'use strict';
@@ -199,7 +199,7 @@
         onAction: function () {
           restoreLastDraft(editor);
         },
-        onSetup: makeSetupHandler(editor, started)
+        onSetup: makeSetupHandler(editor)
       });
       editor.ui.registry.addMenuItem('restoredraft', {
         text: 'Restore last draft',
@@ -207,7 +207,7 @@
         onAction: function () {
           restoreLastDraft(editor);
         },
-        onSetup: makeSetupHandler(editor, started)
+        onSetup: makeSetupHandler(editor)
       });
     };
 

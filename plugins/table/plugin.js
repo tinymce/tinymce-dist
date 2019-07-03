@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.0.9 (2019-06-26)
+ * Version: 5.0.10 (2019-07-02)
  */
 (function (domGlobals) {
     'use strict';
@@ -29,11 +29,6 @@
 
     var noop = function () {
     };
-    var noarg = function (f) {
-      return function () {
-        return f();
-      };
-    };
     var compose = function (fa, fb) {
       return function () {
         var args = [];
@@ -50,9 +45,6 @@
     };
     var identity = function (x) {
       return x;
-    };
-    var tripleEquals = function (a, b) {
-      return a === b;
     };
     function curry(fn) {
       var initialArgs = [];
@@ -85,27 +77,8 @@
     var apply = function (f) {
       return f();
     };
-    var call = function (f) {
-      f();
-    };
     var never = constant(false);
     var always = constant(true);
-
-    var Fun = /*#__PURE__*/Object.freeze({
-        noop: noop,
-        noarg: noarg,
-        compose: compose,
-        constant: constant,
-        identity: identity,
-        tripleEquals: tripleEquals,
-        curry: curry,
-        not: not,
-        die: die,
-        apply: apply,
-        call: call,
-        never: never,
-        always: always
-    });
 
     var never$1 = never;
     var always$1 = always;
@@ -242,9 +215,9 @@
       if (x === null)
         return 'null';
       var t = typeof x;
-      if (t === 'object' && Array.prototype.isPrototypeOf(x))
+      if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array'))
         return 'array';
-      if (t === 'object' && String.prototype.isPrototypeOf(x))
+      if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String'))
         return 'string';
       return t;
     };
@@ -270,30 +243,11 @@
       };
       return pIndexOf === undefined ? slowIndex : fastIndex;
     }();
-    var indexOf = function (xs, x) {
-      var r = rawIndexOf(xs, x);
-      return r === -1 ? Option.none() : Option.some(r);
-    };
     var contains = function (xs, x) {
       return rawIndexOf(xs, x) > -1;
     };
     var exists = function (xs, pred) {
       return findIndex(xs, pred).isSome();
-    };
-    var range = function (num, f) {
-      var r = [];
-      for (var i = 0; i < num; i++) {
-        r.push(f(i));
-      }
-      return r;
-    };
-    var chunk = function (array, size) {
-      var r = [];
-      for (var i = 0; i < array.length; i += size) {
-        var s = slice.call(array, i, i + size);
-        r.push(s);
-      }
-      return r;
     };
     var map = function (xs, f) {
       var len = xs.length;
@@ -316,19 +270,6 @@
         f(x, i, xs);
       }
     };
-    var partition = function (xs, pred) {
-      var pass = [];
-      var fail = [];
-      for (var i = 0, len = xs.length; i < len; i++) {
-        var x = xs[i];
-        var arr = pred(x, i, xs) ? pass : fail;
-        arr.push(x);
-      }
-      return {
-        pass: pass,
-        fail: fail
-      };
-    };
     var filter = function (xs, pred) {
       var r = [];
       for (var i = 0, len = xs.length; i < len; i++) {
@@ -338,29 +279,6 @@
         }
       }
       return r;
-    };
-    var groupBy = function (xs, f) {
-      if (xs.length === 0) {
-        return [];
-      } else {
-        var wasType = f(xs[0]);
-        var r = [];
-        var group = [];
-        for (var i = 0, len = xs.length; i < len; i++) {
-          var x = xs[i];
-          var type = f(x);
-          if (type !== wasType) {
-            r.push(group);
-            group = [];
-          }
-          wasType = type;
-          group.push(x);
-        }
-        if (group.length !== 0) {
-          r.push(group);
-        }
-        return r;
-      }
     };
     var foldr = function (xs, f, acc) {
       eachr(xs, function (x) {
@@ -423,39 +341,10 @@
       }
       return true;
     };
-    var equal = function (a1, a2) {
-      return a1.length === a2.length && forall(a1, function (x, i) {
-        return x === a2[i];
-      });
-    };
     var reverse = function (xs) {
       var r = slice.call(xs, 0);
       r.reverse();
       return r;
-    };
-    var difference = function (a1, a2) {
-      return filter(a1, function (x) {
-        return !contains(a2, x);
-      });
-    };
-    var mapToObject = function (xs, f) {
-      var r = {};
-      for (var i = 0, len = xs.length; i < len; i++) {
-        var x = xs[i];
-        r[String(x)] = f(x, i);
-      }
-      return r;
-    };
-    var pure = function (x) {
-      return [x];
-    };
-    var sort = function (xs, comparator) {
-      var copy = slice.call(xs, 0);
-      copy.sort(comparator);
-      return copy;
-    };
-    var head = function (xs) {
-      return xs.length === 0 ? Option.none() : Option.some(xs[0]);
     };
     var last = function (xs) {
       return xs.length === 0 ? Option.none() : Option.some(xs[xs.length - 1]);
@@ -463,36 +352,6 @@
     var from$1 = isFunction(Array.from) ? Array.from : function (x) {
       return slice.call(x);
     };
-
-    var Arr = /*#__PURE__*/Object.freeze({
-        indexOf: indexOf,
-        contains: contains,
-        exists: exists,
-        range: range,
-        chunk: chunk,
-        map: map,
-        each: each,
-        eachr: eachr,
-        partition: partition,
-        filter: filter,
-        groupBy: groupBy,
-        foldr: foldr,
-        foldl: foldl,
-        find: find,
-        findIndex: findIndex,
-        flatten: flatten,
-        bind: bind,
-        forall: forall,
-        equal: equal,
-        reverse: reverse,
-        difference: difference,
-        mapToObject: mapToObject,
-        pure: pure,
-        sort: sort,
-        head: head,
-        last: last,
-        from: from$1
-    });
 
     var keys = Object.keys;
     var hasOwnProperty = Object.hasOwnProperty;
@@ -548,14 +407,14 @@
       };
     };
 
-    var sort$1 = function (arr) {
+    var sort = function (arr) {
       return arr.slice(0).sort();
     };
     var reqMessage = function (required, keys) {
-      throw new Error('All required keys (' + sort$1(required).join(', ') + ') were not specified. Specified keys were: ' + sort$1(keys).join(', ') + '.');
+      throw new Error('All required keys (' + sort(required).join(', ') + ') were not specified. Specified keys were: ' + sort(keys).join(', ') + '.');
     };
     var unsuppMessage = function (unsupported) {
-      throw new Error('Unsupported keys for object: ' + sort$1(unsupported).join(', '));
+      throw new Error('Unsupported keys for object: ' + sort(unsupported).join(', '));
     };
     var validateStrArr = function (label, array) {
       if (!isArray(array))
@@ -566,10 +425,10 @@
       });
     };
     var invalidTypeMessage = function (incorrect, type) {
-      throw new Error('All values need to be of type: ' + type + '. Keys (' + sort$1(incorrect).join(', ') + ') were not.');
+      throw new Error('All values need to be of type: ' + type + '. Keys (' + sort(incorrect).join(', ') + ') were not.');
     };
     var checkDupes = function (everything) {
-      var sorted = sort$1(everything);
+      var sorted = sort(everything);
       var dupe = find(sorted, function (s, i) {
         return i < sorted.length - 1 && s === sorted[i + 1];
       });
@@ -628,9 +487,6 @@
     var type = function (element) {
       return element.dom().nodeType;
     };
-    var value = function (element) {
-      return element.dom().nodeValue;
-    };
     var isType$1 = function (t) {
       return function (element) {
         return type(element) === t;
@@ -642,16 +498,6 @@
     var isElement = isType$1(ELEMENT);
     var isText = isType$1(TEXT);
     var isDocument = isType$1(DOCUMENT);
-
-    var Node = /*#__PURE__*/Object.freeze({
-        name: name,
-        type: type,
-        value: value,
-        isElement: isElement,
-        isText: isText,
-        isDocument: isDocument,
-        isComment: isComment
-    });
 
     var rawSet = function (dom, key, value) {
       if (isString(value) || isBoolean(value) || isNumber(value)) {
@@ -710,7 +556,7 @@
     };
 
     var isSupported = function (dom) {
-      return dom.style !== undefined;
+      return dom.style !== undefined && isFunction(dom.style.getPropertyValue);
     };
 
     var cached = function (f) {
@@ -806,16 +652,6 @@
         internalSet(dom, k, v);
       });
     };
-    var setOptions = function (element, css) {
-      var dom = element.dom();
-      each$1(css, function (v, k) {
-        v.fold(function () {
-          internalRemove(dom, k);
-        }, function (value) {
-          internalSet(dom, k, value);
-        });
-      });
-    };
     var get$2 = function (element, property) {
       var dom = element.dom();
       var styles = domGlobals.window.getComputedStyle(dom);
@@ -833,36 +669,12 @@
         return r.length > 0;
       });
     };
-    var getAllRaw = function (element) {
-      var css = {};
-      var dom = element.dom();
-      if (isSupported(dom)) {
-        for (var i = 0; i < dom.style.length; i++) {
-          var ruleName = dom.style.item(i);
-          css[ruleName] = dom.style[ruleName];
-        }
-      }
-      return css;
-    };
-    var isValidValue = function (tag, property, value) {
-      var element = Element.fromTag(tag);
-      set$1(element, property, value);
-      var style = getRaw(element, property);
-      return style.isSome();
-    };
     var remove$1 = function (element, property) {
       var dom = element.dom();
       internalRemove(dom, property);
       if (has$1(element, 'style') && trim(get$1(element, 'style')) === '') {
         remove(element, 'style');
       }
-    };
-    var preserve = function (element, f) {
-      var oldStyles = get$1(element, 'style');
-      var result = f(element);
-      var restore = oldStyles === undefined ? remove : set;
-      restore(element, 'style', oldStyles);
-      return result;
     };
     var copy = function (source, target) {
       var sourceDom = source.dom();
@@ -871,39 +683,6 @@
         targetDom.style.cssText = sourceDom.style.cssText;
       }
     };
-    var reflow = function (e) {
-      return e.dom().offsetWidth;
-    };
-    var transferOne = function (source, destination, style) {
-      getRaw(source, style).each(function (value) {
-        if (getRaw(destination, style).isNone()) {
-          set$1(destination, style, value);
-        }
-      });
-    };
-    var transfer = function (source, destination, styles) {
-      if (!isElement(source) || !isElement(destination)) {
-        return;
-      }
-      each(styles, function (style) {
-        transferOne(source, destination, style);
-      });
-    };
-
-    var Css = /*#__PURE__*/Object.freeze({
-        copy: copy,
-        set: set$1,
-        preserve: preserve,
-        setAll: setAll$1,
-        setOptions: setOptions,
-        remove: remove$1,
-        get: get$2,
-        getRaw: getRaw,
-        getAllRaw: getAllRaw,
-        isValidValue: isValidValue,
-        reflow: reflow,
-        transfer: transfer
-    });
 
     var Global = typeof domGlobals.window !== 'undefined' ? domGlobals.window : Function('return this;')();
 
@@ -942,7 +721,7 @@
     var documentPositionContainedBy = function (a, b) {
       return compareDocumentPosition(a, b, node().DOCUMENT_POSITION_CONTAINED_BY);
     };
-    var Node$1 = {
+    var Node = {
       documentPositionPreceding: documentPositionPreceding,
       documentPositionContainedBy: documentPositionContainedBy
     };
@@ -1291,7 +1070,7 @@
       return d1 === d2 ? false : d1.contains(d2);
     };
     var ieContains = function (e1, e2) {
-      return Node$1.documentPositionContainedBy(e1.dom(), e2.dom());
+      return Node.documentPositionContainedBy(e1.dom(), e2.dom());
     };
     var browser = PlatformDetection$1.detect().browser;
     var contains$2 = browser.isIE() ? ieContains : regularContains;
@@ -3331,21 +3110,6 @@
     var remove$4 = function (element, clazz) {
       return remove$3(element, 'class', clazz);
     };
-    var toggle = function (element, clazz) {
-      if (contains(get$7(element), clazz)) {
-        return remove$4(element, clazz);
-      } else {
-        return add$1(element, clazz);
-      }
-    };
-
-    var ClassList = /*#__PURE__*/Object.freeze({
-        get: get$7,
-        add: add$1,
-        remove: remove$4,
-        toggle: toggle,
-        supports: supports
-    });
 
     var add$2 = function (element, clazz) {
       if (supports(element)) {
@@ -3380,7 +3144,7 @@
       }
       return r;
     };
-    var range$1 = function (start, end) {
+    var range = function (start, end) {
       var r = [];
       for (var i = start; i < end; i++) {
         r.push(i);
@@ -3433,8 +3197,8 @@
 
     var columns = function (warehouse) {
       var grid = warehouse.grid();
-      var cols = range$1(0, grid.columns());
-      var rowsArr = range$1(0, grid.rows());
+      var cols = range(0, grid.columns());
+      var rowsArr = range(0, grid.rows());
       return map(cols, function (col) {
         var getBlock = function () {
           return bind(rowsArr, function (r) {
@@ -3466,8 +3230,8 @@
     };
     var rows$1 = function (warehouse) {
       var grid = warehouse.grid();
-      var rowsArr = range$1(0, grid.rows());
-      var cols = range$1(0, grid.columns());
+      var rowsArr = range(0, grid.rows());
+      var cols = range(0, grid.columns());
       return map(rowsArr, function (row) {
         var getBlock = function () {
           return bind(cols, function (c) {
@@ -3839,21 +3603,21 @@
       return cells.length > 0 ? Option.some(cells) : Option.none();
     };
 
-    var value$1 = function (o) {
+    var value = function (o) {
       var is = function (v) {
         return o === v;
       };
       var or = function (opt) {
-        return value$1(o);
+        return value(o);
       };
       var orThunk = function (f) {
-        return value$1(o);
+        return value(o);
       };
       var map = function (f) {
-        return value$1(f(o));
+        return value(f(o));
       };
       var mapError = function (f) {
-        return value$1(o);
+        return value(o);
       };
       var each = function (f) {
         f(o);
@@ -3939,10 +3703,10 @@
     var fromOption = function (opt, err) {
       return opt.fold(function () {
         return error(err);
-      }, value$1);
+      }, value);
     };
     var Result = {
-      value: value$1,
+      value: value,
       error: error,
       fromOption: fromOption
     };
@@ -3980,7 +3744,7 @@
     };
     var colFill = function (grid, amount, generator) {
       return map(grid, function (row) {
-        return GridRow.setCells(row, row.cells().concat(fill(range$1(0, amount), generator)));
+        return GridRow.setCells(row, row.cells().concat(fill(range(0, amount), generator)));
       });
     };
     var tailor = function (gridA, delta, generator) {
@@ -4448,8 +4212,9 @@
         return CellUtils.minWidth() / pixelWidth * 100;
       };
       var setTableWidth = function (table, _newWidths, delta) {
-        var total = floatWidth + delta;
-        Sizes.setPercentageWidth(table, total);
+        var ratio = delta / 100;
+        var change = ratio * floatWidth;
+        Sizes.setPercentageWidth(table, floatWidth + change);
       };
       return {
         width: constant(floatWidth),
@@ -5208,6 +4973,9 @@
     };
     var getTableClassList = function (editor) {
       return editor.getParam('table_class_list', [], 'array');
+    };
+    var isPercentagesForced = function (editor) {
+      return editor.getParam('table_responsive_width') === true;
     };
     var isPixelsForced = function (editor) {
       return editor.getParam('table_responsive_width') === false;
@@ -7221,17 +6989,41 @@
       remove: remove$6
     };
 
+    var calculatePercentageWidth = function (element, parent) {
+      return getPixelWidth$1(element.dom()) / getPixelWidth$1(parent.dom()) * 100 + '%';
+    };
+    var enforcePercentage = function (rawTable) {
+      var table = Element.fromDom(rawTable);
+      parent(table).map(function (parent) {
+        return calculatePercentageWidth(table, parent);
+      }).each(function (tablePercentage) {
+        set$1(table, 'width', tablePercentage);
+        each(descendants$1(table, 'tr'), function (tr) {
+          each(children(tr), function (td) {
+            set$1(td, 'width', calculatePercentageWidth(td, tr));
+          });
+        });
+      });
+    };
+    var enforcePixels = function (table) {
+      set$1(Element.fromDom(table), 'width', getPixelWidth$1(table).toString() + 'px');
+    };
+
     var ResizeHandler = function (editor) {
       var selectionRng = Option.none();
       var resize = Option.none();
       var wire = Option.none();
       var percentageBasedSizeRegex = /(\d+(\.\d+)?)%/;
-      var startW, startRawW;
+      var startW;
+      var startRawW;
       var isTable = function (elm) {
         return elm.nodeName === 'TABLE';
       };
       var getRawWidth = function (elm) {
-        return editor.dom.getStyle(elm, 'width') || editor.dom.getAttrib(elm, 'width');
+        var raw = editor.dom.getStyle(elm, 'width') || editor.dom.getAttrib(elm, 'width');
+        return Option.from(raw).filter(function (s) {
+          return s.length > 0;
+        });
       };
       var lazyResize = function () {
         return resize;
@@ -7278,8 +7070,16 @@
       editor.on('ObjectResizeStart', function (e) {
         var targetElm = e.target;
         if (isTable(targetElm)) {
+          var tableHasPercentage = getRawWidth(targetElm).map(function (w) {
+            return percentageBasedSizeRegex.test(w);
+          }).getOr(false);
+          if (tableHasPercentage && isPixelsForced(editor)) {
+            enforcePixels(targetElm);
+          } else if (!tableHasPercentage && isPercentagesForced(editor)) {
+            enforcePercentage(targetElm);
+          }
           startW = e.width;
-          startRawW = getRawWidth(targetElm);
+          startRawW = getRawWidth(targetElm).getOr('');
         }
       });
       editor.on('ObjectResized', function (e) {
@@ -7448,14 +7248,14 @@
       var start = getStart$1(selection);
       return defaultView(start);
     };
-    var range$2 = SimRange.create;
+    var range$1 = SimRange.create;
     var Selection = {
       domRange: domRange,
       relative: relative,
       exact: exact,
       exactFromRange: exactFromRange,
       getWin: getWin,
-      range: range$2
+      range: range$1
     };
 
     var selectNodeContents = function (win, element) {
@@ -7650,10 +7450,6 @@
         return locateOffset(doc, node, x, y, rect);
       });
     };
-
-    var TextPoint = /*#__PURE__*/Object.freeze({
-        locate: locate
-    });
 
     var searchInChildren = function (doc, node, x, y) {
       var r = doc.dom().createRange();
@@ -8116,11 +7912,6 @@
       return hone(universe, item, predicate, sidestep, Walkers.right(), isRoot);
     };
 
-    var Seeker = /*#__PURE__*/Object.freeze({
-        left: left$1,
-        right: right$1
-    });
-
     var isLeaf = function (universe) {
       return function (element) {
         return universe.property().children(element).length === 0;
@@ -8155,7 +7946,7 @@
 
     var point = Immutable('element', 'offset');
     var delta = Immutable('element', 'deltaOffset');
-    var range$3 = Immutable('element', 'start', 'finish');
+    var range$2 = Immutable('element', 'start', 'finish');
     var points = Immutable('begin', 'end');
     var text = Immutable('element', 'text');
 
@@ -8204,12 +7995,12 @@
     var indexInParent = function (element) {
       return parent(element).bind(function (parent) {
         var children$1 = children(parent);
-        return indexOf$1(children$1, element).map(function (index) {
+        return indexOf(children$1, element).map(function (index) {
           return inParent(parent, children$1, element, index);
         });
       });
     };
-    var indexOf$1 = function (elements, element) {
+    var indexOf = function (elements, element) {
       return findIndex(elements, curry(eq, element));
     };
 

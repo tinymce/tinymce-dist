@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.0.9 (2019-06-26)
+ * Version: 5.0.10 (2019-07-02)
  */
 (function (domGlobals) {
     'use strict';
@@ -103,6 +103,370 @@
     };
     var Commands = { register: register };
 
+    var constant = function (value) {
+      return function () {
+        return value;
+      };
+    };
+    var never = constant(false);
+    var always = constant(true);
+
+    var never$1 = never;
+    var always$1 = always;
+    var none = function () {
+      return NONE;
+    };
+    var NONE = function () {
+      var eq = function (o) {
+        return o.isNone();
+      };
+      var call = function (thunk) {
+        return thunk();
+      };
+      var id = function (n) {
+        return n;
+      };
+      var noop = function () {
+      };
+      var nul = function () {
+        return null;
+      };
+      var undef = function () {
+        return undefined;
+      };
+      var me = {
+        fold: function (n, s) {
+          return n();
+        },
+        is: never$1,
+        isSome: never$1,
+        isNone: always$1,
+        getOr: id,
+        getOrThunk: call,
+        getOrDie: function (msg) {
+          throw new Error(msg || 'error: getOrDie called on none.');
+        },
+        getOrNull: nul,
+        getOrUndefined: undef,
+        or: id,
+        orThunk: call,
+        map: none,
+        ap: none,
+        each: noop,
+        bind: none,
+        flatten: none,
+        exists: never$1,
+        forall: always$1,
+        filter: none,
+        equals: eq,
+        equals_: eq,
+        toArray: function () {
+          return [];
+        },
+        toString: constant('none()')
+      };
+      if (Object.freeze)
+        Object.freeze(me);
+      return me;
+    }();
+    var some = function (a) {
+      var constant_a = function () {
+        return a;
+      };
+      var self = function () {
+        return me;
+      };
+      var map = function (f) {
+        return some(f(a));
+      };
+      var bind = function (f) {
+        return f(a);
+      };
+      var me = {
+        fold: function (n, s) {
+          return s(a);
+        },
+        is: function (v) {
+          return a === v;
+        },
+        isSome: always$1,
+        isNone: never$1,
+        getOr: constant_a,
+        getOrThunk: constant_a,
+        getOrDie: constant_a,
+        getOrNull: constant_a,
+        getOrUndefined: constant_a,
+        or: self,
+        orThunk: self,
+        map: map,
+        ap: function (optfab) {
+          return optfab.fold(none, function (fab) {
+            return some(fab(a));
+          });
+        },
+        each: function (f) {
+          f(a);
+        },
+        bind: bind,
+        flatten: constant_a,
+        exists: bind,
+        forall: bind,
+        filter: function (f) {
+          return f(a) ? me : NONE;
+        },
+        equals: function (o) {
+          return o.is(a);
+        },
+        equals_: function (o, elementEq) {
+          return o.fold(never$1, function (b) {
+            return elementEq(a, b);
+          });
+        },
+        toArray: function () {
+          return [a];
+        },
+        toString: function () {
+          return 'some(' + a + ')';
+        }
+      };
+      return me;
+    };
+    var from = function (value) {
+      return value === null || value === undefined ? NONE : some(value);
+    };
+    var Option = {
+      some: some,
+      none: none,
+      from: from
+    };
+
+    var typeOf = function (x) {
+      if (x === null)
+        return 'null';
+      var t = typeof x;
+      if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array'))
+        return 'array';
+      if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String'))
+        return 'string';
+      return t;
+    };
+    var isType = function (type) {
+      return function (value) {
+        return typeOf(value) === type;
+      };
+    };
+    var isFunction = isType('function');
+
+    var slice = Array.prototype.slice;
+    var map = function (xs, f) {
+      var len = xs.length;
+      var r = new Array(len);
+      for (var i = 0; i < len; i++) {
+        var x = xs[i];
+        r[i] = f(x, i, xs);
+      }
+      return r;
+    };
+    var each = function (xs, f) {
+      for (var i = 0, len = xs.length; i < len; i++) {
+        var x = xs[i];
+        f(x, i, xs);
+      }
+    };
+    var filter = function (xs, pred) {
+      var r = [];
+      for (var i = 0, len = xs.length; i < len; i++) {
+        var x = xs[i];
+        if (pred(x, i, xs)) {
+          r.push(x);
+        }
+      }
+      return r;
+    };
+    var foldl = function (xs, f, acc) {
+      each(xs, function (x) {
+        acc = f(acc, x);
+      });
+      return acc;
+    };
+    var from$1 = isFunction(Array.from) ? Array.from : function (x) {
+      return slice.call(x);
+    };
+
+    var nu = function (baseFn) {
+      var data = Option.none();
+      var callbacks = [];
+      var map = function (f) {
+        return nu(function (nCallback) {
+          get(function (data) {
+            nCallback(f(data));
+          });
+        });
+      };
+      var get = function (nCallback) {
+        if (isReady())
+          call(nCallback);
+        else
+          callbacks.push(nCallback);
+      };
+      var set = function (x) {
+        data = Option.some(x);
+        run(callbacks);
+        callbacks = [];
+      };
+      var isReady = function () {
+        return data.isSome();
+      };
+      var run = function (cbs) {
+        each(cbs, call);
+      };
+      var call = function (cb) {
+        data.each(function (x) {
+          domGlobals.setTimeout(function () {
+            cb(x);
+          }, 0);
+        });
+      };
+      baseFn(set);
+      return {
+        get: get,
+        map: map,
+        isReady: isReady
+      };
+    };
+    var pure = function (a) {
+      return nu(function (callback) {
+        callback(a);
+      });
+    };
+    var LazyValue = {
+      nu: nu,
+      pure: pure
+    };
+
+    var bounce = function (f) {
+      return function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+          args[_i] = arguments[_i];
+        }
+        var me = this;
+        domGlobals.setTimeout(function () {
+          f.apply(me, args);
+        }, 0);
+      };
+    };
+
+    var nu$1 = function (baseFn) {
+      var get = function (callback) {
+        baseFn(bounce(callback));
+      };
+      var map = function (fab) {
+        return nu$1(function (callback) {
+          get(function (a) {
+            var value = fab(a);
+            callback(value);
+          });
+        });
+      };
+      var bind = function (aFutureB) {
+        return nu$1(function (callback) {
+          get(function (a) {
+            aFutureB(a).get(callback);
+          });
+        });
+      };
+      var anonBind = function (futureB) {
+        return nu$1(function (callback) {
+          get(function (a) {
+            futureB.get(callback);
+          });
+        });
+      };
+      var toLazy = function () {
+        return LazyValue.nu(get);
+      };
+      var toCached = function () {
+        var cache = null;
+        return nu$1(function (callback) {
+          if (cache === null) {
+            cache = toLazy();
+          }
+          cache.get(callback);
+        });
+      };
+      return {
+        map: map,
+        bind: bind,
+        anonBind: anonBind,
+        toLazy: toLazy,
+        toCached: toCached,
+        get: get
+      };
+    };
+    var pure$1 = function (a) {
+      return nu$1(function (callback) {
+        callback(a);
+      });
+    };
+    var Future = {
+      nu: nu$1,
+      pure: pure$1
+    };
+
+    var par = function (asyncValues, nu) {
+      return nu(function (callback) {
+        var r = [];
+        var count = 0;
+        var cb = function (i) {
+          return function (value) {
+            r[i] = value;
+            count++;
+            if (count >= asyncValues.length) {
+              callback(r);
+            }
+          };
+        };
+        if (asyncValues.length === 0) {
+          callback([]);
+        } else {
+          each(asyncValues, function (asyncValue, i) {
+            asyncValue.get(cb(i));
+          });
+        }
+      });
+    };
+
+    var par$1 = function (futures) {
+      return par(futures, Future.nu);
+    };
+    var mapM = function (array, fn) {
+      var futures = map(array, fn);
+      return par$1(futures);
+    };
+
+    var value = function () {
+      var subject = Cell(Option.none());
+      var clear = function () {
+        subject.set(Option.none());
+      };
+      var set = function (s) {
+        subject.set(Option.some(s));
+      };
+      var on = function (f) {
+        subject.get().each(f);
+      };
+      var isSet = function () {
+        return subject.get().isSome();
+      };
+      return {
+        clear: clear,
+        set: set,
+        isSet: isSet,
+        on: on
+      };
+    };
+
     var global$1 = tinymce.util.Tools.resolve('tinymce.Env');
 
     var global$2 = tinymce.util.Tools.resolve('tinymce.util.Delay');
@@ -168,7 +532,7 @@
       return paragraphs.length === 1 ? paragraphs[0] : global$3.map(paragraphs, stitch).join('');
     };
     var convert = function (text, rootTag, rootAttrs) {
-      return rootTag ? toBlockElements(text, rootTag, rootAttrs) : toBRs(text);
+      return rootTag ? toBlockElements(text, rootTag === true ? 'p' : rootTag, rootAttrs) : toBRs(text);
     };
     var Newlines = {
       isPlainText: isPlainText,
@@ -245,7 +609,7 @@
       shouldUseDefaultFilters: shouldUseDefaultFilters
     };
 
-    function filter(content, items) {
+    function filter$1(content, items) {
       global$3.each(items, function (v) {
         if (v.constructor === RegExp) {
           content = content.replace(v, '');
@@ -295,7 +659,7 @@
           }
         }
       }
-      html = filter(html, [/<!\[[^\]]+\]>/g]);
+      html = filter$1(html, [/<!\[[^\]]+\]>/g]);
       walk(domParser.parse(html));
       return text;
     }
@@ -306,7 +670,7 @@
         }
         return '\xA0';
       }
-      html = filter(html, [
+      html = filter$1(html, [
         /^[\s\S]*<body[^>]*>\s*|\s*<\/body[^>]*>[\s\S]*$/ig,
         /<!--StartFragment-->|<!--EndFragment-->/g,
         [
@@ -328,7 +692,7 @@
       return domGlobals.navigator.userAgent.indexOf(' Edge/') !== -1;
     };
     var Utils = {
-      filter: filter,
+      filter: filter$1,
       innerText: innerText,
       trimHtml: trimHtml,
       createIdGenerator: createIdGenerator,
@@ -744,362 +1108,40 @@
       insertContent: insertContent
     };
 
-    var constant = function (value) {
-      return function () {
-        return value;
-      };
+    var isCollapsibleWhitespace = function (c) {
+      return ' \f\t\x0B'.indexOf(c) !== -1;
     };
-    var never = constant(false);
-    var always = constant(true);
-
-    var never$1 = never;
-    var always$1 = always;
-    var none = function () {
-      return NONE;
+    var isNewLineChar = function (c) {
+      return c === '\n' || c === '\r';
     };
-    var NONE = function () {
-      var eq = function (o) {
-        return o.isNone();
-      };
-      var call = function (thunk) {
-        return thunk();
-      };
-      var id = function (n) {
-        return n;
-      };
-      var noop = function () {
-      };
-      var nul = function () {
-        return null;
-      };
-      var undef = function () {
-        return undefined;
-      };
-      var me = {
-        fold: function (n, s) {
-          return n();
-        },
-        is: never$1,
-        isSome: never$1,
-        isNone: always$1,
-        getOr: id,
-        getOrThunk: call,
-        getOrDie: function (msg) {
-          throw new Error(msg || 'error: getOrDie called on none.');
-        },
-        getOrNull: nul,
-        getOrUndefined: undef,
-        or: id,
-        orThunk: call,
-        map: none,
-        ap: none,
-        each: noop,
-        bind: none,
-        flatten: none,
-        exists: never$1,
-        forall: always$1,
-        filter: none,
-        equals: eq,
-        equals_: eq,
-        toArray: function () {
-          return [];
-        },
-        toString: constant('none()')
-      };
-      if (Object.freeze)
-        Object.freeze(me);
-      return me;
-    }();
-    var some = function (a) {
-      var constant_a = function () {
-        return a;
-      };
-      var self = function () {
-        return me;
-      };
-      var map = function (f) {
-        return some(f(a));
-      };
-      var bind = function (f) {
-        return f(a);
-      };
-      var me = {
-        fold: function (n, s) {
-          return s(a);
-        },
-        is: function (v) {
-          return a === v;
-        },
-        isSome: always$1,
-        isNone: never$1,
-        getOr: constant_a,
-        getOrThunk: constant_a,
-        getOrDie: constant_a,
-        getOrNull: constant_a,
-        getOrUndefined: constant_a,
-        or: self,
-        orThunk: self,
-        map: map,
-        ap: function (optfab) {
-          return optfab.fold(none, function (fab) {
-            return some(fab(a));
-          });
-        },
-        each: function (f) {
-          f(a);
-        },
-        bind: bind,
-        flatten: constant_a,
-        exists: bind,
-        forall: bind,
-        filter: function (f) {
-          return f(a) ? me : NONE;
-        },
-        equals: function (o) {
-          return o.is(a);
-        },
-        equals_: function (o, elementEq) {
-          return o.fold(never$1, function (b) {
-            return elementEq(a, b);
-          });
-        },
-        toArray: function () {
-          return [a];
-        },
-        toString: function () {
-          return 'some(' + a + ')';
-        }
-      };
-      return me;
+    var isNewline = function (text, idx) {
+      return idx < text.length && idx >= 0 ? isNewLineChar(text[idx]) : false;
     };
-    var from = function (value) {
-      return value === null || value === undefined ? NONE : some(value);
-    };
-    var Option = {
-      some: some,
-      none: none,
-      from: from
-    };
-
-    var typeOf = function (x) {
-      if (x === null)
-        return 'null';
-      var t = typeof x;
-      if (t === 'object' && Array.prototype.isPrototypeOf(x))
-        return 'array';
-      if (t === 'object' && String.prototype.isPrototypeOf(x))
-        return 'string';
-      return t;
-    };
-    var isType = function (type) {
-      return function (value) {
-        return typeOf(value) === type;
-      };
-    };
-    var isFunction = isType('function');
-
-    var slice = Array.prototype.slice;
-    var map = function (xs, f) {
-      var len = xs.length;
-      var r = new Array(len);
-      for (var i = 0; i < len; i++) {
-        var x = xs[i];
-        r[i] = f(x, i, xs);
-      }
-      return r;
-    };
-    var each = function (xs, f) {
-      for (var i = 0, len = xs.length; i < len; i++) {
-        var x = xs[i];
-        f(x, i, xs);
-      }
-    };
-    var filter$1 = function (xs, pred) {
-      var r = [];
-      for (var i = 0, len = xs.length; i < len; i++) {
-        var x = xs[i];
-        if (pred(x, i, xs)) {
-          r.push(x);
-        }
-      }
-      return r;
-    };
-    var from$1 = isFunction(Array.from) ? Array.from : function (x) {
-      return slice.call(x);
-    };
-
-    var nu = function (baseFn) {
-      var data = Option.none();
-      var callbacks = [];
-      var map = function (f) {
-        return nu(function (nCallback) {
-          get(function (data) {
-            nCallback(f(data));
-          });
-        });
-      };
-      var get = function (nCallback) {
-        if (isReady())
-          call(nCallback);
-        else
-          callbacks.push(nCallback);
-      };
-      var set = function (x) {
-        data = Option.some(x);
-        run(callbacks);
-        callbacks = [];
-      };
-      var isReady = function () {
-        return data.isSome();
-      };
-      var run = function (cbs) {
-        each(cbs, call);
-      };
-      var call = function (cb) {
-        data.each(function (x) {
-          domGlobals.setTimeout(function () {
-            cb(x);
-          }, 0);
-        });
-      };
-      baseFn(set);
-      return {
-        get: get,
-        map: map,
-        isReady: isReady
-      };
-    };
-    var pure = function (a) {
-      return nu(function (callback) {
-        callback(a);
-      });
-    };
-    var LazyValue = {
-      nu: nu,
-      pure: pure
-    };
-
-    var bounce = function (f) {
-      return function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-          args[_i] = arguments[_i];
-        }
-        var me = this;
-        domGlobals.setTimeout(function () {
-          f.apply(me, args);
-        }, 0);
-      };
-    };
-
-    var nu$1 = function (baseFn) {
-      var get = function (callback) {
-        baseFn(bounce(callback));
-      };
-      var map = function (fab) {
-        return nu$1(function (callback) {
-          get(function (a) {
-            var value = fab(a);
-            callback(value);
-          });
-        });
-      };
-      var bind = function (aFutureB) {
-        return nu$1(function (callback) {
-          get(function (a) {
-            aFutureB(a).get(callback);
-          });
-        });
-      };
-      var anonBind = function (futureB) {
-        return nu$1(function (callback) {
-          get(function (a) {
-            futureB.get(callback);
-          });
-        });
-      };
-      var toLazy = function () {
-        return LazyValue.nu(get);
-      };
-      var toCached = function () {
-        var cache = null;
-        return nu$1(function (callback) {
-          if (cache === null) {
-            cache = toLazy();
+    var normalizeWhitespace = function (text) {
+      var result = foldl(text, function (acc, c) {
+        if (isCollapsibleWhitespace(c) || c === '\xA0') {
+          if (acc.pcIsSpace || acc.str === '' || acc.str.length === text.length - 1 || isNewline(text, acc.str.length + 1)) {
+            return {
+              pcIsSpace: false,
+              str: acc.str + '\xA0'
+            };
+          } else {
+            return {
+              pcIsSpace: true,
+              str: acc.str + ' '
+            };
           }
-          cache.get(callback);
-        });
-      };
-      return {
-        map: map,
-        bind: bind,
-        anonBind: anonBind,
-        toLazy: toLazy,
-        toCached: toCached,
-        get: get
-      };
-    };
-    var pure$1 = function (a) {
-      return nu$1(function (callback) {
-        callback(a);
-      });
-    };
-    var Future = {
-      nu: nu$1,
-      pure: pure$1
-    };
-
-    var par = function (asyncValues, nu) {
-      return nu(function (callback) {
-        var r = [];
-        var count = 0;
-        var cb = function (i) {
-          return function (value) {
-            r[i] = value;
-            count++;
-            if (count >= asyncValues.length) {
-              callback(r);
-            }
-          };
-        };
-        if (asyncValues.length === 0) {
-          callback([]);
         } else {
-          each(asyncValues, function (asyncValue, i) {
-            asyncValue.get(cb(i));
-          });
+          return {
+            pcIsSpace: isNewLineChar(c),
+            str: acc.str + c
+          };
         }
+      }, {
+        pcIsSpace: false,
+        str: ''
       });
-    };
-
-    var par$1 = function (futures) {
-      return par(futures, Future.nu);
-    };
-    var mapM = function (array, fn) {
-      var futures = map(array, fn);
-      return par$1(futures);
-    };
-
-    var value = function () {
-      var subject = Cell(Option.none());
-      var clear = function () {
-        subject.set(Option.none());
-      };
-      var set = function (s) {
-        subject.set(Option.some(s));
-      };
-      var on = function (f) {
-        subject.get().each(f);
-      };
-      var isSet = function () {
-        return subject.get().isSome();
-      };
-      return {
-        clear: clear,
-        set: set,
-        isSet: isSet,
-        on: on
-      };
+      return result.str;
     };
 
     var pasteHtml$1 = function (editor, html, internalFlag) {
@@ -1110,9 +1152,10 @@
       }
     };
     var pasteText = function (editor, text) {
-      text = editor.dom.encode(text).replace(/\r\n/g, '\n');
-      text = Newlines.convert(text, editor.settings.forced_root_block, editor.settings.forced_root_block_attrs);
-      pasteHtml$1(editor, text, false);
+      var encodedText = editor.dom.encode(text).replace(/\r\n/g, '\n');
+      var normalizedText = normalizeWhitespace(encodedText);
+      var html = Newlines.convert(normalizedText, editor.settings.forced_root_block, editor.settings.forced_root_block_attrs);
+      pasteHtml$1(editor, html, false);
     };
     var getDataTransferItems = function (dataTransfer) {
       var items = {};
@@ -1211,7 +1254,7 @@
         return item.getAsFile();
       }) : [];
       var files = dataTransfer.files ? from$1(dataTransfer.files) : [];
-      var images = filter$1(items.length > 0 ? items : files, function (file) {
+      var images = filter(items.length > 0 ? items : files, function (file) {
         return /^image\/(jpeg|png|gif|bmp)$/.test(file.type);
       });
       return images;
