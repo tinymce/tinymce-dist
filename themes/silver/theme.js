@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.0.10 (2019-07-02)
+ * Version: 5.0.11 (2019-07-04)
  */
 (function (domGlobals) {
     'use strict';
@@ -6502,7 +6502,7 @@
     var locateVisible = function (container, current, selector) {
       return locateIn(container, current, selector);
     };
-    var locateIn = function (container, current, selector, filter) {
+    var locateIn = function (container, current, selector, filter$1) {
       var predicate = curry(eq, current);
       var candidates = descendants(container, selector);
       var visible = filter(candidates, isVisible);
@@ -19253,14 +19253,15 @@
       };
       var setContents = function (comp, items) {
         var htmlLines = map(items, function (item) {
-          var textContent = spec.columns === 1 ? '<div class="tox-collection__item-label">' + item.text + '</div>' : '';
+          var itemText = global$4.translate(item.text);
+          var textContent = spec.columns === 1 ? '<div class="tox-collection__item-label">' + itemText + '</div>' : '';
           var iconContent = '<div class="tox-collection__item-icon">' + item.icon + '</div>';
           var mapItemName = {
             '_': ' ',
             ' - ': ' ',
             '-': ' '
           };
-          var ariaLabel = item.text.replace(/\_| \- |\-/g, function (match) {
+          var ariaLabel = itemText.replace(/\_| \- |\-/g, function (match) {
             return mapItemName[match];
           });
           return '<div class="tox-collection__item" tabindex="-1" data-collection-item-value="' + escapeAttribute(item.value) + '" title="' + ariaLabel + '" aria-label="' + ariaLabel + '">' + iconContent + textContent + '</div>';
@@ -26586,17 +26587,17 @@
 
     var formComponentFields = [
       strictString('type'),
-      strictString('name'),
-      optionString('label')
+      strictString('name')
     ];
+    var formComponentWithLabelFields = formComponentFields.concat([optionString('label')]);
 
-    var colorInputFields = formComponentFields;
+    var colorInputFields = formComponentWithLabelFields;
     var colorInputDataProcessor = string;
 
-    var colorPickerFields = formComponentFields;
+    var colorPickerFields = formComponentWithLabelFields;
     var colorPickerDataProcessor = string;
 
-    var dropZoneFields = formComponentFields;
+    var dropZoneFields = formComponentWithLabelFields;
     var dropZoneDataProcessor = arrOfVal();
 
     var createGridFields = function (itemsField) {
@@ -26607,13 +26608,13 @@
       ];
     };
 
-    var iframeFields = formComponentFields.concat([defaultedBoolean('sandboxed', true)]);
+    var iframeFields = formComponentWithLabelFields.concat([defaultedBoolean('sandboxed', true)]);
     var iframeDataProcessor = string;
 
-    var inputFields = formComponentFields.concat([optionString('placeholder')]);
+    var inputFields = formComponentWithLabelFields.concat([optionString('placeholder')]);
     var inputDataProcessor = string;
 
-    var selectBoxFields = formComponentFields.concat([
+    var selectBoxFields = formComponentWithLabelFields.concat([
       strictArrayOfObj('items', [
         strictString('text'),
         strictString('value')
@@ -26622,16 +26623,16 @@
     ]);
     var selectBoxDataProcessor = string;
 
-    var sizeInputFields = formComponentFields.concat([defaultedBoolean('constrain', true)]);
+    var sizeInputFields = formComponentWithLabelFields.concat([defaultedBoolean('constrain', true)]);
     var sizeInputDataProcessor = objOf([
       strictString('width'),
       strictString('height')
     ]);
 
-    var textAreaFields = formComponentFields.concat([optionString('placeholder')]);
+    var textAreaFields = formComponentWithLabelFields.concat([optionString('placeholder')]);
     var textAreaDataProcessor = string;
 
-    var urlInputFields = formComponentFields.concat([defaultedStringEnum('filetype', 'file', [
+    var urlInputFields = formComponentWithLabelFields.concat([defaultedStringEnum('filetype', 'file', [
         'image',
         'media',
         'file'
@@ -26641,11 +26642,10 @@
       defaulted$1('meta', {})
     ]);
 
-    var customEditorFields = [
-      strictString('type'),
+    var customEditorFields = formComponentFields.concat([
       defaultedString('tag', 'textarea'),
       strictFunction('init')
-    ];
+    ]);
     var customEditorDataProcessor = string;
 
     var htmlPanelFields = [
@@ -26657,12 +26657,12 @@
       ])
     ];
 
-    var imageToolsFields = formComponentFields.concat([strictOf('currentState', objOf([
+    var imageToolsFields = formComponentWithLabelFields.concat([strictOf('currentState', objOf([
         strict$1('blob'),
         strictString('url')
       ]))]);
 
-    var collectionFields = formComponentFields.concat([defaulted$1('columns', 'auto')]);
+    var collectionFields = formComponentWithLabelFields.concat([defaulted$1('columns', 'auto')]);
     var collectionDataProcessor = arrOfObj$1([
       strictString('value'),
       strictString('text'),

@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.0.10 (2019-07-02)
+ * Version: 5.0.11 (2019-07-04)
  */
 (function (domGlobals) {
     'use strict';
@@ -3929,7 +3929,7 @@
     var locateVisible = function (container, current, selector) {
       return locateIn(container, current, selector);
     };
-    var locateIn = function (container, current, selector, filter) {
+    var locateIn = function (container, current, selector, filter$1) {
       var predicate = curry(eq, current);
       var candidates = descendants(container, selector);
       var visible = filter(candidates, isVisible);

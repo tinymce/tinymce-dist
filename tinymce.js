@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.0.10 (2019-07-02)
+ * Version: 5.0.11 (2019-07-04)
  */
 (function (domGlobals) {
     'use strict';
@@ -6002,7 +6002,7 @@
       var getViewPort = function (argWin) {
         var actWin = !argWin ? win : argWin;
         var doc = actWin.document;
-        var rootElm = doc.documentElement;
+        var rootElm =  doc.documentElement ;
         return {
           x: actWin.pageXOffset || rootElm.scrollLeft,
           y: actWin.pageYOffset || rootElm.scrollTop,
@@ -26728,8 +26728,8 @@
       suffix: null,
       $: DomQuery,
       majorVersion: '5',
-      minorVersion: '0.10',
-      releaseDate: '2019-07-02',
+      minorVersion: '0.11',
+      releaseDate: '2019-07-04',
       editors: legacyEditors,
       i18n: I18n,
       activeEditor: null,
