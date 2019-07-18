@@ -117,6 +117,9 @@ button::-moz-focus-inner {
   border-color: #000000;
   border-style: solid;
 }
+.tox .accessibility-issue__repair {
+  margin-top: 16px;
+}
 .tox .accessibility-issue--info .accessibility-issue__description {
   background-color: rgba(32, 122, 183, 0.5);
   border-color: #207ab7;
@@ -130,6 +133,9 @@ button::-moz-focus-inner {
 }
 .tox .accessibility-issue--info .tox-icon svg {
   fill: #fff;
+}
+.tox .accessibility-issue--info a .tox-icon {
+  color: #fff;
 }
 .tox .accessibility-issue--warn .accessibility-issue__description {
   background-color: rgba(255, 165, 0, 0.5);
@@ -145,6 +151,9 @@ button::-moz-focus-inner {
 .tox .accessibility-issue--warn .tox-icon svg {
   fill: #fff;
 }
+.tox .accessibility-issue--warn a .tox-icon {
+  color: #fff;
+}
 .tox .accessibility-issue--error .accessibility-issue__description {
   background-color: rgba(204, 0, 0, 0.5);
   border-color: rgba(204, 0, 0, 0.8);
@@ -159,8 +168,28 @@ button::-moz-focus-inner {
 .tox .accessibility-issue--error .tox-icon svg {
   fill: #fff;
 }
+.tox .accessibility-issue--error a .tox-icon {
+  color: #fff;
+}
+.tox .accessibility-issue--success .accessibility-issue__description {
+  background-color: rgba(120, 171, 70, 0.5);
+  border-color: rgba(120, 171, 70, 0.8);
+  color: #fff;
+}
+.tox .accessibility-issue--success .accessibility-issue__description > *:last-child {
+  border-color: rgba(120, 171, 70, 0.8);
+}
+.tox .accessibility-issue--success h2 {
+  color: #fff;
+}
+.tox .accessibility-issue--success .tox-icon svg {
+  fill: #fff;
+}
+.tox .accessibility-issue--success a .tox-icon {
+  color: #fff;
+}
 .tox .tox-dialog__body-content .accessibility-issue__header h1,
-.tox .tox-dialog__body-content .accessibility-issue__description h2 {
+.tox .tox-dialog__body-content .tox-form__group .accessibility-issue__description h2 {
   margin-top: 0;
 }
 .tox:not([dir=rtl]) .accessibility-issue__header > *:nth-last-child(2) {
@@ -325,6 +354,12 @@ button::-moz-focus-inner {
   box-shadow: unset;
   color: #fff;
 }
+.tox .tox-button--naked[disabled] {
+  background-color: #3d546f;
+  border-color: #3d546f;
+  box-shadow: none;
+  color: rgba(255, 255, 255, 0.5);
+}
 .tox .tox-button--naked:hover:not(:disabled) {
   background-color: #34485f;
   border-color: #34485f;
@@ -388,6 +423,19 @@ button::-moz-focus-inner {
 .tox .tox-checkbox__icons .tox-checkbox-icon__checked svg {
   display: none;
   fill: #207ab7;
+}
+.tox .tox-checkbox--disabled {
+  color: rgba(255, 255, 255, 0.5);
+  cursor: not-allowed;
+}
+.tox .tox-checkbox--disabled .tox-checkbox__icons .tox-checkbox-icon__checked svg {
+  fill: rgba(255, 255, 255, 0.5);
+}
+.tox .tox-checkbox--disabled .tox-checkbox__icons .tox-checkbox-icon__unchecked svg {
+  fill: rgba(255, 255, 255, 0.5);
+}
+.tox .tox-checkbox--disabled .tox-checkbox__icons .tox-checkbox-icon__indeterminate svg {
+  fill: rgba(255, 255, 255, 0.5);
 }
 .tox input.tox-checkbox__input:checked + .tox-checkbox__icons .tox-checkbox-icon__unchecked svg {
   display: none;
@@ -986,7 +1034,7 @@ button::-moz-focus-inner {
   z-index: 1102;
 }
 @media only screen and (max-width:767px) {
-  .tox .tox-dialog {
+  body:not(.tox-force-desktop) .tox .tox-dialog {
     align-self: flex-start;
     margin: 8px auto;
     width: calc(100vw - 16px);
@@ -1043,7 +1091,7 @@ button::-moz-focus-inner {
   text-transform: normal;
 }
 @media only screen and (max-width:767px) {
-  .tox .tox-dialog__body {
+  body:not(.tox-force-desktop) .tox .tox-dialog__body {
     flex-direction: column;
   }
 }
@@ -1054,7 +1102,7 @@ button::-moz-focus-inner {
   padding: 16px 16px;
 }
 @media only screen and (max-width:767px) {
-  .tox .tox-dialog__body-nav {
+  body:not(.tox-force-desktop) .tox .tox-dialog__body-nav {
     flex-direction: row;
     -webkit-overflow-scrolling: touch;
     overflow-x: auto;
@@ -1100,16 +1148,6 @@ button::-moz-focus-inner {
   margin-bottom: 0;
   margin-top: 0;
 }
-.tox .tox-dialog__body-content h1 {
-  font-size: 20px;
-  font-weight: bold;
-  margin-top: 2rem;
-}
-.tox .tox-dialog__body-content h2 {
-  font-size: 16px;
-  font-weight: bold;
-  margin-top: 2rem;
-}
 .tox .tox-dialog__body-content a {
   color: #207ab7;
   cursor: pointer;
@@ -1127,12 +1165,44 @@ button::-moz-focus-inner {
 .tox .tox-dialog__body-content ul {
   display: block;
   list-style-type: disc;
+  margin-bottom: 16px;
   -webkit-margin-end: 0;
           margin-inline-end: 0;
   -webkit-margin-start: 0;
           margin-inline-start: 0;
   -webkit-padding-start: 2.5rem;
           padding-inline-start: 2.5rem;
+}
+.tox .tox-dialog__body-content .tox-form__group h1 {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 16px;
+  margin-top: 2rem;
+}
+.tox .tox-dialog__body-content .tox-form__group h2 {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 16px;
+  margin-top: 2rem;
+}
+.tox .tox-dialog__body-content .tox-form__group p {
+  margin-bottom: 16px;
+}
+.tox .tox-dialog__body-content .tox-form__group h1:first-child,
+.tox .tox-dialog__body-content .tox-form__group h2:first-child,
+.tox .tox-dialog__body-content .tox-form__group p:first-child {
+  margin-top: 0;
+}
+.tox .tox-dialog__body-content .tox-form__group h1:last-child,
+.tox .tox-dialog__body-content .tox-form__group h2:last-child,
+.tox .tox-dialog__body-content .tox-form__group p:last-child {
+  margin-bottom: 0;
+}
+.tox .tox-dialog__body-content .tox-form__group h1:only-child,
+.tox .tox-dialog__body-content .tox-form__group h2:only-child,
+.tox .tox-dialog__body-content .tox-form__group p:only-child {
+  margin-bottom: 0;
+  margin-top: 0;
 }
 .tox .tox-dialog--width-lg {
   height: 650px;
@@ -1220,15 +1290,12 @@ body.tox-dialog__disable-scroll {
   position: -ms-device-fixed;
 }
 @media only screen and (max-width:767px) {
-  .tox:not([dir=rtl]) .tox-dialog__body-nav {
+  body:not(.tox-force-desktop) .tox:not([dir=rtl]) .tox-dialog__body-nav {
     margin-right: 0;
   }
 }
 @media only screen and (max-width:767px) {
-  .tox:not([dir=rtl]) .tox-dialog__body-nav-item {
-    /* stylelint-disable-line */
-  }
-  .tox:not([dir=rtl]) .tox-dialog__body-nav-item:not(:first-child) {
+  body:not(.tox-force-desktop) .tox:not([dir=rtl]) .tox-dialog__body-nav-item:not(:first-child) {
     margin-left: 8px;
   }
 }
@@ -1240,15 +1307,12 @@ body.tox-dialog__disable-scroll {
   text-align: right;
 }
 @media only screen and (max-width:767px) {
-  .tox[dir=rtl] .tox-dialog__body-nav {
+  body:not(.tox-force-desktop) .tox[dir=rtl] .tox-dialog__body-nav {
     margin-left: 0;
   }
 }
 @media only screen and (max-width:767px) {
-  .tox[dir=rtl] .tox-dialog__body-nav-item {
-    /* stylelint-disable-line */
-  }
-  .tox[dir=rtl] .tox-dialog__body-nav-item:not(:first-child) {
+  body:not(.tox-force-desktop) .tox[dir=rtl] .tox-dialog__body-nav-item:not(:first-child) {
     margin-right: 8px;
   }
 }
@@ -1491,6 +1555,12 @@ body.tox-dialog__disable-scroll {
   resize: none;
   width: 100%;
 }
+.tox .tox-textfield[disabled],
+.tox .tox-textarea[disabled] {
+  background-color: #222f3e;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: not-allowed;
+}
 .tox .tox-textfield:focus,
 .tox .tox-selectfield select:focus,
 .tox .tox-textarea:focus {
@@ -1528,6 +1598,11 @@ body.tox-dialog__disable-scroll {
 .tox .tox-selectfield {
   cursor: pointer;
   position: relative;
+}
+.tox .tox-selectfield select[disabled] {
+  background-color: #19232e;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: not-allowed;
 }
 .tox .tox-selectfield select::-ms-expand {
   display: none;
@@ -1722,7 +1797,7 @@ body.tox-dialog__disable-scroll {
   display: inline-block;
   overflow: hidden;
   vertical-align: top;
-  z-index: 1;
+  z-index: 1150;
 }
 .tox .tox-menu.tox-collection.tox-collection--list {
   padding: 0;
