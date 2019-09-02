@@ -59,9 +59,11 @@
 code[class*="language-"],
 pre[class*="language-"] {
   color: black;
+  background: none;
   text-shadow: 0 1px white;
   font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
-  font-size: 0.875rem;
+  font-size: 1em;
+  text-align: left;
   white-space: pre;
   word-spacing: normal;
   word-break: normal;
@@ -101,13 +103,13 @@ pre[class*="language-"] {
 }
 :not(pre) > code[class*="language-"],
 pre[class*="language-"] {
-  background: transparent !important;
-  border: 1px solid #ccc;
+  background: #f5f2f0;
 }
 /* Inline code */
 :not(pre) > code[class*="language-"] {
   padding: 0.1em;
   border-radius: 0.3em;
+  white-space: normal;
 }
 .token.comment,
 .token.prolog,
@@ -143,7 +145,7 @@ pre[class*="language-"] {
 .token.url,
 .language-css .token.string,
 .style .token.string {
-  color: #a67f59;
+  color: #9a6e3a;
   background: hsla(0, 0%, 100%, 0.5);
 }
 .token.atrule,
@@ -151,7 +153,8 @@ pre[class*="language-"] {
 .token.keyword {
   color: #07a;
 }
-.token.function {
+.token.function,
+.token.class-name {
   color: #DD4A68;
 }
 .token.regex,
@@ -168,16 +171,6 @@ pre[class*="language-"] {
 }
 .token.entity {
   cursor: help;
-}
-:not([dir=rtl]) code[class*="language-"],
-:not([dir=rtl]) pre[class*="language-"] {
-  direction: ltr;
-  text-align: left;
-}
-[dir=rtl] code[class*="language-"],
-[dir=rtl] pre[class*="language-"] {
-  direction: rtl;
-  text-align: right;
 }
 /* stylelint-enable */
 .mce-content-body {
@@ -440,7 +433,7 @@ pre[class*="language-"] {
   opacity: 1;
 }
 .mce-spellchecker-word {
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D'4'%20height%3D'4'%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%3E%3Cpath%20stroke%3D'%23ff0000'%20fill%3D'none'%20stroke-linecap%3D'round'%20stroke-opacity%3D'.5'%20d%3D'M0%203L2%201%204%203'%2F%3E%3C%2Fsvg%3E%0A");
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D'4'%20height%3D'4'%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%3E%3Cpath%20stroke%3D'%23ff0000'%20fill%3D'none'%20stroke-linecap%3D'round'%20stroke-opacity%3D'.75'%20d%3D'M0%203L2%201%204%203'%2F%3E%3C%2Fsvg%3E%0A");
   background-position: 0 calc(100% + 1px);
   background-repeat: repeat-x;
   background-size: auto 6px;
@@ -448,7 +441,7 @@ pre[class*="language-"] {
   height: 2rem;
 }
 .mce-spellchecker-grammar {
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D'4'%20height%3D'4'%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%3E%3Cpath%20stroke%3D'%23008800'%20fill%3D'none'%20stroke-linecap%3D'round'%20d%3D'M0%203L2%201%204%203'%2F%3E%3C%2Fsvg%3E%0A");
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D'4'%20height%3D'4'%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%3E%3Cpath%20stroke%3D'%2300A835'%20fill%3D'none'%20stroke-linecap%3D'round'%20d%3D'M0%203L2%201%204%203'%2F%3E%3C%2Fsvg%3E%0A");
   background-position: 0 calc(100% + 1px);
   background-repeat: repeat-x;
   background-size: auto 6px;
