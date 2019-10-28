@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.1.0 (2019-10-17)
+ * Version: 5.1.1 (2019-10-28)
  */
 (function (domGlobals) {
     'use strict';
@@ -25523,7 +25523,7 @@
       var fonts = font.split(/\s*,\s*/);
       return map(fonts, function (font) {
         if (font.indexOf(' ') !== -1 && !(startsWith(font, '"') || startsWith(font, '\''))) {
-          return '"' + font + '"';
+          return '\'' + font + '\'';
         } else {
           return font;
         }
@@ -27170,8 +27170,8 @@
       suffix: null,
       $: DomQuery,
       majorVersion: '5',
-      minorVersion: '1.0',
-      releaseDate: '2019-10-17',
+      minorVersion: '1.1',
+      releaseDate: '2019-10-28',
       editors: legacyEditors,
       i18n: I18n,
       activeEditor: null,
