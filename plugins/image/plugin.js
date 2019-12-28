@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.1.5 (2019-12-19)
+ * Version: 5.1.6 (2019-12-27)
  */
 (function (domGlobals) {
     'use strict';
@@ -1055,6 +1055,11 @@
         filetype: 'image',
         label: 'Source'
       };
+      var imageSrcset = {
+        name: 'srcset',
+        type: 'multiline',
+        label: 'Srcset'
+      };
       var imageList = info.imageList.map(function (items) {
         return {
           name: 'images',
@@ -1134,6 +1139,9 @@
     var hasAdvTab = function (editor) {
       return editor.getParam('image_advtab', false, 'boolean');
     };
+    var hasSrcsetTab = function (editor) {
+      return editor.getParam('image_srcsettab', false, 'boolean');
+    };
     var hasUploadTab = function (editor) {
       return editor.getParam('image_uploadtab', true, 'boolean');
     };
@@ -1177,6 +1185,7 @@
       hasDimensions: hasDimensions,
       hasUploadTab: hasUploadTab,
       hasAdvTab: hasAdvTab,
+      hasSrcsetTab: hasSrcsetTab,
       getPrependUrl: getPrependUrl,
       getClassList: getClassList,
       hasDescription: hasDescription,
@@ -1439,6 +1448,7 @@
     var defaultData = function () {
       return {
         src: '',
+        srcset: '',
         alt: '',
         title: '',
         width: '',
@@ -1486,6 +1496,7 @@
     var read = function (normalizeCss, image) {
       return {
         src: getAttrib(image, 'src'),
+        srcset: getAttrib(image, 'srcset'),
         alt: getAttrib(image, 'alt'),
         title: getAttrib(image, 'title'),
         width: getSize(image, 'width'),
@@ -1516,6 +1527,7 @@
         return toggleCaption(image);
       });
       updateProp(image, oldData, newData, 'src', setAttrib);
+      updateProp(image, oldData, newData, 'srcset', setAttrib);
       updateProp(image, oldData, newData, 'alt', setAttrib);
       updateProp(image, oldData, newData, 'title', setAttrib);
       updateProp(image, oldData, newData, 'width', setSize('width', normalizeCss));
@@ -1847,6 +1859,21 @@
     };
     var AdvTab = { makeTab: makeTab$1 };
 
+    var makeTab$2 = function (info) {
+      return {
+        title: 'Srcset',
+        name: 'srcset',
+        items: [
+          {
+            type: 'textarea',
+            label: '&nbsp;',
+            name: 'srcset'
+          }
+        ]
+      };
+    };
+    var SrcsetTab = { makeTab: makeTab$2 };
+
     var collect = function (editor) {
       var urlListSanitizer = ListUtils.sanitizer(function (item) {
         return editor.convertURL(item.value || item.url, 'src');
@@ -1866,6 +1893,7 @@
       });
       var classList = ListUtils.sanitize(Settings.getClassList(editor));
       var hasAdvTab = Settings.hasAdvTab(editor);
+      var hasSrcsetTab = Settings.hasSrcsetTab(editor);
       var hasUploadTab = Settings.hasUploadTab(editor);
       var hasUploadUrl = Settings.hasUploadUrl(editor);
       var hasUploadHandler = Settings.hasUploadHandler(editor);
@@ -1887,6 +1915,7 @@
           imageList: imageList,
           classList: classList,
           hasAdvTab: hasAdvTab,
+          hasSrcsetTab: hasSrcsetTab,
           hasUploadTab: hasUploadTab,
           hasUploadUrl: hasUploadUrl,
           hasUploadHandler: hasUploadHandler,
@@ -1930,6 +1959,7 @@
           meta: {}
         },
         images: image.src,
+        srcset: image.srcset,
         alt: image.alt,
         title: image.title,
         dimensions: {
@@ -1949,6 +1979,7 @@
     var toImageData = function (data) {
       return {
         src: data.src.value,
+        srcset: data.srcset,
         alt: data.alt,
         title: data.title,
         width: data.dimensions.width,
@@ -2021,6 +2052,11 @@
         }
         if (isString(meta.borderstyle)) {
           data.borderstyle = meta.borderstyle;
+        }
+      }
+      if (info.hasSrcsetTab) {
+        if (isString(meta.srcset)) {
+          data.srcset = meta.srcset;
         }
       }
     };
@@ -2185,12 +2221,13 @@
       };
     };
     var makeDialogBody = function (info) {
-      if (info.hasAdvTab || info.hasUploadUrl || info.hasUploadHandler) {
+      if (info.hasAdvTab || info.hasSrcsetTab || info.hasUploadUrl || info.hasUploadHandler) {
         var tabPanel = {
           type: 'tabpanel',
           tabs: flatten([
             [MainTab.makeTab(info)],
             info.hasAdvTab ? [AdvTab.makeTab(info)] : [],
+            info.hasSrcsetTab ? [SrcsetTab.makeTab(info)] : [],
             info.hasUploadTab && (info.hasUploadUrl || info.hasUploadHandler) ? [UploadTab.makeTab(info)] : []
           ])
         };
@@ -2208,7 +2245,7 @@
         var state = createState(info);
         return {
           title: 'Insert/Edit Image',
-          size: 'normal',
+          size: 'medium',
           body: makeDialogBody(info),
           buttons: [
             {
