@@ -338,7 +338,7 @@
 						win.submit();
 					}},
 					{text: "Replace", disabled: true, onclick: function() {
-						if (!self.replace(win.find('#replace').value())) {
+						if (!self.replace(win.find('#replace').value(), false)) {
 							win.statusbar.items().slice(1).disabled(true);
 							currentIndex = -1;
 							last = {};
