@@ -1,4 +1,4 @@
-// 4.9.8 (2020-01-28)
+// 4.9.9 (2020-03-25)
 (function () {
 (function (domGlobals) {
     'use strict';
@@ -3720,6 +3720,17 @@
       return Option.from(raw).filter(function (r) {
         return r.length > 0;
       });
+    };
+    var getAllRaw = function (element) {
+      var css = {};
+      var dom = element.dom();
+      if (isSupported(dom)) {
+        for (var i = 0; i < dom.style.length; i++) {
+          var ruleName = dom.style.item(i);
+          css[ruleName] = dom.style[ruleName];
+        }
+      }
+      return css;
     };
 
     var Immutable = function () {
@@ -7790,6 +7801,18 @@
       };
     };
 
+    var __assign = function () {
+      __assign = Object.assign || function __assign(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+          s = arguments[i];
+          for (var p in s)
+            if (Object.prototype.hasOwnProperty.call(s, p))
+              t[p] = s[p];
+        }
+        return t;
+      };
+      return __assign.apply(this, arguments);
+    };
     function __rest(s, e) {
       var t = {};
       for (var p in s)
@@ -7801,6 +7824,14 @@
             t[p[i]] = s[p[i]];
         }
       return t;
+    }
+    function __spreadArrays() {
+      for (var s = 0, i = 0, il = arguments.length; i < il; i++)
+        s += arguments[i].length;
+      for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+          r[k] = a[j];
+      return r;
     }
 
     var unique = 0;
@@ -23352,10 +23383,41 @@
       }
       return parent !== root ? editableRoot : root;
     };
+    var applyAttributes = function (editor, node, forcedRootBlockAttrs) {
+      Option.from(forcedRootBlockAttrs.style).map(editor.dom.parseStyle).each(function (attrStyles) {
+        var currentStyles = getAllRaw(Element.fromDom(node));
+        var newStyles = __assign(__assign({}, currentStyles), attrStyles);
+        editor.dom.setStyles(node, newStyles);
+      });
+      var attrClassesOpt = Option.from(forcedRootBlockAttrs.class).map(function (attrClasses) {
+        return attrClasses.split(/\s+/);
+      });
+      var currentClassesOpt = Option.from(node.className).map(function (currentClasses) {
+        return filter(currentClasses.split(/\s+/), function (clazz) {
+          return clazz !== '';
+        });
+      });
+      lift2(attrClassesOpt, currentClassesOpt, function (attrClasses, currentClasses) {
+        var filteredClasses = filter(currentClasses, function (clazz) {
+          return !contains(attrClasses, clazz);
+        });
+        var newClasses = __spreadArrays(attrClasses, filteredClasses);
+        editor.dom.setAttrib(node, 'class', newClasses.join(' '));
+      });
+      var appliedAttrs = [
+        'style',
+        'class'
+      ];
+      var remainingAttrs = bifilter(forcedRootBlockAttrs, function (_, attrs) {
+        return !contains(appliedAttrs, attrs);
+      }).t;
+      editor.dom.setAttribs(node, remainingAttrs);
+    };
     var setForcedBlockAttrs = function (editor, node) {
       var forcedRootBlockName = Settings.getForcedRootBlock(editor);
       if (forcedRootBlockName && forcedRootBlockName.toLowerCase() === node.tagName.toLowerCase()) {
-        editor.dom.setAttribs(node, Settings.getForcedRootBlockAttrs(editor));
+        var forcedRootBlockAttrs = Settings.getForcedRootBlockAttrs(editor);
+        applyAttributes(editor, node, forcedRootBlockAttrs);
       }
     };
     var wrapSelfAndSiblingsInDefaultBlock = function (editor, newBlockName, rng, container, offset) {
@@ -23421,7 +23483,6 @@
         var textInlineElements = schema.getTextInlineElements();
         if (name || parentBlockName === 'TABLE' || parentBlockName === 'HR') {
           block = dom.create(name || newBlockName);
-          setForcedBlockAttrs(editor, block);
         } else {
           block = parentBlock.cloneNode(false);
         }
@@ -23447,6 +23508,7 @@
             }
           } while ((node = node.parentNode) && node !== editableRoot);
         }
+        setForcedBlockAttrs(editor, block);
         emptyBlock(caretNode);
         return block;
       };
@@ -23553,6 +23615,7 @@
         if (dom.isEmpty(parentBlock)) {
           emptyBlock(parentBlock);
         }
+        setForcedBlockAttrs(editor, newBlock);
         NewLineUtils.moveToCaretPosition(editor, newBlock);
       } else if (isCaretAtStartOrEndOfBlock()) {
         insertNewBlockAfter();
@@ -23577,6 +23640,7 @@
           dom.remove(newBlock);
           insertNewBlockAfter();
         } else {
+          setForcedBlockAttrs(editor, newBlock);
           NewLineUtils.moveToCaretPosition(editor, newBlock);
         }
       }
@@ -26267,15 +26331,15 @@
       defaultSettings: {},
       $: DomQuery,
       majorVersion: '4',
-      minorVersion: '9.8',
-      releaseDate: '2020-01-28',
+      minorVersion: '9.9',
+      releaseDate: '2020-03-25',
       editors: legacyEditors,
       i18n: I18n,
       activeEditor: null,
       settings: {},
       setup: function () {
         var self = this;
-        var baseURL, documentBaseURL, suffix = '', preInit, src;
+        var baseURL, documentBaseURL, suffix = '';
         documentBaseURL = URI.getDocumentBaseUrl(domGlobals.document.location);
         if (/^[^:]+:\/\/\/?[^\/]+\//.test(documentBaseURL)) {
           documentBaseURL = documentBaseURL.replace(/[\?#].*$/, '').replace(/[\/\\][^\/]+$/, '');
@@ -26283,14 +26347,17 @@
             documentBaseURL += '/';
           }
         }
-        preInit = window.tinymce || window.tinyMCEPreInit;
+        var preInit = window.tinymce || window.tinyMCEPreInit;
         if (preInit) {
           baseURL = preInit.base || preInit.baseURL;
           suffix = preInit.suffix;
         } else {
           var scripts = domGlobals.document.getElementsByTagName('script');
           for (var i = 0; i < scripts.length; i++) {
-            src = scripts[i].src;
+            var src = scripts[i].src || '';
+            if (src === '') {
+              continue;
+            }
             var srcScript = src.substring(src.lastIndexOf('/'));
             if (/tinymce(\.full|\.jquery|)(\.min|\.dev|)\.js/.test(src)) {
               if (srcScript.indexOf('.min') !== -1) {
@@ -26301,7 +26368,7 @@
             }
           }
           if (!baseURL && domGlobals.document.currentScript) {
-            src = domGlobals.document.currentScript.src;
+            var src = domGlobals.document.currentScript.src;
             if (src.indexOf('.min') !== -1) {
               suffix = '.min';
             }
