@@ -4,9 +4,9 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.4.2 (2020-08-17)
+ * Version: 5.5.0 (2020-09-29)
  */
-(function (domGlobals) {
+(function () {
     'use strict';
 
     var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
@@ -96,7 +96,7 @@
           } else {
             global$4.setTimeout(function () {
               if (!global$3.webkit) {
-                domGlobals.window.focus();
+                window.focus();
               }
               el.focus();
             }, 10);
@@ -125,4 +125,4 @@
 
     Plugin();
 
-}(window));
+}());
