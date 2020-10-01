@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.5.0 (2020-09-29)
+ * Version: 5.5.1 (2020-10-01)
  */
 (function () {
     'use strict';
@@ -543,37 +543,38 @@
 
     var isArray$1 = Array.isArray;
     var toArray = function (obj) {
-      var array = obj, i, l;
       if (!isArray$1(obj)) {
-        array = [];
-        for (i = 0, l = obj.length; i < l; i++) {
+        var array = [];
+        for (var i = 0, l = obj.length; i < l; i++) {
           array[i] = obj[i];
         }
+        return array;
+      } else {
+        return obj;
       }
-      return array;
     };
     var each$2 = function (o, cb, s) {
       var n, l;
       if (!o) {
-        return 0;
+        return false;
       }
       s = s || o;
       if (o.length !== undefined) {
         for (n = 0, l = o.length; n < l; n++) {
           if (cb.call(s, o[n], n, o) === false) {
-            return 0;
+            return false;
           }
         }
       } else {
         for (n in o) {
           if (o.hasOwnProperty(n)) {
             if (cb.call(s, o[n], n, o) === false) {
-              return 0;
+              return false;
             }
           }
         }
       }
-      return 1;
+      return true;
     };
     var map$2 = function (array, callback) {
       var out = [];
@@ -592,9 +593,8 @@
       return o;
     };
     var indexOf$1 = function (a, v) {
-      var i, l;
       if (a) {
-        for (i = 0, l = a.length; i < l; i++) {
+        for (var i = 0, l = a.length; i < l; i++) {
           if (a[i] === v) {
             return i;
           }
@@ -603,14 +603,11 @@
       return -1;
     };
     var reduce = function (collection, iteratee, accumulator, thisArg) {
-      var i = 0;
-      if (arguments.length < 3) {
-        accumulator = collection[0];
+      var acc = isUndefined(accumulator) ? collection[0] : accumulator;
+      for (var i = 0; i < collection.length; i++) {
+        acc = iteratee.call(thisArg, acc, collection[i], i);
       }
-      for (; i < collection.length; i++) {
-        accumulator = iteratee.call(thisArg, accumulator, collection[i], i);
-      }
-      return accumulator;
+      return acc;
     };
     var findIndex$1 = function (array, predicate, thisArg) {
       var i, l;
@@ -3924,8 +3921,8 @@
         if (typeof children === 'string') {
           children = split(children);
         }
-        name = split(name);
-        ni = name.length;
+        var names = split(name);
+        ni = names.length;
         while (ni--) {
           attributesOrder = split([
             globalAttributes,
@@ -3936,19 +3933,19 @@
             attributesOrder: attributesOrder,
             children: arrayToMap(children, dummyObj)
           };
-          schema[name[ni]] = element;
+          schema[names[ni]] = element;
         }
       };
       var addAttrs = function (name, attributes) {
         var ni, schemaItem, i, l;
-        name = split(name);
-        ni = name.length;
-        attributes = split(attributes);
+        var names = split(name);
+        ni = names.length;
+        var attrs = split(attributes);
         while (ni--) {
-          schemaItem = schema[name[ni]];
-          for (i = 0, l = attributes.length; i < l; i++) {
-            schemaItem.attributes[attributes[i]] = {};
-            schemaItem.attributesOrder.push(attributes[i]);
+          schemaItem = schema[names[ni]];
+          for (i = 0, l = attrs.length; i < l; i++) {
+            schemaItem.attributes[attrs[i]] = {};
+            schemaItem.attributesOrder.push(attrs[i]);
           }
         }
       };
@@ -4201,13 +4198,13 @@
         var ei, el, ai, al, matches, element, attr, attrData, elementName, attrName, attrType, attributes, attributesOrder, prefix, outputName, globalAttributes, globalAttributesOrder, value;
         var elementRuleRegExp = /^([#+\-])?([^\[!\/]+)(?:\/([^\[!]+))?(?:(!?)\[([^\]]+)])?$/, attrRuleRegExp = /^([!\-])?(\w+[\\:]:\w+|[^=:<]+)?(?:([=:<])(.*))?$/, hasPatternsRegExp = /[*?+]/;
         if (validElements) {
-          validElements = split(validElements, ',');
+          var validElementsArr = split(validElements, ',');
           if (elements['@']) {
             globalAttributes = elements['@'].attributes;
             globalAttributesOrder = elements['@'].attributesOrder;
           }
-          for (ei = 0, el = validElements.length; ei < el; ei++) {
-            matches = elementRuleRegExp.exec(validElements[ei]);
+          for (ei = 0, el = validElementsArr.length; ei < el; ei++) {
+            matches = elementRuleRegExp.exec(validElementsArr[ei]);
             if (matches) {
               prefix = matches[1];
               elementName = matches[2];
@@ -4391,8 +4388,8 @@
         });
         if (settings.schema !== 'html5') {
           each$3(split('strong/b em/i'), function (item) {
-            item = split(item, '/');
-            elements[item[1]].outputName = item[0];
+            var items = split(item, '/');
+            elements[items[1]].outputName = items[0];
           });
         }
         each$3(split('ol ul sub sup blockquote span font a table tbody tr strong em b i'), function (name) {
@@ -9126,14 +9123,14 @@
       var paths = parts[0].split('/');
       offset = parts.length > 1 ? parts[1] : 'before';
       var container = reduce(paths, function (result, value) {
-        value = /([\w\-\(\)]+)\[([0-9]+)\]/.exec(value);
-        if (!value) {
+        var match = /([\w\-\(\)]+)\[([0-9]+)\]/.exec(value);
+        if (!match) {
           return null;
         }
-        if (value[1] === 'text()') {
-          value[1] = '#text';
+        if (match[1] === 'text()') {
+          match[1] = '#text';
         }
-        return resolvePathItem(result, value[1], parseInt(value[2], 10));
+        return resolvePathItem(result, match[1], parseInt(match[2], 10));
       }, root);
       if (!container) {
         return null;
@@ -15545,7 +15542,9 @@
       return isCaretNode(element.dom) && isCaretContainerEmpty(element.dom);
     };
 
-    var postProcessHooks = {}, filter$4 = filter$2, each$8 = each$2;
+    var postProcessHooks = {};
+    var filter$4 = filter$2;
+    var each$8 = each$2;
     var addPostProcessHook = function (name, hook) {
       var hooks = postProcessHooks[name];
       if (!hooks) {
@@ -20727,21 +20726,21 @@
       }
       var previewElm = dom.select(name, previewFrag)[0] || previewFrag.firstChild;
       each$e(format.styles, function (value, name) {
-        value = removeVars(value);
-        if (value) {
-          dom.setStyle(previewElm, name, value);
+        var newValue = removeVars(value);
+        if (newValue) {
+          dom.setStyle(previewElm, name, newValue);
         }
       });
       each$e(format.attributes, function (value, name) {
-        value = removeVars(value);
-        if (value) {
-          dom.setAttrib(previewElm, name, value);
+        var newValue = removeVars(value);
+        if (newValue) {
+          dom.setAttrib(previewElm, name, newValue);
         }
       });
       each$e(format.classes, function (value) {
-        value = removeVars(value);
-        if (!dom.hasClass(previewElm, value)) {
-          dom.addClass(previewElm, value);
+        var newValue = removeVars(value);
+        if (!dom.hasClass(previewElm, newValue)) {
+          dom.addClass(previewElm, newValue);
         }
       });
       editor.fire('PreviewFormats');
@@ -22824,7 +22823,7 @@
       var caretClientRect = last$1(caretPosition.getClientRects());
       var forwards = direction === VDirection.Down;
       if (!caretClientRect) {
-        return null;
+        return Optional.none();
       }
       var walkerFn = forwards ? downUntil : upUntil;
       var linePositions = walkerFn(editor.getBody(), isAboveLine(1), caretPosition);
@@ -28402,8 +28401,8 @@
       suffix: null,
       $: DomQuery,
       majorVersion: '5',
-      minorVersion: '5.0',
-      releaseDate: '2020-09-29',
+      minorVersion: '5.1',
+      releaseDate: '2020-10-01',
       editors: legacyEditors,
       i18n: I18n,
       activeEditor: null,

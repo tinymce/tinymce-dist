@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.5.0 (2020-09-29)
+ * Version: 5.5.1 (2020-10-01)
  */
 (function () {
     'use strict';
@@ -590,10 +590,10 @@
     };
     var getItems = function (editor) {
       return global$1.map(getLanguages(editor).split(','), function (langPair) {
-        langPair = langPair.split('=');
+        var langPairs = langPair.split('=');
         return {
-          name: langPair[0],
-          value: langPair[1]
+          name: langPairs[0],
+          value: langPairs[1]
         };
       });
     };

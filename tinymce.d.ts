@@ -121,20 +121,23 @@ interface UndoManager {
     extra: (callback1: () => void, callback2: () => void) => void;
 }
 declare type ArrayCallback<T, R> = (x: T, i: number, xs: ReadonlyArray<T>) => R;
-declare type ObjCallback<T, R> = (value: T[keyof T], key: string, obj: T) => R;
+declare type ObjCallback<T, R> = (value: T, key: string, obj: Record<string, T>) => R;
+declare type ArrayCallback$1<T, R> = ArrayCallback<T, R>;
+declare type ObjCallback$1<T, R> = ObjCallback<T, R>;
 interface Tools {
     is(obj: any, type: string): boolean;
     isArray<T>(arr: any): arr is Array<T>;
     inArray<T>(arr: ArrayLike<T>, value: T): number;
-    grep<T>(arr: ArrayLike<T>, pred?: ArrayCallback<T, boolean>): any;
+    grep<T>(arr: ArrayLike<T> | null | undefined, pred?: ArrayCallback$1<T, boolean>): T[];
+    grep<T>(arr: Record<string, T> | null | undefined, pred?: ObjCallback$1<T, boolean>): T[];
     trim(str: string): string;
     toArray<T>(obj: ArrayLike<T>): T[];
     hasOwn(obj: any, name: string): boolean;
     makeMap<T>(items: ArrayLike<T> | string, delim?: string | RegExp, map?: Record<string, T | string>): Record<string, T | string>;
-    each<T>(arr: ArrayLike<T>, cb: ArrayCallback<T, any>, scope?: any): void;
-    each<T>(obj: T, cb: ObjCallback<T, any>, scope?: any): void;
-    map<T, U>(arr: ArrayLike<T>, cb: ArrayCallback<T, U>, scope?: any): Array<U>;
-    map<T, U>(obj: T, cb: ObjCallback<T, U>, scope?: any): Array<U>;
+    each<T>(arr: ArrayLike<T> | null | undefined, cb: ArrayCallback$1<T, void | boolean>, scope?: any): boolean;
+    each<T>(obj: Record<string, T> | null | undefined, cb: ObjCallback$1<T, void | boolean>, scope?: any): boolean;
+    map<T, R>(arr: ArrayLike<T> | null | undefined, cb: ArrayCallback$1<T, R>): R[];
+    map<T, R>(obj: Record<string, T> | null | undefined, cb: ObjCallback$1<T, R>): R[];
     extend(obj: Object, ext: Object, ...objs: Object[]): any;
     create(name: string, p: Object, root?: Object): any;
     walk<T = any>(obj: T, f: Function, n?: keyof T, scope?: any): void;
@@ -225,7 +228,7 @@ interface DomQueryConstructor {
     contains(context: any, elem: Node): number;
     filter(expr: string, elems: Node[], not?: boolean): any;
 }
-interface DomQuery<T extends Node = Node> extends Iterable<T> {
+interface DomQuery<T extends Node = Node> extends ArrayLike<T> {
     init: (selector?: DomQueryInitSelector<T>, context?: Node) => void;
     context: T;
     length: number;
@@ -239,10 +242,10 @@ interface DomQuery<T extends Node = Node> extends Iterable<T> {
     attr(attrs: Record<string, string | boolean | number | null>): this;
     attr(name: string): string;
     before(content: DomQuerySelector<T>): this;
-    children(selector?: string): this;
+    children(selector?: string): DomQuery<ChildNode>;
     clone(): this;
     closest(selector: DomQuerySelector<T>): this;
-    contents(selector?: string): this;
+    contents(selector?: string): DomQuery<ChildNode>;
     css(name: string, value: string | number | null): this;
     css(styles: Record<string, string | number | null>): this;
     css(name: string): string;
@@ -258,26 +261,26 @@ interface DomQuery<T extends Node = Node> extends Iterable<T> {
     html(): string;
     is(selector: string | ((i: number, item: any) => boolean)): boolean;
     last(): this;
-    next(selector?: string): this;
-    nextUntil(selector: DomQuerySelector<T>, until?: string): this;
+    next(selector?: string): DomQuery<ChildNode>;
+    nextUntil(selector: DomQuerySelector<T>, until?: string): DomQuery<ChildNode>;
     off<K extends keyof HTMLElementEventMap>(name: K, callback?: EventUtilsCallback<HTMLElementEventMap[K]>): this;
     off<U>(name?: string, callback?: EventUtilsCallback<U>): this;
     offset(offset?: {}): {} | this;
     on<K extends keyof HTMLElementEventMap>(name: K, callback: EventUtilsCallback<HTMLElementEventMap[K]>): this;
     on<U>(name: string, callback: EventUtilsCallback<U>): this;
-    parent(selector?: string): this;
-    parents(selector?: string): this;
-    parentsUntil(selector: DomQuerySelector<T>, filter?: string): this;
+    parent(selector?: string): DomQuery<Node>;
+    parents(selector?: string): DomQuery<Node>;
+    parentsUntil(selector: DomQuerySelector<T>, filter?: string): DomQuery<Node>;
     prepend(content: DomQuerySelector<T>): this;
     prependTo(val: DomQuerySelector<T>): this;
-    prev(selector?: string): this;
-    prevUntil(selector: DomQuerySelector<T>, filter?: string): this;
+    prev(selector?: string): DomQuery<ChildNode>;
+    prevUntil(selector: DomQuerySelector<T>, filter?: string): DomQuery<ChildNode>;
     prop(name: string, value: string): this;
     prop(props: Record<string, string | number>): this;
     prop(name: string): string;
     push(...items: T[]): number;
     remove(): this;
-    removeAttr(name: string): DomQuery | string;
+    removeAttr(name: string): this;
     removeClass(className: string): this;
     replaceWith(content: DomQuerySelector<T>): this;
     show(): this;
@@ -468,6 +471,12 @@ interface UploadFailureOptions {
     remove?: boolean;
 }
 declare type UploadHandler = (blobInfo: BlobInfo, success: (url: string) => void, failure: (err: string, options?: UploadFailureOptions) => void, progress?: (percent: number) => void) => void;
+interface RangeLikeObject {
+    startContainer: Node;
+    startOffset: number;
+    endContainer: Node;
+    endOffset: number;
+}
 declare type ApplyFormat = BlockFormat | InlineFormat | SelectorFormat;
 declare type RemoveFormat = RemoveBlockFormat | RemoveInlineFormat | RemoveSelectorFormat;
 declare type Format = ApplyFormat | RemoveFormat;
@@ -482,7 +491,7 @@ interface CommonFormat<T> {
     expand?: boolean;
     links?: boolean;
     onmatch?: (node: Node, fmt: T, itemName: string) => boolean;
-    onformat?: (node: Node, fmt: T, vars?: FormatVars) => void;
+    onformat?: (elm: Node, fmt: T, vars?: FormatVars, node?: Node | RangeLikeObject) => void;
     remove_similar?: boolean;
 }
 interface CommonApplyFormat<T> extends CommonFormat<T> {
@@ -1545,7 +1554,7 @@ interface DOMUtils {
     create(name: string, attrs?: Record<string, string | boolean | number>, html?: string | Node): HTMLElement;
     createHTML(name: string, attrs?: Record<string, string>, html?: string): string;
     createFragment(html?: string): DocumentFragment;
-    remove<T extends Node>(node: string | T | T[] | DomQuery, keepChildren?: boolean): T | T[];
+    remove<T extends Node>(node: string | T | T[] | DomQuery<T>, keepChildren?: boolean): T | T[];
     setStyle(elm: string | Node, name: string, value: string | number | null): void;
     setStyle(elm: string | Node, styles: StyleMap): void;
     getStyle(elm: string | Node, name: string, computed?: boolean): string;
@@ -2119,12 +2128,6 @@ interface FormatRegistry {
     has(name: string): boolean;
     register(name: string | Formats, format?: Format[] | Format): void;
     unregister(name: string): Formats;
-}
-interface RangeLikeObject {
-    startContainer: Node;
-    startOffset: number;
-    endContainer: Node;
-    endOffset: number;
 }
 interface Formatter extends FormatRegistry {
     apply(name: string, vars?: FormatVars, node?: Node | RangeLikeObject): void;

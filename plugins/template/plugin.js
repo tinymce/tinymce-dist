@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.5.0 (2020-09-29)
+ * Version: 5.5.1 (2020-10-01)
  */
 (function () {
     'use strict';
@@ -159,7 +159,7 @@
     var hasClass = function (n, c) {
       return new RegExp('\\b' + c + '\\b', 'g').test(n.className);
     };
-    var insertTemplate = function (editor, ui, html) {
+    var insertTemplate = function (editor, _ui, html) {
       var el;
       var dom = editor.dom;
       var sel = editor.selection.getContent();
