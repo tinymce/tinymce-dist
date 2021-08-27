@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.9.0 (2021-08-26)
+ * Version: 5.9.1 (2021-08-27)
  */
 (function () {
     'use strict';
@@ -3455,55 +3455,6 @@
       return map$1(nodes, SugarElement.fromDom);
     };
 
-    var fireNewRow = function (editor, row) {
-      return editor.fire('newrow', { node: row });
-    };
-    var fireNewCell = function (editor, cell) {
-      return editor.fire('newcell', { node: cell });
-    };
-    var fireObjectResizeStart = function (editor, target, width, height, origin) {
-      editor.fire('ObjectResizeStart', {
-        target: target,
-        width: width,
-        height: height,
-        origin: origin
-      });
-    };
-    var fireObjectResized = function (editor, target, width, height, origin) {
-      editor.fire('ObjectResized', {
-        target: target,
-        width: width,
-        height: height,
-        origin: origin
-      });
-    };
-    var fireTableSelectionChange = function (editor, cells, start, finish, otherCells) {
-      editor.fire('TableSelectionChange', {
-        cells: cells,
-        start: start,
-        finish: finish,
-        otherCells: otherCells
-      });
-    };
-    var fireTableSelectionClear = function (editor) {
-      editor.fire('TableSelectionClear');
-    };
-    var fireTableModified = function (editor, table, data) {
-      editor.fire('TableModified', __assign(__assign({}, data), { table: table }));
-    };
-    var styleModified = {
-      structure: false,
-      style: true
-    };
-    var structureModified = {
-      structure: true,
-      style: false
-    };
-    var styleAndStructureModified = {
-      structure: true,
-      style: true
-    };
-
     var getNodeName = function (elm) {
       return elm.nodeName.toLowerCase();
     };
@@ -3708,11 +3659,8 @@
                 var doc = SugarElement.fromDom(editor.getDoc());
                 var generators = paste$1(doc);
                 var targets = paste(cell, elements[0], generators);
-                actions.pasteCells(table, targets).each(function (data) {
-                  editor.selection.setRng(data.rng);
+                actions.pasteCells(table, targets).each(function () {
                   editor.focus();
-                  cellSelection.clear(table);
-                  fireTableModified(editor, table.dom, data.effect);
                 });
               }
             });
@@ -5096,6 +5044,55 @@
       };
     };
     var TableResize = { create: create$3 };
+
+    var fireNewRow = function (editor, row) {
+      return editor.fire('newrow', { node: row });
+    };
+    var fireNewCell = function (editor, cell) {
+      return editor.fire('newcell', { node: cell });
+    };
+    var fireObjectResizeStart = function (editor, target, width, height, origin) {
+      editor.fire('ObjectResizeStart', {
+        target: target,
+        width: width,
+        height: height,
+        origin: origin
+      });
+    };
+    var fireObjectResized = function (editor, target, width, height, origin) {
+      editor.fire('ObjectResized', {
+        target: target,
+        width: width,
+        height: height,
+        origin: origin
+      });
+    };
+    var fireTableSelectionChange = function (editor, cells, start, finish, otherCells) {
+      editor.fire('TableSelectionChange', {
+        cells: cells,
+        start: start,
+        finish: finish,
+        otherCells: otherCells
+      });
+    };
+    var fireTableSelectionClear = function (editor) {
+      editor.fire('TableSelectionClear');
+    };
+    var fireTableModified = function (editor, table, data) {
+      editor.fire('TableModified', __assign(__assign({}, data), { table: table }));
+    };
+    var styleModified = {
+      structure: false,
+      style: true
+    };
+    var structureModified = {
+      structure: true,
+      style: false
+    };
+    var styleAndStructureModified = {
+      structure: true,
+      style: true
+    };
 
     var defaultTableToolbar = 'tableprops tabledelete | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol';
     var defaultStyles = {
@@ -6974,7 +6971,7 @@
     var getCellsType = opGetCellsType;
     var getRowsType = opGetRowsType;
 
-    var TableActions = function (editor, lazyWire) {
+    var TableActions = function (editor, cellSelection, lazyWire) {
       var isTableBody = function (editor) {
         return name(getBody(editor)) === 'table';
       };
@@ -6998,8 +6995,32 @@
           return TableSection.getTableSectionType(table, 'section');
         }
       };
+      var setSelectionFromAction = function (table, result) {
+        return result.cursor.fold(function () {
+          var cells = cells$1(table);
+          return head(cells).filter(inBody).map(function (firstCell) {
+            cellSelection.clear(table);
+            var rng = editor.dom.createRng();
+            rng.selectNode(firstCell.dom);
+            editor.selection.setRng(rng);
+            set$2(firstCell, 'data-mce-selected', '1');
+            return rng;
+          });
+        }, function (cell) {
+          var des = freefallRtl(cell);
+          var rng = editor.dom.createRng();
+          rng.setStart(des.element.dom, des.offset);
+          rng.setEnd(des.element.dom, des.offset);
+          editor.selection.setRng(rng);
+          cellSelection.clear(table);
+          return Optional.some(rng);
+        });
+      };
       var execute = function (operation, guard, mutate, lazyWire, effect) {
-        return function (table, target) {
+        return function (table, target, noEvents) {
+          if (noEvents === void 0) {
+            noEvents = false;
+          }
           removeDataStyle(table);
           var wire = lazyWire();
           var doc = SugarElement.fromDom(editor.getDoc());
@@ -7016,11 +7037,14 @@
             each$2(result.newCells, function (cell) {
               fireNewCell(editor, cell.dom);
             });
-            return result.cursor.map(function (cell) {
-              var des = freefallRtl(cell);
-              var rng = editor.dom.createRng();
-              rng.setStart(des.element.dom, des.offset);
-              rng.setEnd(des.element.dom, des.offset);
+            var range = setSelectionFromAction(table, result);
+            if (inBody(table)) {
+              removeDataStyle(table);
+              if (!noEvents) {
+                fireTableModified(editor, table.dom, effect);
+              }
+            }
+            return range.map(function (rng) {
               return {
                 rng: rng,
                 effect: effect
@@ -8622,19 +8646,8 @@
           });
         });
       };
-      var postExecute = function (table, noEvents) {
-        if (noEvents === void 0) {
-          noEvents = false;
-        }
-        return function (data) {
-          editor.selection.setRng(data.rng);
-          editor.focus();
-          cellSelection.clear(table);
-          removeDataStyle(table);
-          if (!noEvents) {
-            fireTableModified(editor, table.dom, data.effect);
-          }
-        };
+      var postExecute = function (_data) {
+        editor.focus();
       };
       var actOnSelection = function (execute, noEvents) {
         if (noEvents === void 0) {
@@ -8642,7 +8655,7 @@
         }
         return performActionOnSelection(function (table, startCell) {
           var targets = forMenu(selections, table, startCell);
-          execute(table, targets).each(postExecute(table, noEvents));
+          execute(table, targets, noEvents).each(postExecute);
         });
       };
       var copyRowSelection = function () {
@@ -8666,7 +8679,7 @@
           performActionOnSelection(function (table, startCell) {
             var generators = paste$1(SugarElement.fromDom(editor.getDoc()));
             var targets = pasteRows(selections, startCell, clonedRows, generators);
-            execute(table, targets).each(postExecute(table));
+            execute(table, targets).each(postExecute);
           });
         });
       };
@@ -11402,11 +11415,11 @@
       var selectionTargets = getSelectionTargets(editor, selections);
       var resizeHandler = getResizeHandler(editor);
       var cellSelection = CellSelection(editor, resizeHandler.lazyResize, selectionTargets);
-      var actions = TableActions(editor, resizeHandler.lazyWire);
+      var actions = TableActions(editor, cellSelection, resizeHandler.lazyWire);
       var clipboard = Clipboard();
       registerCommands(editor, actions, cellSelection, selections, clipboard);
       registerQueryCommands(editor, actions, selections);
-      registerEvents(editor, selections, actions, cellSelection);
+      registerEvents(editor, selections, actions);
       addMenuItems(editor, selections, selectionTargets, clipboard);
       addButtons(editor, selections, selectionTargets, clipboard);
       addToolbars(editor);
