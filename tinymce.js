@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 6.0.0 (2020-03-03)
+ * TinyMCE version 6.0.1 (2022-03-23)
  */
 
 (function () {
@@ -5964,6 +5964,279 @@
     };
     const getUndoBookmark = curry(getOffsetBookmark, identity, true);
 
+    const value$1 = value => {
+      const applyHelper = fn => fn(value);
+      const constHelper = constant(value);
+      const outputHelper = () => output;
+      const output = {
+        tag: true,
+        inner: value,
+        fold: (_onError, onValue) => onValue(value),
+        isValue: always,
+        isError: never,
+        map: mapper => Result.value(mapper(value)),
+        mapError: outputHelper,
+        bind: applyHelper,
+        exists: applyHelper,
+        forall: applyHelper,
+        getOr: constHelper,
+        or: outputHelper,
+        getOrThunk: constHelper,
+        orThunk: outputHelper,
+        getOrDie: constHelper,
+        each: fn => {
+          fn(value);
+        },
+        toOptional: () => Optional.some(value)
+      };
+      return output;
+    };
+    const error = error => {
+      const outputHelper = () => output;
+      const output = {
+        tag: false,
+        inner: error,
+        fold: (onError, _onValue) => onError(error),
+        isValue: never,
+        isError: always,
+        map: outputHelper,
+        mapError: mapper => Result.error(mapper(error)),
+        bind: outputHelper,
+        exists: never,
+        forall: always,
+        getOr: identity,
+        or: identity,
+        getOrThunk: apply$1,
+        orThunk: apply$1,
+        getOrDie: die(String(error)),
+        each: noop,
+        toOptional: Optional.none
+      };
+      return output;
+    };
+    const fromOption = (optional, err) => optional.fold(() => error(err), value$1);
+    const Result = {
+      value: value$1,
+      error,
+      fromOption
+    };
+
+    const generate = cases => {
+      if (!isArray$1(cases)) {
+        throw new Error('cases must be an array');
+      }
+      if (cases.length === 0) {
+        throw new Error('there must be at least one case');
+      }
+      const constructors = [];
+      const adt = {};
+      each$g(cases, (acase, count) => {
+        const keys$1 = keys(acase);
+        if (keys$1.length !== 1) {
+          throw new Error('one and only one name per case');
+        }
+        const key = keys$1[0];
+        const value = acase[key];
+        if (adt[key] !== undefined) {
+          throw new Error('duplicate key detected:' + key);
+        } else if (key === 'cata') {
+          throw new Error('cannot have a case named cata (sorry)');
+        } else if (!isArray$1(value)) {
+          throw new Error('case arguments must be an array');
+        }
+        constructors.push(key);
+        adt[key] = (...args) => {
+          const argLength = args.length;
+          if (argLength !== value.length) {
+            throw new Error('Wrong number of arguments to case ' + key + '. Expected ' + value.length + ' (' + value + '), got ' + argLength);
+          }
+          const match = branches => {
+            const branchKeys = keys(branches);
+            if (constructors.length !== branchKeys.length) {
+              throw new Error('Wrong number of arguments to match. Expected: ' + constructors.join(',') + '\nActual: ' + branchKeys.join(','));
+            }
+            const allReqd = forall(constructors, reqKey => {
+              return contains$2(branchKeys, reqKey);
+            });
+            if (!allReqd) {
+              throw new Error('Not all branches were specified when using match. Specified: ' + branchKeys.join(', ') + '\nRequired: ' + constructors.join(', '));
+            }
+            return branches[key].apply(null, args);
+          };
+          return {
+            fold: (...foldArgs) => {
+              if (foldArgs.length !== cases.length) {
+                throw new Error('Wrong number of arguments to fold. Expected ' + cases.length + ', got ' + foldArgs.length);
+              }
+              const target = foldArgs[count];
+              return target.apply(null, args);
+            },
+            match,
+            log: label => {
+              console.log(label, {
+                constructors,
+                constructor: key,
+                params: args
+              });
+            }
+          };
+        };
+      });
+      return adt;
+    };
+    const Adt = { generate };
+
+    Adt.generate([
+      {
+        bothErrors: [
+          'error1',
+          'error2'
+        ]
+      },
+      {
+        firstError: [
+          'error1',
+          'value2'
+        ]
+      },
+      {
+        secondError: [
+          'value1',
+          'error2'
+        ]
+      },
+      {
+        bothValues: [
+          'value1',
+          'value2'
+        ]
+      }
+    ]);
+    const partition$1 = results => {
+      const errors = [];
+      const values = [];
+      each$g(results, result => {
+        result.fold(err => {
+          errors.push(err);
+        }, value => {
+          values.push(value);
+        });
+      });
+      return {
+        errors,
+        values
+      };
+    };
+
+    const isInlinePattern = pattern => pattern.type === 'inline-command' || pattern.type === 'inline-format';
+    const isBlockPattern = pattern => pattern.type === 'block-command' || pattern.type === 'block-format';
+    const sortPatterns = patterns => sort(patterns, (a, b) => {
+      if (a.start.length === b.start.length) {
+        return 0;
+      }
+      return a.start.length > b.start.length ? -1 : 1;
+    });
+    const normalizePattern = pattern => {
+      const err = message => Result.error({
+        message,
+        pattern
+      });
+      const formatOrCmd = (name, onFormat, onCommand) => {
+        if (pattern.format !== undefined) {
+          let formats;
+          if (isArray$1(pattern.format)) {
+            if (!forall(pattern.format, isString)) {
+              return err(name + ' pattern has non-string items in the `format` array');
+            }
+            formats = pattern.format;
+          } else if (isString(pattern.format)) {
+            formats = [pattern.format];
+          } else {
+            return err(name + ' pattern has non-string `format` parameter');
+          }
+          return Result.value(onFormat(formats));
+        } else if (pattern.cmd !== undefined) {
+          if (!isString(pattern.cmd)) {
+            return err(name + ' pattern has non-string `cmd` parameter');
+          }
+          return Result.value(onCommand(pattern.cmd, pattern.value));
+        } else {
+          return err(name + ' pattern is missing both `format` and `cmd` parameters');
+        }
+      };
+      if (!isObject(pattern)) {
+        return err('Raw pattern is not an object');
+      }
+      if (!isString(pattern.start)) {
+        return err('Raw pattern is missing `start` parameter');
+      }
+      if (pattern.end !== undefined) {
+        if (!isString(pattern.end)) {
+          return err('Inline pattern has non-string `end` parameter');
+        }
+        if (pattern.start.length === 0 && pattern.end.length === 0) {
+          return err('Inline pattern has empty `start` and `end` parameters');
+        }
+        let start = pattern.start;
+        let end = pattern.end;
+        if (end.length === 0) {
+          end = start;
+          start = '';
+        }
+        return formatOrCmd('Inline', format => ({
+          type: 'inline-format',
+          start,
+          end,
+          format
+        }), (cmd, value) => ({
+          type: 'inline-command',
+          start,
+          end,
+          cmd,
+          value
+        }));
+      } else if (pattern.replacement !== undefined) {
+        if (!isString(pattern.replacement)) {
+          return err('Replacement pattern has non-string `replacement` parameter');
+        }
+        if (pattern.start.length === 0) {
+          return err('Replacement pattern has empty `start` parameter');
+        }
+        return Result.value({
+          type: 'inline-command',
+          start: '',
+          end: pattern.start,
+          cmd: 'mceInsertContent',
+          value: pattern.replacement
+        });
+      } else {
+        if (pattern.start.length === 0) {
+          return err('Block pattern has empty `start` parameter');
+        }
+        return formatOrCmd('Block', formats => ({
+          type: 'block-format',
+          start: pattern.start,
+          format: formats[0]
+        }), (command, commandValue) => ({
+          type: 'block-command',
+          start: pattern.start,
+          cmd: command,
+          value: commandValue
+        }));
+      }
+    };
+    const getBlockPatterns = patterns => sortPatterns(filter$6(patterns, isBlockPattern));
+    const getInlinePatterns = patterns => filter$6(patterns, isInlinePattern);
+    const createPatternSet = patterns => ({
+      inlinePatterns: getInlinePatterns(patterns),
+      blockPatterns: getBlockPatterns(patterns)
+    });
+    const fromRawPatterns = patterns => {
+      const normalized = partition$1(map$3(patterns, normalizePattern));
+      each$g(normalized.errors, err => console.error(err.message, err.pattern));
+      return normalized.values;
+    };
+
     const deviceDetection$1 = detect$2().deviceType;
     const isTouch = deviceDetection$1.isTouch();
     const DOM$a = DOMUtils.DOM;
@@ -6494,8 +6767,9 @@
       registerOption('text_patterns', {
         processor: value => {
           if (isArrayOf(value, isObject) || value === false) {
+            const patterns = value === false ? [] : value;
             return {
-              value: value === false ? [] : value,
+              value: fromRawPatterns(patterns),
               valid: true
             };
           } else {
@@ -8789,71 +9063,6 @@
       rng.setEnd(finish.dom, foffset);
       return rng;
     };
-
-    const generate = cases => {
-      if (!isArray$1(cases)) {
-        throw new Error('cases must be an array');
-      }
-      if (cases.length === 0) {
-        throw new Error('there must be at least one case');
-      }
-      const constructors = [];
-      const adt = {};
-      each$g(cases, (acase, count) => {
-        const keys$1 = keys(acase);
-        if (keys$1.length !== 1) {
-          throw new Error('one and only one name per case');
-        }
-        const key = keys$1[0];
-        const value = acase[key];
-        if (adt[key] !== undefined) {
-          throw new Error('duplicate key detected:' + key);
-        } else if (key === 'cata') {
-          throw new Error('cannot have a case named cata (sorry)');
-        } else if (!isArray$1(value)) {
-          throw new Error('case arguments must be an array');
-        }
-        constructors.push(key);
-        adt[key] = (...args) => {
-          const argLength = args.length;
-          if (argLength !== value.length) {
-            throw new Error('Wrong number of arguments to case ' + key + '. Expected ' + value.length + ' (' + value + '), got ' + argLength);
-          }
-          const match = branches => {
-            const branchKeys = keys(branches);
-            if (constructors.length !== branchKeys.length) {
-              throw new Error('Wrong number of arguments to match. Expected: ' + constructors.join(',') + '\nActual: ' + branchKeys.join(','));
-            }
-            const allReqd = forall(constructors, reqKey => {
-              return contains$2(branchKeys, reqKey);
-            });
-            if (!allReqd) {
-              throw new Error('Not all branches were specified when using match. Specified: ' + branchKeys.join(', ') + '\nRequired: ' + constructors.join(', '));
-            }
-            return branches[key].apply(null, args);
-          };
-          return {
-            fold: (...foldArgs) => {
-              if (foldArgs.length !== cases.length) {
-                throw new Error('Wrong number of arguments to fold. Expected ' + cases.length + ', got ' + foldArgs.length);
-              }
-              const target = foldArgs[count];
-              return target.apply(null, args);
-            },
-            match,
-            log: label => {
-              console.log(label, {
-                constructors,
-                constructor: key,
-                params: args
-              });
-            }
-          };
-        };
-      });
-      return adt;
-    };
-    const Adt = { generate };
 
     const adt$3 = Adt.generate([
       {
@@ -13333,63 +13542,6 @@
       }
     };
 
-    const value$1 = value => {
-      const applyHelper = fn => fn(value);
-      const constHelper = constant(value);
-      const outputHelper = () => output;
-      const output = {
-        tag: true,
-        inner: value,
-        fold: (_onError, onValue) => onValue(value),
-        isValue: always,
-        isError: never,
-        map: mapper => Result.value(mapper(value)),
-        mapError: outputHelper,
-        bind: applyHelper,
-        exists: applyHelper,
-        forall: applyHelper,
-        getOr: constHelper,
-        or: outputHelper,
-        getOrThunk: constHelper,
-        orThunk: outputHelper,
-        getOrDie: constHelper,
-        each: fn => {
-          fn(value);
-        },
-        toOptional: () => Optional.some(value)
-      };
-      return output;
-    };
-    const error = error => {
-      const outputHelper = () => output;
-      const output = {
-        tag: false,
-        inner: error,
-        fold: (onError, _onValue) => onError(error),
-        isValue: never,
-        isError: always,
-        map: outputHelper,
-        mapError: mapper => Result.error(mapper(error)),
-        bind: outputHelper,
-        exists: never,
-        forall: always,
-        getOr: identity,
-        or: identity,
-        getOrThunk: apply$1,
-        orThunk: apply$1,
-        getOrDie: die(String(error)),
-        each: noop,
-        toOptional: Optional.none
-      };
-      return output;
-    };
-    const fromOption = (optional, err) => optional.fold(() => error(err), value$1);
-    const Result = {
-      value: value$1,
-      error,
-      fromOption
-    };
-
     function _toConsumableArray(arr) {
       if (Array.isArray(arr)) {
         for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
@@ -17633,7 +17785,7 @@
       }).getOr(content);
     };
 
-    const removedOptions = ('autoresize_on_init,content_editable_state,padd_empty_with_br,block_elements,' + 'boolean_attributes,editor_deselector,editor_selector,elements,file_browser_callback_types,filepicker_validator_handler,' + 'force_hex_style_colors,force_p_newlines,gecko_spellcheck,images_dataimg_filter,media_scripts,mode,move_caret_before_on_enter_elements,' + 'non_empty_elements,self_closing_elements,short_ended_elements,special,spellchecker_select_languages,spellchecker_whitelist,' + 'tab_focus,table_responsive_width,text_block_elements,text_inline_elements,toolbar_drawer,types,validate,whitespace_elements,' + 'paste_word_valid_elements,paste_retain_style_properties,paste_convert_word_fake_lists').split(',');
+    const removedOptions = ('autoresize_on_init,content_editable_state,padd_empty_with_br,block_elements,' + 'boolean_attributes,editor_deselector,editor_selector,elements,file_browser_callback_types,filepicker_validator_handler,' + 'force_hex_style_colors,force_p_newlines,gecko_spellcheck,images_dataimg_filter,media_scripts,mode,move_caret_before_on_enter_elements,' + 'non_empty_elements,self_closing_elements,short_ended_elements,special,spellchecker_select_languages,spellchecker_whitelist,' + 'tab_focus,tabfocus_elements,table_responsive_width,text_block_elements,text_inline_elements,toolbar_drawer,types,validate,whitespace_elements,' + 'paste_enable_default_filters,paste_filter_drop,paste_word_valid_elements,paste_retain_style_properties,paste_convert_word_fake_lists').split(',');
     const removedPlugins = 'bbcode,colorpicker,contextmenu,fullpage,legacyoutput,spellchecker,textcolor'.split(',');
     const getRemovedOptions = options => {
       const settingNames = filter$6(removedOptions, setting => has$2(options, setting));
@@ -17650,17 +17802,17 @@
       return sort(pluginNames);
     };
     const logRemovedWarnings = (rawOptions, normalizedOptions) => {
-      const removedSettings = getRemovedOptions(rawOptions);
+      const removedOptions = getRemovedOptions(rawOptions);
       const removedPlugins = getRemovedPlugins(normalizedOptions);
       const hasRemovedPlugins = removedPlugins.length > 0;
-      const hasRemovedSettings = removedSettings.length > 0;
+      const hasRemovedOptions = removedOptions.length > 0;
       const isLegacyMobileTheme = normalizedOptions.theme === 'mobile';
-      if (hasRemovedPlugins || hasRemovedSettings || isLegacyMobileTheme) {
+      if (hasRemovedPlugins || hasRemovedOptions || isLegacyMobileTheme) {
         const listJoiner = '\n- ';
         const themesMessage = isLegacyMobileTheme ? `\n\nThemes:${ listJoiner }mobile` : '';
         const pluginsMessage = hasRemovedPlugins ? `\n\nPlugins:${ listJoiner }${ removedPlugins.join(listJoiner) }` : '';
-        const settingsMessage = hasRemovedSettings ? `\n\nSettings:${ listJoiner }${ removedSettings.join(listJoiner) }` : '';
-        console.warn('The following deprecated features are currently enabled and have been removed in TinyMCE 6.0. These features will no longer work and should be removed from the TinyMCE configuration. ' + 'See https://www.tiny.cloud/docs/tinymce/6/migration-from-5x.html for more information.' + themesMessage + pluginsMessage + settingsMessage);
+        const optionsMessage = hasRemovedOptions ? `\n\nOptions:${ listJoiner }${ removedOptions.join(listJoiner) }` : '';
+        console.warn('The following deprecated features are currently enabled and have been removed in TinyMCE 6.0. These features will no longer work and should be removed from the TinyMCE configuration. ' + 'See https://www.tiny.cloud/docs/tinymce/6/migration-from-5x/ for more information.' + themesMessage + pluginsMessage + optionsMessage);
       }
     };
     const logWarnings = (rawOptions, normalizedOptions) => {
@@ -21676,7 +21828,7 @@
       SimpleResultType[SimpleResultType['Value'] = 1] = 'Value';
     }(SimpleResultType || (SimpleResultType = {})));
     const fold$1 = (res, onError, onValue) => res.stype === SimpleResultType.Error ? onError(res.serror) : onValue(res.svalue);
-    const partition$1 = results => {
+    const partition = results => {
       const values = [];
       const errors = [];
       each$g(results, obj => {
@@ -21735,7 +21887,7 @@
       fromResult,
       toResult,
       svalue,
-      partition: partition$1,
+      partition,
       serror,
       bind,
       bindError,
@@ -22083,8 +22235,8 @@
       };
     };
 
-    const setupEditorInput = (editor, load) => {
-      const update = last$1(load, 50);
+    const setupEditorInput = (editor, api) => {
+      const update = last$1(api.load, 50);
       editor.on('keypress compositionend', e => {
         if (e.which === 27) {
           return;
@@ -22092,19 +22244,24 @@
         update.throttle();
       });
       editor.on('keydown', e => {
-        if (e.which === 8) {
+        const keyCode = e.which;
+        if (keyCode === 8) {
           update.throttle();
+        } else if (keyCode === 27) {
+          api.cancelIfNecessary();
         }
       });
       editor.on('remove', update.cancel);
     };
     const setup$j = editor => {
       const activeAutocompleter = value$2();
+      const uiActive = Cell(false);
       const isActive = activeAutocompleter.isSet;
       const cancelIfNecessary = () => {
         if (isActive()) {
           removeAutocompleterDecoration(editor);
           fireAutocompleterEnd(editor);
+          uiActive.set(false);
           activeAutocompleter.clear();
         }
       };
@@ -22115,16 +22272,13 @@
             triggerChar: context.triggerChar,
             matchLength: context.text.length
           });
-          return true;
-        } else {
-          return false;
         }
       };
       const getAutocompleters = cached(() => register$2(editor));
       const doLookup = fetchOptions => activeAutocompleter.get().map(ac => getContext(editor.dom, editor.selection.getRng(), ac.triggerChar).bind(newContext => lookupWithContext(editor, getAutocompleters, newContext, fetchOptions))).getOrThunk(() => lookup(editor, getAutocompleters));
       const load = fetchOptions => {
         doLookup(fetchOptions).fold(cancelIfNecessary, lookupInfo => {
-          const wasNecessary = commenceIfNecessary(lookupInfo.context);
+          commenceIfNecessary(lookupInfo.context);
           lookupInfo.lookupData.then(lookupData => {
             activeAutocompleter.get().map(ac => {
               const context = lookupInfo.context;
@@ -22136,10 +22290,11 @@
                     ...ac,
                     matchLength: context.text.length
                   });
-                  if (wasNecessary) {
-                    fireAutocompleterStart(editor, { lookupData });
-                  } else {
+                  if (uiActive.get()) {
                     fireAutocompleterUpdate(editor, { lookupData });
+                  } else {
+                    uiActive.set(true);
+                    fireAutocompleterStart(editor, { lookupData });
                   }
                 }
               }
@@ -22152,7 +22307,10 @@
         load(fetchOptions);
       });
       editor.addCommand('mceAutocompleterClose', cancelIfNecessary);
-      setupEditorInput(editor, load);
+      setupEditorInput(editor, {
+        cancelIfNecessary,
+        load
+      });
     };
 
     const createAndFireInputEvent = eventType => (editor, inputType, specifics = {}) => {
@@ -24153,18 +24311,35 @@
         position: distanceToRectLeft(rect, clientX) < distanceToRectRight(rect, clientX) ? FakeCaretPosition.Before : FakeCaretPosition.After
       };
     };
-    const horizontalDistance = (rect, x, _y) => Math.min(Math.abs(rect.left - x), Math.abs(rect.right - x));
+    const horizontalDistance = (rect, x, _y) => x > rect.left && x < rect.right ? 0 : Math.min(Math.abs(rect.left - x), Math.abs(rect.right - x));
     const closestChildCaretCandidateNodeRect = (children, clientX, clientY) => {
-      const findClosestCaretCandidateNodeRect = (rects, distance) => {
-        return findMap(sort(rects, (r1, r2) => distance(r1, clientX, clientY) - distance(r2, clientX, clientY)), rect => {
-          if (isCaretCandidate$3(rect.node)) {
-            return Optional.some(rect);
-          } else if (isElement$6(rect.node)) {
-            return closestChildCaretCandidateNodeRect(from(rect.node.childNodes), clientX, clientY);
-          } else {
-            return Optional.none();
+      const caretCandidateRect = rect => {
+        if (isCaretCandidate$3(rect.node)) {
+          return Optional.some(rect);
+        } else if (isElement$6(rect.node)) {
+          return closestChildCaretCandidateNodeRect(from(rect.node.childNodes), clientX, clientY);
+        } else {
+          return Optional.none();
+        }
+      };
+      const getClosestTextNode = (rects, distance) => {
+        if (rects.length >= 2) {
+          const r1 = caretCandidateRect(rects[0]).getOr(rects[0]);
+          const r2 = caretCandidateRect(rects[1]).getOr(rects[1]);
+          const deltaDistance = Math.abs(distance(r1, clientX, clientY) - distance(r2, clientX, clientY));
+          if (deltaDistance < 2) {
+            if (isText$8(r1.node)) {
+              return Optional.some(r1);
+            } else if (isText$8(r2.node)) {
+              return Optional.some(r2);
+            }
           }
-        });
+        }
+        return Optional.none();
+      };
+      const findClosestCaretCandidateNodeRect = (rects, distance) => {
+        const sortedRects = sort(rects, (r1, r2) => distance(r1, clientX, clientY) - distance(r2, clientX, clientY));
+        return getClosestTextNode(sortedRects, distance).orThunk(() => findMap(sortedRects, caretCandidateRect));
       };
       const [horizontalRects, verticalRects] = splitRectsPerAxis(getClientRects(children), clientY);
       const {
@@ -24180,7 +24355,7 @@
           return closestChildCaretCandidateNodeRect(uncheckedChildren, clientX, clientY);
         }).orThunk(() => {
           const parent = eq(scope, rootElm) ? Optional.none() : parentElement(scope);
-          return parent.filter(newScope => !eq(newScope, rootElm)).bind(newScope => helper(newScope, Optional.some(scope)));
+          return parent.bind(newScope => helper(newScope, Optional.some(scope)));
         });
       };
       return helper(scope, Optional.none());
@@ -24526,10 +24701,6 @@
       let selectedElement;
       const isFakeSelectionElement = node => dom.hasClass(node, 'mce-offscreen-selection');
       const isFakeSelectionTargetElement = node => node !== rootNode && (isContentEditableFalse(node) || isMedia$2(node)) && dom.isChildOf(node, rootNode);
-      const getRealSelectionElement = () => {
-        const container = dom.get(realSelectionId);
-        return container ? container.getElementsByTagName('*')[0] : container;
-      };
       const setRange = range => {
         if (range) {
           selection.setRng(range);
@@ -24640,18 +24811,6 @@
           }
           if (!isFakeSelectionElement(parentNode)) {
             removeElementSelection();
-          }
-        });
-        editor.on('copy', e => {
-          const clipboardData = e.clipboardData;
-          if (!e.isDefaultPrevented() && e.clipboardData) {
-            const realSelectionElement = getRealSelectionElement();
-            if (realSelectionElement) {
-              e.preventDefault();
-              clipboardData.clearData();
-              clipboardData.setData('text/html', realSelectionElement.outerHTML);
-              clipboardData.setData('text/plain', realSelectionElement.outerText || realSelectionElement.innerText);
-            }
           }
         });
         init$2(editor);
@@ -24797,150 +24956,6 @@
         destroy
       };
     };
-
-    Adt.generate([
-      {
-        bothErrors: [
-          'error1',
-          'error2'
-        ]
-      },
-      {
-        firstError: [
-          'error1',
-          'value2'
-        ]
-      },
-      {
-        secondError: [
-          'value1',
-          'error2'
-        ]
-      },
-      {
-        bothValues: [
-          'value1',
-          'value2'
-        ]
-      }
-    ]);
-    const partition = results => {
-      const errors = [];
-      const values = [];
-      each$g(results, result => {
-        result.fold(err => {
-          errors.push(err);
-        }, value => {
-          values.push(value);
-        });
-      });
-      return {
-        errors,
-        values
-      };
-    };
-
-    const isInlinePattern = pattern => pattern.type === 'inline-command' || pattern.type === 'inline-format';
-    const isBlockPattern = pattern => pattern.type === 'block-command' || pattern.type === 'block-format';
-    const sortPatterns = patterns => sort(patterns, (a, b) => {
-      if (a.start.length === b.start.length) {
-        return 0;
-      }
-      return a.start.length > b.start.length ? -1 : 1;
-    });
-    const normalizePattern = pattern => {
-      const err = message => Result.error({
-        message,
-        pattern
-      });
-      const formatOrCmd = (name, onFormat, onCommand) => {
-        if (pattern.format !== undefined) {
-          let formats;
-          if (isArray$1(pattern.format)) {
-            if (!forall(pattern.format, isString)) {
-              return err(name + ' pattern has non-string items in the `format` array');
-            }
-            formats = pattern.format;
-          } else if (isString(pattern.format)) {
-            formats = [pattern.format];
-          } else {
-            return err(name + ' pattern has non-string `format` parameter');
-          }
-          return Result.value(onFormat(formats));
-        } else if (pattern.cmd !== undefined) {
-          if (!isString(pattern.cmd)) {
-            return err(name + ' pattern has non-string `cmd` parameter');
-          }
-          return Result.value(onCommand(pattern.cmd, pattern.value));
-        } else {
-          return err(name + ' pattern is missing both `format` and `cmd` parameters');
-        }
-      };
-      if (!isObject(pattern)) {
-        return err('Raw pattern is not an object');
-      }
-      if (!isString(pattern.start)) {
-        return err('Raw pattern is missing `start` parameter');
-      }
-      if (pattern.end !== undefined) {
-        if (!isString(pattern.end)) {
-          return err('Inline pattern has non-string `end` parameter');
-        }
-        if (pattern.start.length === 0 && pattern.end.length === 0) {
-          return err('Inline pattern has empty `start` and `end` parameters');
-        }
-        let start = pattern.start;
-        let end = pattern.end;
-        if (end.length === 0) {
-          end = start;
-          start = '';
-        }
-        return formatOrCmd('Inline', format => ({
-          type: 'inline-format',
-          start,
-          end,
-          format
-        }), (cmd, value) => ({
-          type: 'inline-command',
-          start,
-          end,
-          cmd,
-          value
-        }));
-      } else if (pattern.replacement !== undefined) {
-        if (!isString(pattern.replacement)) {
-          return err('Replacement pattern has non-string `replacement` parameter');
-        }
-        if (pattern.start.length === 0) {
-          return err('Replacement pattern has empty `start` parameter');
-        }
-        return Result.value({
-          type: 'inline-command',
-          start: '',
-          end: pattern.start,
-          cmd: 'mceInsertContent',
-          value: pattern.replacement
-        });
-      } else {
-        if (pattern.start.length === 0) {
-          return err('Block pattern has empty `start` parameter');
-        }
-        return formatOrCmd('Block', formats => ({
-          type: 'block-format',
-          start: pattern.start,
-          format: formats[0]
-        }), (command, commandValue) => ({
-          type: 'block-command',
-          start: pattern.start,
-          cmd: command,
-          value: commandValue
-        }));
-      }
-    };
-    const createPatternSet = patterns => ({
-      inlinePatterns: filter$6(patterns, isInlinePattern),
-      blockPatterns: sortPatterns(filter$6(patterns, isBlockPattern))
-    });
 
     const generatePath = (root, node, offset) => {
       if (isText$8(node) && (offset < 0 || offset > node.data.length)) {
@@ -25319,8 +25334,9 @@
       editor.selection.moveToBookmark(bookmark);
     };
 
+    const hasPatterns = patternSet => patternSet.inlinePatterns.length > 0 || patternSet.blockPatterns.length > 0;
     const handleEnter = (editor, patternSet) => {
-      if (!editor.selection.isCollapsed()) {
+      if (!editor.selection.isCollapsed() || !hasPatterns(patternSet)) {
         return false;
       }
       const inlineMatches = findPatterns(editor, patternSet.inlinePatterns, false);
@@ -25348,12 +25364,14 @@
       }
       return false;
     };
-    const handleInlineKey = (editor, patternSet) => {
-      const inlineMatches = findPatterns(editor, patternSet.inlinePatterns, true);
-      if (inlineMatches.length > 0) {
-        editor.undoManager.transact(() => {
-          applyMatches(editor, inlineMatches);
-        });
+    const handleInlineKey = (editor, inlinePatterns) => {
+      if (inlinePatterns.length > 0) {
+        const inlineMatches = findPatterns(editor, inlinePatterns, true);
+        if (inlineMatches.length > 0) {
+          editor.undoManager.transact(() => {
+            applyMatches(editor, inlineMatches);
+          });
+        }
       }
     };
     const checkKeyEvent = (codes, event, predicate) => {
@@ -25371,7 +25389,7 @@
       return chr.charCodeAt(0) === event.charCode;
     });
 
-    const setup$2 = (editor, patternsState) => {
+    const setup$2 = editor => {
       const charCodes = [
         ',',
         '.',
@@ -25381,38 +25399,31 @@
         '?'
       ];
       const keyCodes = [32];
+      const getPatternSet = () => createPatternSet(getTextPatterns(editor));
+      const getInlinePatterns$1 = () => getInlinePatterns(getTextPatterns(editor));
       editor.on('keydown', e => {
         if (e.keyCode === 13 && !VK.modifierPressed(e)) {
-          if (handleEnter(editor, patternsState.get())) {
+          if (handleEnter(editor, getPatternSet())) {
             e.preventDefault();
           }
         }
       }, true);
       editor.on('keyup', e => {
         if (checkKeyCode(keyCodes, e)) {
-          handleInlineKey(editor, patternsState.get());
+          handleInlineKey(editor, getInlinePatterns$1());
         }
       });
       editor.on('keypress', e => {
         if (checkCharCode(charCodes, e)) {
           Delay.setEditorTimeout(editor, () => {
-            handleInlineKey(editor, patternsState.get());
+            handleInlineKey(editor, getInlinePatterns$1());
           });
         }
       });
     };
 
-    const generatePatternSet = patterns => {
-      const normalized = partition(map$3(patterns, normalizePattern));
-      each$g(normalized.errors, err => console.error(err.message, err.pattern));
-      return createPatternSet(normalized.values);
-    };
     const setup$1 = editor => {
-      const patterns = getTextPatterns(editor);
-      if (patterns.length > 0) {
-        const patternSet = generatePatternSet(patterns);
-        setup$2(editor, Cell(patternSet));
-      }
+      setup$2(editor);
     };
 
     const Quirks = editor => {
@@ -28417,8 +28428,8 @@
       documentBaseURL: null,
       suffix: null,
       majorVersion: '6',
-      minorVersion: '0.0',
-      releaseDate: '2020-03-03',
+      minorVersion: '0.1',
+      releaseDate: '2022-03-23',
       i18n: I18n,
       activeEditor: null,
       focusedEditor: null,
@@ -28505,7 +28516,7 @@
         };
         const findTargets = options => {
           if (Env.browser.isIE() || Env.browser.isEdge()) {
-            initError('TinyMCE does not support the browser you are using. For a list of supported' + ' browsers please see: https://www.tiny.cloud/docs/tinymce/6/support.html#supportedwebbrowsers');
+            initError('TinyMCE does not support the browser you are using. For a list of supported' + ' browsers please see: https://www.tiny.cloud/docs/tinymce/6/support/#supportedwebbrowsers');
             return [];
           } else if (isQuirksMode) {
             initError('Failed to initialize the editor as the document is not in standards mode. ' + 'TinyMCE requires standards mode.');

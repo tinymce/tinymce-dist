@@ -402,6 +402,34 @@ interface RawPattern {
     value?: any;
     replacement?: any;
 }
+interface InlineBasePattern {
+    readonly start: string;
+    readonly end: string;
+}
+interface InlineFormatPattern extends InlineBasePattern {
+    readonly type: 'inline-format';
+    readonly format: string[];
+}
+interface InlineCmdPattern extends InlineBasePattern {
+    readonly type: 'inline-command';
+    readonly cmd: string;
+    readonly value?: any;
+}
+declare type InlinePattern = InlineFormatPattern | InlineCmdPattern;
+interface BlockBasePattern {
+    readonly start: string;
+}
+interface BlockFormatPattern extends BlockBasePattern {
+    readonly type: 'block-format';
+    readonly format: string;
+}
+interface BlockCmdPattern extends BlockBasePattern {
+    readonly type: 'block-command';
+    readonly cmd: string;
+    readonly value?: any;
+}
+declare type BlockPattern = BlockFormatPattern | BlockCmdPattern;
+declare type Pattern = InlinePattern | BlockPattern;
 interface AlertBannerSpec {
     type: 'alertbanner';
     level: 'info' | 'warn' | 'error' | 'success';
@@ -586,6 +614,7 @@ interface BaseDialogFooterButtonSpec {
     primary?: boolean;
     enabled?: boolean;
     icon?: string;
+    buttonType?: 'primary' | 'secondary';
 }
 interface DialogFooterNormalButtonSpec extends BaseDialogFooterButtonSpec {
     type: 'submit' | 'cancel' | 'custom';
@@ -1781,7 +1810,7 @@ interface EditorOptions extends NormalizedEditorOptions {
     noneditable_regexp: RegExp[];
     object_resizing?: string;
     preview_styles?: string;
-    text_patterns?: RawPattern[];
+    text_patterns?: Pattern[];
 }
 declare type StyleMap = Record<string, string | number>;
 interface StylesSettings {

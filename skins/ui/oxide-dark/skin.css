@@ -369,27 +369,27 @@ button::-moz-focus-inner {
   color: #fff;
 }
 .tox .tox-button--naked[disabled] {
-  background-color: #3d546f;
-  border-color: #3d546f;
-  box-shadow: none;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: transparent;
+  box-shadow: unset;
   color: rgba(255, 255, 255, 0.5);
 }
 .tox .tox-button--naked:hover:not(:disabled) {
-  background-color: #34485f;
-  border-color: #34485f;
-  box-shadow: none;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: transparent;
+  box-shadow: unset;
   color: #fff;
 }
 .tox .tox-button--naked:focus:not(:disabled) {
-  background-color: #34485f;
-  border-color: #34485f;
-  box-shadow: none;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: transparent;
+  box-shadow: unset;
   color: #fff;
 }
 .tox .tox-button--naked:active:not(:disabled) {
-  background-color: #2b3b4e;
-  border-color: #2b3b4e;
-  box-shadow: none;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-color: transparent;
+  box-shadow: unset;
   color: #fff;
 }
 .tox .tox-button--naked .tox-icon svg {
@@ -1581,6 +1581,8 @@ body.tox-dialog__disable-scroll {
   max-width: 25em;
 }
 .tox .tox-autocompleter .tox-menu {
+  border-color: #161f29;
+  box-shadow: none;
   max-width: 25em;
 }
 .tox .tox-autocompleter .tox-autocompleter-highlight {
@@ -2191,7 +2193,7 @@ body.tox-dialog__disable-scroll {
   color: #fff;
 }
 .tox .tox-notification--success a {
-  color: #a1c47e;
+  color: #b5d199;
 }
 .tox .tox-notification--success svg {
   fill: #fff;
@@ -2205,7 +2207,7 @@ body.tox-dialog__disable-scroll {
   color: #fff;
 }
 .tox .tox-notification--error a {
-  color: #c00;
+  color: #e68080;
 }
 .tox .tox-notification--error svg {
   fill: #fff;
@@ -2237,7 +2239,7 @@ body.tox-dialog__disable-scroll {
   color: #fff;
 }
 .tox .tox-notification--info a {
-  color: #6eabf1;
+  color: #83b7f3;
 }
 .tox .tox-notification--info svg {
   fill: #fff;

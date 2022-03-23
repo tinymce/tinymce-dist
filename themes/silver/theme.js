@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 6.0.0 (2020-03-03)
+ * TinyMCE version 6.0.1 (2022-03-23)
  */
 
 (function () {
@@ -8526,35 +8526,34 @@
       const redirectKeyToItem = (item, e) => {
         emitWith(item, keydown(), { raw: e });
       };
+      const getItem = () => api.getView().bind(Highlighting.getHighlighted);
       editor.on('keydown', e => {
-        const getItem = () => api.getView().bind(Highlighting.getHighlighted);
-        if (api.isActive()) {
-          if (e.which === 27) {
-            api.cancelIfNecessary();
-          }
-          if (api.isMenuOpen()) {
-            if (e.which === 13) {
-              getItem().each(emitExecute);
-              e.preventDefault();
-            } else if (e.which === 40) {
-              getItem().fold(() => {
-                api.getView().each(Highlighting.highlightFirst);
-              }, item => {
-                redirectKeyToItem(item, e);
-              });
+        const keyCode = e.which;
+        if (!api.isActive()) {
+          return;
+        }
+        if (api.isMenuOpen()) {
+          if (keyCode === 13) {
+            getItem().each(emitExecute);
+            e.preventDefault();
+          } else if (keyCode === 40) {
+            getItem().fold(() => {
+              api.getView().each(Highlighting.highlightFirst);
+            }, item => {
+              redirectKeyToItem(item, e);
+            });
+            e.preventDefault();
+            e.stopImmediatePropagation();
+          } else if (keyCode === 37 || keyCode === 38 || keyCode === 39) {
+            getItem().each(item => {
+              redirectKeyToItem(item, e);
               e.preventDefault();
               e.stopImmediatePropagation();
-            } else if (e.which === 37 || e.which === 38 || e.which === 39) {
-              getItem().each(item => {
-                redirectKeyToItem(item, e);
-                e.preventDefault();
-                e.stopImmediatePropagation();
-              });
-            }
-          } else {
-            if (e.which === 13 || e.which === 38 || e.which === 40) {
-              api.cancelIfNecessary();
-            }
+            });
+          }
+        } else {
+          if (keyCode === 13 || keyCode === 38 || keyCode === 40) {
+            api.cancelIfNecessary();
           }
         }
       });
@@ -10651,7 +10650,7 @@
       const isMenuOpen = () => InlineView.isOpen(autocompleter);
       const isActive = activeState.get;
       const hideIfNecessary = () => {
-        if (isActive()) {
+        if (isMenuOpen()) {
           InlineView.hide(autocompleter);
         }
       };
@@ -15731,7 +15730,6 @@
         const action = getAction(spec.name, buttonType);
         const buttonSpec = {
           ...spec,
-          buttonType: Optional.none(),
           borderless: false
         };
         return renderButton(buttonSpec, action, backstage.shared.providers, []);
@@ -24028,7 +24026,11 @@
         'end'
       ]),
       primary,
-      enabled
+      enabled,
+      optionStringEnum('buttonType', [
+        'primary',
+        'secondary'
+      ])
     ];
     const dialogFooterButtonFields = [
       ...baseFooterButtonFields,
@@ -25862,6 +25864,7 @@
           name: 'close-alert',
           text: 'OK',
           primary: true,
+          buttonType: Optional.some('primary'),
           align: 'end',
           enabled: true,
           icon: Optional.none()
@@ -25898,6 +25901,7 @@
           name: 'yes',
           text: 'Yes',
           primary: true,
+          buttonType: Optional.some('primary'),
           align: 'end',
           enabled: true,
           icon: Optional.none()
@@ -25906,6 +25910,7 @@
           name: 'no',
           text: 'No',
           primary: false,
+          buttonType: Optional.some('secondary'),
           align: 'end',
           enabled: true,
           icon: Optional.none()

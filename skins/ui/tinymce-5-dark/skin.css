@@ -1581,6 +1581,8 @@ body.tox-dialog__disable-scroll {
   max-width: 25em;
 }
 .tox .tox-autocompleter .tox-menu {
+  border-color: #000000;
+  box-shadow: none;
   max-width: 25em;
 }
 .tox .tox-autocompleter .tox-autocompleter-highlight {
@@ -2191,7 +2193,7 @@ body.tox-dialog__disable-scroll {
   color: #fff;
 }
 .tox .tox-notification--success a {
-  color: #a1c47e;
+  color: #b5d199;
 }
 .tox .tox-notification--success svg {
   fill: #fff;
@@ -2205,7 +2207,7 @@ body.tox-dialog__disable-scroll {
   color: #fff;
 }
 .tox .tox-notification--error a {
-  color: #c00;
+  color: #e68080;
 }
 .tox .tox-notification--error svg {
   fill: #fff;
@@ -2237,7 +2239,7 @@ body.tox-dialog__disable-scroll {
   color: #fff;
 }
 .tox .tox-notification--info a {
-  color: #6eabf1;
+  color: #83b7f3;
 }
 .tox .tox-notification--info svg {
   fill: #fff;
@@ -3033,6 +3035,10 @@ body.tox-dialog__disable-scroll {
 .tox.tox-tinymce-inline .tox-editor-header {
   margin-bottom: -1px;
 }
+.tox:not(.tox-tinymce-inline).tox-tinymce--toolbar-bottom .tox-editor-header {
+  border-top: none;
+  box-shadow: none;
+}
 .tox.tox.tox-tinymce--toolbar-sticky-on .tox-editor-header {
   background-color: transparent;
   box-shadow: 0 4px 4px -3px rgba(0, 0, 0, 0.25);
@@ -3060,8 +3066,12 @@ body.tox-dialog__disable-scroll {
 .tox .tox-toolbar__overflow {
   background: url("data:image/svg+xml;charset=utf8,%3Csvg height='39px' viewBox='0 0 40 39px' width='40' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='0' y='38px' width='100' height='1' fill='%23000000'/%3E%3C/svg%3E") left 0 top 0px #222f3e !important;
 }
+.tox .tox-menubar + .tox-toolbar-overlord {
+  border-top: none;
+}
 .tox .tox-menubar + .tox-toolbar,
 .tox .tox-menubar + .tox-toolbar-overlord .tox-toolbar__primary {
+  border-top: 1px solid #000000;
   margin-top: -1px;
 }
 .tox.tox-tinymce-aux .tox-toolbar__overflow {

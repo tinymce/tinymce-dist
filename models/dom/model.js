@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 6.0.0 (2020-03-03)
+ * TinyMCE version 6.0.1 (2022-03-23)
  */
 
 (function () {
@@ -2075,6 +2075,7 @@
       f(row, td);
     };
     const fillInGaps = (list, house, stats, isSelected) => {
+      const rows = filter$2(list, row => row.section !== 'colgroup');
       const totalColumns = house.grid.columns;
       const totalRows = house.grid.rows;
       for (let i = 0; i < totalRows; i++) {
@@ -2083,7 +2084,7 @@
           if (!(i < stats.minRow || i > stats.maxRow || j < stats.minCol || j > stats.maxCol)) {
             const needCell = Warehouse.getAt(house, i, j).filter(isSelected).isNone();
             if (needCell) {
-              makeCell(list, seenSelected, i);
+              makeCell(rows, seenSelected, i);
             } else {
               seenSelected = true;
             }

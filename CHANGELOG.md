@@ -6,7 +6,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
-## 6.0.0 - 2020-03-03
+## 6.0.1 - 2022-03-23
+
+### Fixed
+- Fixed the dev ZIP missing the required `bin` scripts to build from the source #TINY-8542
+- Fixed a regression whereby text patterns couldn't be updated at runtime #TINY-8540
+- Fixed an issue where tables with colgroups could be copied incorrectly in some cases #TINY-8568
+- Naked buttons better adapt to various background colors, improved text contrast in notifications #TINY-8533
+- The autocompleter would not fire the `AutocompleterStart` event nor close the menu in some cases #TINY-8552
+- It wasn't possible to select text right after an inline noneditable element #TINY-8567
+- Fixed a double border showing for the `tinymce-5` skin when using `toolbar_location: 'bottom'` #TINY-8564
+- Clipboard content was not generated correctly when cutting and copying `contenteditable="false"` elements #TINY-8563
+- Fixed the box-shadow getting clipped in autocompletor popups #TINY-8573
+- The `buttonType` property did not work for dialog footer buttons #TINY-8582
+- Fix contrast ratio for error messages #TINY-8586
+
+## 6.0.0 - 2022-03-03
 
 ### Added
 - New `editor.options` API to replace the old `editor.settings` and `editor.getParam` APIs #TINY-8206
@@ -123,7 +138,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed support for Microsoft Word from the opensource paste functionality #TINY-7493
 - Removed support for the `plugins` option allowing a mixture of a string array and of space separated strings #TINY-8399
 - Removed support for the deprecated `false` value for the `forced_root_block` option #TINY-8260
-- Removed the jQuery integration #TINY-4518
+- Removed the jQuery integration #TINY-4519
 - Removed the `imagetools` plugin, which is now classified as a Premium plugin #TINY-8209
 - Removed the `imagetools` dialog component #TINY-8333
 - Removed the `toc` plugin, which is now classified as a Premium plugin #TINY-8250
@@ -1227,7 +1242,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 5.0.0 - 2019-02-04
 
-Full documentation for the version 5 features and changes is available at https://www.tiny.cloud/docs/tinymce/5/release-notes/release-notes50.html
+Full documentation for the version 5 features and changes is available at https://www.tiny.cloud/docs/tinymce/5/release-notes/release-notes50/
 
 ### Added
 - Added links and registered names with * to denote premium plugins in Plugins tab of Help dialog #TINY-3223
@@ -1400,7 +1415,7 @@ Full documentation for the version 5 features and changes is available at https:
 
 Developer preview 1
 
-Initial list of features and changes is available at https://www.tiny.cloud/docs/tinymce/5/release-notes/release-notes50.html
+Initial list of features and changes is available at https://www.tiny.cloud/docs/tinymce/5/release-notes/release-notes50/
 
 ## 4.9.11 - 2020-07-13
 

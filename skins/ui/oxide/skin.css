@@ -369,27 +369,27 @@ button::-moz-focus-inner {
   color: #222f3e;
 }
 .tox .tox-button--naked[disabled] {
-  background-color: #f0f0f0;
-  border-color: #f0f0f0;
-  box-shadow: none;
+  background-color: rgba(34, 47, 62, 0.12);
+  border-color: transparent;
+  box-shadow: unset;
   color: rgba(34, 47, 62, 0.5);
 }
 .tox .tox-button--naked:hover:not(:disabled) {
-  background-color: #e3e3e3;
-  border-color: #e3e3e3;
-  box-shadow: none;
+  background-color: rgba(34, 47, 62, 0.12);
+  border-color: transparent;
+  box-shadow: unset;
   color: #222f3e;
 }
 .tox .tox-button--naked:focus:not(:disabled) {
-  background-color: #e3e3e3;
-  border-color: #e3e3e3;
-  box-shadow: none;
+  background-color: rgba(34, 47, 62, 0.12);
+  border-color: transparent;
+  box-shadow: unset;
   color: #222f3e;
 }
 .tox .tox-button--naked:active:not(:disabled) {
-  background-color: #d6d6d6;
-  border-color: #d6d6d6;
-  box-shadow: none;
+  background-color: rgba(34, 47, 62, 0.18);
+  border-color: transparent;
+  box-shadow: unset;
   color: #222f3e;
 }
 .tox .tox-button--naked .tox-icon svg {
@@ -1581,6 +1581,8 @@ body.tox-dialog__disable-scroll {
   max-width: 25em;
 }
 .tox .tox-autocompleter .tox-menu {
+  border-color: #eeeeee;
+  box-shadow: none;
   max-width: 25em;
 }
 .tox .tox-autocompleter .tox-autocompleter-highlight {
@@ -2191,7 +2193,7 @@ body.tox-dialog__disable-scroll {
   color: #222f3e;
 }
 .tox .tox-notification--success a {
-  color: #5e8644;
+  color: #517342;
 }
 .tox .tox-notification--success svg {
   fill: #222f3e;
@@ -2205,7 +2207,7 @@ body.tox-dialog__disable-scroll {
   color: #222f3e;
 }
 .tox .tox-notification--error a {
-  color: #c00;
+  color: #77181f;
 }
 .tox .tox-notification--error svg {
   fill: #222f3e;
@@ -2222,7 +2224,7 @@ body.tox-dialog__disable-scroll {
 }
 .tox .tox-notification--warn a,
 .tox .tox-notification--warning a {
-  color: #bd9d13;
+  color: #7a6e25;
 }
 .tox .tox-notification--warn svg,
 .tox .tox-notification--warning svg {
@@ -2237,7 +2239,7 @@ body.tox-dialog__disable-scroll {
   color: #222f3e;
 }
 .tox .tox-notification--info a {
-  color: #2c6db7;
+  color: #2a64a6;
 }
 .tox .tox-notification--info svg {
   fill: #222f3e;
