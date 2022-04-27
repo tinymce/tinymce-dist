@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 5.10.4 - 2022-04-27
+
+### Fixed
+- Inline toolbars flickered when switching between editors #TINY-8594
+- Multiple inline toolbars were shown if focused too quickly #TINY-8503
+
 ## 5.10.3 - 2022-02-09
 
 ### Fixed
