@@ -2780,6 +2780,12 @@ body.tox-dialog__disable-scroll {
 .tox .tox-tbtn__select-chevron svg {
   fill: rgba(255, 255, 255, 0.5);
 }
+.tox .tox-tbtn--bespoke {
+  background: transparent;
+}
+.tox .tox-tbtn--bespoke + .tox-tbtn--bespoke {
+  margin-inline-start: 0;
+}
 .tox .tox-tbtn--bespoke .tox-tbtn__select-label {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2814,12 +2820,6 @@ body.tox-dialog__disable-scroll {
 .tox .tox-split-button .tox-tbtn {
   margin: 0;
 }
-.tox.tox-platform-touch .tox-split-button .tox-tbtn:first-child {
-  width: 30px;
-}
-.tox.tox-platform-touch .tox-split-button__chevron {
-  width: 20px;
-}
 .tox .tox-split-button.tox-tbtn--disabled:hover,
 .tox .tox-split-button.tox-tbtn--disabled:focus,
 .tox .tox-split-button.tox-tbtn--disabled .tox-tbtn:hover,
@@ -2827,6 +2827,15 @@ body.tox-dialog__disable-scroll {
   background: transparent;
   box-shadow: none;
   color: rgba(255, 255, 255, 0.5);
+}
+.tox.tox-platform-touch .tox-split-button .tox-tbtn--select {
+  padding: 0 0px;
+}
+.tox.tox-platform-touch .tox-split-button .tox-tbtn:not(.tox-tbtn--select):first-child {
+  width: 30px;
+}
+.tox.tox-platform-touch .tox-split-button__chevron {
+  width: 20px;
 }
 .tox .tox-toolbar-overlord {
   background-color: #222f3e;

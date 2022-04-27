@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 6.0.1 (2022-03-23)
+ * TinyMCE version 6.0.2 (2022-04-27)
  */
 
 (function () {
@@ -20891,16 +20891,15 @@
         setupEvents(editor, targetElm, ui, toolbarPersist);
         editor.nodeChanged();
       };
-      const delayedRender = () => global$9.setEditorTimeout(editor, render, 0);
       editor.on('show', render);
       editor.on('hide', ui.hide);
       if (!toolbarPersist) {
-        editor.on('focus', delayedRender);
+        editor.on('focus', render);
         editor.on('blur', ui.hide);
       }
       editor.on('init', () => {
         if (editor.hasFocus() || toolbarPersist) {
-          delayedRender();
+          render();
         }
       });
       setupReadonlyModeSwitch(editor, uiComponents);
