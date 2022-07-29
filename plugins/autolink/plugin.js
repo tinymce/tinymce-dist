@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 6.1.1 (2022-07-27)
+ * TinyMCE version 6.1.2 (2022-07-29)
  */
 
 (function () {
@@ -173,26 +173,24 @@
   const convertToLink = (editor, result) => {
     const defaultLinkTarget = getDefaultLinkTarget(editor);
     const {rng, url} = result;
-    editor.undoManager.transact(() => {
-      const bookmark = editor.selection.getBookmark();
-      editor.selection.setRng(rng);
-      const command = 'createlink';
-      const args = {
-        command,
-        ui: false,
-        value: url
-      };
-      const beforeExecEvent = editor.dispatch('BeforeExecCommand', args);
-      if (!beforeExecEvent.isDefaultPrevented()) {
-        editor.getDoc().execCommand(command, false, url);
-        editor.dispatch('ExecCommand', args);
-        if (isString(defaultLinkTarget)) {
-          editor.dom.setAttrib(editor.selection.getNode(), 'target', defaultLinkTarget);
-        }
+    const bookmark = editor.selection.getBookmark();
+    editor.selection.setRng(rng);
+    const command = 'createlink';
+    const args = {
+      command,
+      ui: false,
+      value: url
+    };
+    const beforeExecEvent = editor.dispatch('BeforeExecCommand', args);
+    if (!beforeExecEvent.isDefaultPrevented()) {
+      editor.getDoc().execCommand(command, false, url);
+      editor.dispatch('ExecCommand', args);
+      if (isString(defaultLinkTarget)) {
+        editor.dom.setAttrib(editor.selection.getNode(), 'target', defaultLinkTarget);
       }
-      editor.selection.moveToBookmark(bookmark);
-      editor.nodeChanged();
-    });
+    }
+    editor.selection.moveToBookmark(bookmark);
+    editor.nodeChanged();
   };
   const handleSpacebar = editor => {
     const result = parseCurrentLine(editor, 0);
@@ -201,18 +199,16 @@
     }
   };
   const handleBracket = handleSpacebar;
-  const handleEnter = (editor, e) => {
+  const handleEnter = editor => {
     const result = parseCurrentLine(editor, -1);
     if (isNonNullable(result)) {
-      e.preventDefault();
-      editor.execCommand('mceInsertNewLine', false, e);
       convertToLink(editor, result);
     }
   };
   const setup = editor => {
     editor.on('keydown', e => {
       if (e.keyCode === 13 && !e.isDefaultPrevented()) {
-        handleEnter(editor, e);
+        handleEnter(editor);
       }
     });
     editor.on('keyup', e => {
