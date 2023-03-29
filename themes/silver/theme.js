@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 6.4.0 (2023-03-15)
+ * TinyMCE version 6.4.1 (2023-03-29)
  */
 
 (function () {
@@ -21623,6 +21623,7 @@
       const makeStepperButton = (action, title, tooltip, classes) => {
         const translatedTooltip = backstage.shared.providers.translate(tooltip);
         const altExecuting = generate$6('altExecuting');
+        const onClick = () => action(true);
         return Button.sketch({
           dom: {
             tag: 'button',
@@ -21639,9 +21640,8 @@
                   action(false);
                 }
               }),
-              run$1(click(), (_comp, _se) => {
-                action(true);
-              })
+              run$1(click(), onClick),
+              run$1(touchend(), onClick)
             ])]),
           eventOrder: {
             [keydown()]: [
@@ -21649,6 +21649,10 @@
               'keying'
             ],
             [click()]: [
+              altExecuting,
+              'alloy.base.behaviour'
+            ],
+            [touchend()]: [
               altExecuting,
               'alloy.base.behaviour'
             ]
@@ -22787,15 +22791,12 @@
             left: Math.round(left) + 'px',
             top: Math.round(top) + 'px'
           };
-          const widthProperties = optToolbarWidth.bind(toolbarWidth => {
+          const widthProperties = optToolbarWidth.map(toolbarWidth => {
             const scroll = get$b();
             const minimumToolbarWidth = 150;
             const availableWidth = window.innerWidth - (left - scroll.left);
             const width = Math.max(Math.min(toolbarWidth, availableWidth), minimumToolbarWidth);
-            if (availableWidth > width) {
-              return Optional.none();
-            }
-            return Optional.some({ width: width + 'px' });
+            return { width: width + 'px' };
           }).getOr({});
           setAll(mainUi.outerContainer.element, {
             ...baseProperties,
