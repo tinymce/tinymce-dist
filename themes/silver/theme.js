@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 6.4.1 (2023-03-29)
+ * TinyMCE version 6.4.2 (2023-04-26)
  */
 
 (function () {
@@ -785,7 +785,7 @@
       }
       return css;
     };
-    const isValidValue = (tag, property, value) => {
+    const isValidValue$1 = (tag, property, value) => {
       const element = SugarElement.fromTag(tag);
       set$8(element, property, value);
       const style = getRaw(element, property);
@@ -15122,9 +15122,12 @@
                 return get$6(select.element);
               },
               setValue: (select, newValue) => {
+                const firstOption = head(detail.options);
                 const found = find$5(detail.options, opt => opt.value === newValue);
                 if (found.isSome()) {
                   set$5(select.element, newValue);
+                } else if (select.element.dom.selectedIndex === -1 && newValue === '') {
+                  firstOption.each(value => set$5(select.element, value.value));
                 }
               },
               ...initialValues
@@ -16996,8 +16999,9 @@
     };
 
     const getItems = (fileType, input, urlBackstage) => {
+      var _a, _b;
       const urlInputValue = Representing.getValue(input);
-      const term = urlInputValue.meta.text !== undefined ? urlInputValue.meta.text : urlInputValue.value;
+      const term = (_b = (_a = urlInputValue === null || urlInputValue === void 0 ? void 0 : urlInputValue.meta) === null || _a === void 0 ? void 0 : _a.text) !== null && _b !== void 0 ? _b : urlInputValue.value;
       const info = urlBackstage.getLinkInformation();
       return info.fold(() => [], linkInfo => {
         const history = filterByQuery(term, historyTargets(urlBackstage.getHistory(fileType)));
@@ -21490,23 +21494,6 @@
       });
     };
 
-    const Keys = {
-      tab: constant$1(9),
-      escape: constant$1(27),
-      enter: constant$1(13),
-      backspace: constant$1(8),
-      delete: constant$1(46),
-      left: constant$1(37),
-      up: constant$1(38),
-      right: constant$1(39),
-      down: constant$1(40),
-      space: constant$1(32),
-      home: constant$1(36),
-      end: constant$1(35),
-      pageUp: constant$1(33),
-      pageDown: constant$1(34)
-    };
-
     const units = {
       unsupportedLength: [
         'em',
@@ -21571,6 +21558,23 @@
     };
     const normalise = (input, accepted) => parse(input, accepted).map(({value, unit}) => value + unit);
 
+    const Keys = {
+      tab: constant$1(9),
+      escape: constant$1(27),
+      enter: constant$1(13),
+      backspace: constant$1(8),
+      delete: constant$1(46),
+      left: constant$1(37),
+      up: constant$1(38),
+      right: constant$1(39),
+      down: constant$1(40),
+      space: constant$1(32),
+      home: constant$1(36),
+      end: constant$1(35),
+      pageUp: constant$1(33),
+      pageDown: constant$1(34)
+    };
+
     const createBespokeNumberInput = (editor, backstage, spec) => {
       let currentComp = Optional.none();
       const getValueFromCurrentComp = comp => comp.map(alloyComp => Representing.getValue(alloyComp)).getOr('');
@@ -21582,24 +21586,15 @@
       const getApi = comp => ({ getComponent: constant$1(comp) });
       const editorOffCell = Cell(noop);
       const customEvents = generate$6('custom-number-input-events');
-      const isValidValue = value => value >= 0;
       const changeValue = (f, fromInput, focusBack) => {
         const text = getValueFromCurrentComp(currentComp);
-        const parsedText = parse(text, [
-          'unsupportedLength',
-          'empty'
-        ]);
-        const value = parsedText.map(res => res.value).getOr(0);
-        const defaultUnit = getFontSizeInputDefaultUnit(editor);
-        const unit = parsedText.map(res => res.unit).filter(u => u !== '').getOr(defaultUnit);
-        const newValue = f(value, spec.getConfigFromUnit(unit).step);
-        const newValueWithUnit = `${ isValidValue(newValue) ? newValue : value }${ unit }`;
-        const lenghtDelta = `${ value }${ unit }`.length - `${ newValueWithUnit }`.length;
+        const newValue = spec.getNewValue(text, f);
+        const lenghtDelta = text.length - `${ newValue }`.length;
         const oldStart = currentComp.map(comp => comp.element.dom.selectionStart - lenghtDelta);
         const oldEnd = currentComp.map(comp => comp.element.dom.selectionEnd - lenghtDelta);
-        spec.onAction(newValueWithUnit, focusBack);
+        spec.onAction(newValue, focusBack);
         currentComp.each(comp => {
-          Representing.setValue(comp, newValueWithUnit);
+          Representing.setValue(comp, newValue);
           if (fromInput) {
             oldStart.each(oldStart => comp.element.dom.selectionStart = oldStart);
             oldEnd.each(oldEnd => comp.element.dom.selectionEnd = oldEnd);
@@ -21859,12 +21854,32 @@
       };
       return (_a = configs[unit]) !== null && _a !== void 0 ? _a : baseConfig;
     };
+    const defaultValue = 16;
+    const isValidValue = value => value >= 0;
     const getNumberInputSpec = editor => {
-      const updateInputValue = comp => emitWith(comp, updateMenuText, { text: editor.queryCommandValue('FontSize') });
+      const getCurrentValue = () => editor.queryCommandValue('FontSize');
+      const updateInputValue = comp => emitWith(comp, updateMenuText, { text: getCurrentValue() });
       return {
         updateInputValue,
-        getConfigFromUnit,
-        onAction: (format, focusBack) => editor.execCommand('FontSize', false, format, { skip_focus: !focusBack })
+        onAction: (format, focusBack) => editor.execCommand('FontSize', false, format, { skip_focus: !focusBack }),
+        getNewValue: (text, updateFunction) => {
+          parse(text, [
+            'unsupportedLength',
+            'empty'
+          ]);
+          const parsedText = parse(text, [
+            'unsupportedLength',
+            'empty'
+          ]).or(parse(getCurrentValue(), [
+            'unsupportedLength',
+            'empty'
+          ]));
+          const value = parsedText.map(res => res.value).getOr(defaultValue);
+          const defaultUnit = getFontSizeInputDefaultUnit(editor);
+          const unit = parsedText.map(res => res.unit).filter(u => u !== '').getOr(defaultUnit);
+          const newValue = updateFunction(value, getConfigFromUnit(unit).step);
+          return `${ isValidValue(newValue) ? newValue : value }${ unit }`;
+        }
       };
     };
     const createFontSizeInputButton = (editor, backstage) => createBespokeNumberInput(editor, backstage, getNumberInputSpec(editor));
@@ -22427,7 +22442,7 @@
     const types = {
       button: renderFromBridge(createToolbarButton, (s, backstage) => renderToolbarButton(s, backstage.shared.providers)),
       togglebutton: renderFromBridge(createToggleButton, (s, backstage) => renderToolbarToggleButton(s, backstage.shared.providers)),
-      menubutton: renderFromBridge(createMenuButton, (s, backstage) => renderMenuButton(s, 'tox-tbtn', backstage, Optional.none())),
+      menubutton: renderFromBridge(createMenuButton, (s, backstage) => renderMenuButton(s, 'tox-tbtn', backstage, Optional.none(), false)),
       splitbutton: renderFromBridge(createSplitButton, (s, backstage) => renderSplitButton(s, backstage.shared)),
       grouptoolbarbutton: renderFromBridge(createGroupToolbarButton, (s, backstage, editor) => {
         const buttons = editor.ui.registry.getAll().buttons;
@@ -25864,10 +25879,10 @@
         const parsedHeight = numToPx(getHeightWithFallback(editor));
         const parsedWidth = numToPx(getWidthWithFallback(editor));
         if (!editor.inline) {
-          if (isValidValue('div', 'width', parsedWidth)) {
+          if (isValidValue$1('div', 'width', parsedWidth)) {
             set$8(outerContainer.element, 'width', parsedWidth);
           }
-          if (isValidValue('div', 'height', parsedHeight)) {
+          if (isValidValue$1('div', 'height', parsedHeight)) {
             set$8(outerContainer.element, 'height', parsedHeight);
           } else {
             set$8(outerContainer.element, 'height', '400px');

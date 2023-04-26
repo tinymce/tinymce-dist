@@ -336,21 +336,41 @@ button::-moz-focus-inner {
   box-shadow: none;
   color: #fff;
 }
-.tox .tox-button.tox-button--enabled,
-.tox .tox-button.tox-button--enabled:hover {
-  background: #c8cbcf;
-  border-width: 1px;
+.tox .tox-button.tox-button--enabled {
+  background-color: #185d8c;
+  background-image: none;
+  border-color: #185d8c;
   box-shadow: none;
-  color: #222f3e;
+  color: #fff;
 }
-.tox .tox-button.tox-button--enabled > *,
-.tox .tox-button.tox-button--enabled:hover > * {
-  transform: none;
+.tox .tox-button.tox-button--enabled[disabled] {
+  background-color: #185d8c;
+  background-image: none;
+  border-color: #185d8c;
+  box-shadow: none;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: not-allowed;
 }
-.tox .tox-button.tox-button--enabled svg,
-.tox .tox-button.tox-button--enabled:hover svg {
-  /* stylelint-disable-line no-descending-specificity */
-  fill: #222f3e;
+.tox .tox-button.tox-button--enabled:focus:not(:disabled) {
+  background-color: #154f76;
+  background-image: none;
+  border-color: #154f76;
+  box-shadow: none;
+  color: #fff;
+}
+.tox .tox-button.tox-button--enabled:hover:not(:disabled) {
+  background-color: #154f76;
+  background-image: none;
+  border-color: #154f76;
+  box-shadow: none;
+  color: #fff;
+}
+.tox .tox-button.tox-button--enabled:active:not(:disabled) {
+  background-color: #114060;
+  background-image: none;
+  border-color: #114060;
+  box-shadow: none;
+  color: #fff;
 }
 .tox .tox-button--icon-and-text,
 .tox .tox-button.tox-button--icon-and-text,
@@ -409,6 +429,41 @@ button::-moz-focus-inner {
   background-color: #d6d6d6;
   background-image: none;
   border-color: #d6d6d6;
+  box-shadow: none;
+  color: #222f3e;
+}
+.tox .tox-button--secondary.tox-button--enabled {
+  background-color: #b1ccdf;
+  background-image: none;
+  border-color: #b1ccdf;
+  box-shadow: none;
+  color: #222f3e;
+}
+.tox .tox-button--secondary.tox-button--enabled[disabled] {
+  background-color: #b1ccdf;
+  background-image: none;
+  border-color: #b1ccdf;
+  box-shadow: none;
+  color: rgba(34, 47, 62, 0.5);
+}
+.tox .tox-button--secondary.tox-button--enabled:focus:not(:disabled) {
+  background-color: #9fc1d7;
+  background-image: none;
+  border-color: #9fc1d7;
+  box-shadow: none;
+  color: #222f3e;
+}
+.tox .tox-button--secondary.tox-button--enabled:hover:not(:disabled) {
+  background-color: #9fc1d7;
+  background-image: none;
+  border-color: #9fc1d7;
+  box-shadow: none;
+  color: #222f3e;
+}
+.tox .tox-button--secondary.tox-button--enabled:active:not(:disabled) {
+  background-color: #8db5d0;
+  background-image: none;
+  border-color: #8db5d0;
   box-shadow: none;
   color: #222f3e;
 }
@@ -3301,6 +3356,7 @@ body.tox-dialog__disable-scroll {
   text-transform: none;
 }
 .tox .tox-tree .tox-trbtn .tox-tree__label {
+  cursor: default;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
