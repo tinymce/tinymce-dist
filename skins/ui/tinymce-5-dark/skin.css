@@ -259,6 +259,10 @@ button::-moz-focus-inner {
   display: flex;
   flex: 0 0 auto;
 }
+.tox .tox-bottom-anchorbar {
+  display: flex;
+  flex: 0 0 auto;
+}
 .tox .tox-bar {
   display: flex;
   flex: 0 0 auto;
@@ -1519,6 +1523,12 @@ button::-moz-focus-inner {
   margin-bottom: 0;
   margin-top: 0;
 }
+.tox .tox-dialog__body-content .tox-form__group .tox-label.tox-label--center {
+  text-align: center;
+}
+.tox .tox-dialog__body-content .tox-form__group .tox-label.tox-label--end {
+  text-align: end;
+}
 .tox .tox-dialog--width-lg {
   height: 650px;
   max-width: 1200px;
@@ -1587,8 +1597,15 @@ button::-moz-focus-inner {
 .tox .tox-dialog__table td:first-child {
   padding-right: 8px;
 }
+.tox .tox-dialog__iframe {
+  min-height: 200px;
+}
 .tox .tox-dialog__iframe.tox-dialog__iframe--opaque {
   background: #fff;
+}
+.tox .tox-dialog__iframe.tox-dialog__iframe--bordered {
+  border: 1px solid #000000;
+  border-radius: 3px;
 }
 .tox .tox-dialog__popups {
   position: absolute;
@@ -1991,6 +2008,7 @@ body.tox-dialog__disable-scroll {
   cursor: not-allowed;
 }
 .tox .tox-textfield:focus,
+.tox .tox-dialog__iframe.tox-dialog__iframe--bordered:focus-within,
 .tox .tox-listboxfield .tox-listbox--select:focus,
 .tox .tox-textarea-wrap:focus-within,
 .tox .tox-textarea:focus,

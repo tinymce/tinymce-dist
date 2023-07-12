@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 6.5.1 (2023-06-19)
+ * TinyMCE version 6.6.0 (2023-07-12)
  */
 
 (function () {
@@ -14627,37 +14627,56 @@
       ].join(','), never);
     };
 
-    const getDynamicSource = initialData => {
+    const getDynamicSource = (initialData, stream) => {
       const cachedValue = Cell(initialData.getOr(''));
       return {
         getValue: _frameComponent => cachedValue.get(),
         setValue: (frameComponent, html) => {
           if (cachedValue.get() !== html) {
-            set$9(frameComponent.element, 'srcdoc', html);
+            const iframeElement = frameComponent.element;
+            const setSrcdocValue = () => set$9(iframeElement, 'srcdoc', html);
+            if (stream) {
+              const iframe = iframeElement.dom;
+              Optional.from(iframe.contentDocument).fold(setSrcdocValue, doc => {
+                const isElementScrollAtBottom = ({scrollTop, scrollHeight, clientHeight}) => Math.ceil(scrollTop) + clientHeight >= scrollHeight;
+                const isScrollAtBottom = Optional.from(doc.documentElement).forall(isElementScrollAtBottom);
+                doc.open();
+                doc.write(html);
+                doc.close();
+                const win = iframe.contentWindow;
+                const body = doc.body;
+                if (isScrollAtBottom && isNonNullable(win) && isNonNullable(body)) {
+                  win.scrollTo(0, body.scrollHeight);
+                }
+              });
+            } else {
+              setSrcdocValue();
+            }
           }
           cachedValue.set(html);
         }
       };
     };
     const renderIFrame = (spec, providersBackstage, initialData) => {
-      const isSandbox = spec.sandboxed;
-      const isTransparent = spec.transparent;
       const baseClass = 'tox-dialog__iframe';
+      const borderedClass = spec.border ? [`${ baseClass }--bordered`] : [];
+      const opaqueClass = spec.transparent ? [] : [`${ baseClass }--opaque`];
       const attributes = {
         ...spec.label.map(title => ({ title })).getOr({}),
         ...initialData.map(html => ({ srcdoc: html })).getOr({}),
-        ...isSandbox ? { sandbox: 'allow-scripts allow-same-origin' } : {}
+        ...spec.sandboxed ? { sandbox: 'allow-scripts allow-same-origin' } : {}
       };
-      const sourcing = getDynamicSource(initialData);
+      const sourcing = getDynamicSource(initialData, spec.streamContent);
       const pLabel = spec.label.map(label => renderLabel$3(label, providersBackstage));
       const factory = newSpec => craft({
         uid: newSpec.uid,
         dom: {
           tag: 'iframe',
           attributes,
-          classes: isTransparent ? [baseClass] : [
+          classes: [
             baseClass,
-            `${ baseClass }--opaque`
+            ...borderedClass,
+            ...opaqueClass
           ]
         },
         behaviours: derive$1([
@@ -14782,10 +14801,17 @@
     };
 
     const renderLabel$2 = (spec, backstageShared) => {
+      const baseClass = 'tox-label';
+      const centerClass = spec.align === 'center' ? [`${ baseClass }--center`] : [];
+      const endClass = spec.align === 'end' ? [`${ baseClass }--end`] : [];
       const label = {
         dom: {
           tag: 'label',
-          classes: ['tox-label']
+          classes: [
+            baseClass,
+            ...centerClass,
+            ...endClass
+          ]
         },
         components: [text$2(backstageShared.providers.translate(spec.label))]
       };
@@ -17367,51 +17393,53 @@
       });
     };
 
-    const renderAlertBanner = (spec, providersBackstage) => Container.sketch({
-      dom: {
-        tag: 'div',
-        attributes: { role: 'alert' },
-        classes: [
-          'tox-notification',
-          'tox-notification--in',
-          `tox-notification--${ spec.level }`
-        ]
-      },
-      components: [
-        {
-          dom: {
-            tag: 'div',
-            classes: ['tox-notification__icon']
-          },
-          components: [Button.sketch({
-              dom: {
-                tag: 'button',
-                classes: [
-                  'tox-button',
-                  'tox-button--naked',
-                  'tox-button--icon'
-                ],
-                innerHtml: get$2(spec.icon, providersBackstage.icons),
-                attributes: { title: providersBackstage.translate(spec.iconTooltip) }
-              },
-              action: comp => {
-                emitWith(comp, formActionEvent, {
+    const renderAlertBanner = (spec, providersBackstage) => {
+      const icon = get$2(spec.icon, providersBackstage.icons);
+      return Container.sketch({
+        dom: {
+          tag: 'div',
+          attributes: { role: 'alert' },
+          classes: [
+            'tox-notification',
+            'tox-notification--in',
+            `tox-notification--${ spec.level }`
+          ]
+        },
+        components: [
+          {
+            dom: {
+              tag: 'div',
+              classes: ['tox-notification__icon'],
+              innerHtml: !spec.url ? icon : undefined
+            },
+            components: spec.url ? [Button.sketch({
+                dom: {
+                  tag: 'button',
+                  classes: [
+                    'tox-button',
+                    'tox-button--naked',
+                    'tox-button--icon'
+                  ],
+                  innerHtml: icon,
+                  attributes: { title: providersBackstage.translate(spec.iconTooltip) }
+                },
+                action: comp => emitWith(comp, formActionEvent, {
                   name: 'alert-banner',
                   value: spec.url
-                });
-              },
-              buttonBehaviours: derive$1([addFocusableBehaviour()])
-            })]
-        },
-        {
-          dom: {
-            tag: 'div',
-            classes: ['tox-notification__body'],
-            innerHtml: providersBackstage.translate(spec.text)
+                }),
+                buttonBehaviours: derive$1([addFocusableBehaviour()])
+              })] : undefined
+          },
+          {
+            dom: {
+              tag: 'div',
+              classes: ['tox-notification__body'],
+              innerHtml: providersBackstage.translate(spec.text)
+            }
           }
-        }
-      ]
-    });
+        ]
+      });
+    };
 
     const set$1 = (element, status) => {
       element.dom.checked = status;
@@ -17692,6 +17720,42 @@
       });
       return () => lazyUseEditableAreaAnchor() ? editableAreaAnchor() : standardAnchor();
     };
+    const getInlineBottomDialogAnchor = (inline, contentAreaElement, lazyBottomAnchorBar, lazyUseEditableAreaAnchor) => {
+      const bubbleSize = 12;
+      const overrides = { maxHeightFunction: expandable$1() };
+      const editableAreaAnchor = () => ({
+        type: 'node',
+        root: getContentContainer(getRootNode(contentAreaElement())),
+        node: Optional.from(contentAreaElement()),
+        bubble: nu$5(bubbleSize, bubbleSize, bubbleAlignments$2),
+        layouts: {
+          onRtl: () => [north],
+          onLtr: () => [north]
+        },
+        overrides
+      });
+      const standardAnchor = () => inline ? {
+        type: 'node',
+        root: getContentContainer(getRootNode(contentAreaElement())),
+        node: Optional.from(contentAreaElement()),
+        bubble: nu$5(0, -getOuter$2(contentAreaElement()), bubbleAlignments$2),
+        layouts: {
+          onRtl: () => [north$2],
+          onLtr: () => [north$2]
+        },
+        overrides
+      } : {
+        type: 'hotspot',
+        hotspot: lazyBottomAnchorBar(),
+        bubble: nu$5(0, 0, bubbleAlignments$2),
+        layouts: {
+          onRtl: () => [north$2],
+          onLtr: () => [north$2]
+        },
+        overrides
+      };
+      return () => lazyUseEditableAreaAnchor() ? editableAreaAnchor() : standardAnchor();
+    };
     const getBannerAnchor = (contentAreaElement, lazyAnchorbar, lazyUseEditableAreaAnchor) => {
       const editableAreaAnchor = () => ({
         type: 'node',
@@ -17735,13 +17799,14 @@
       root: bodyElement(),
       node: element
     });
-    const getAnchors = (editor, lazyAnchorbar, isToolbarTop) => {
+    const getAnchors = (editor, lazyAnchorbar, lazyBottomAnchorBar, isToolbarTop) => {
       const useFixedToolbarContainer = useFixedContainer(editor);
       const bodyElement = () => SugarElement.fromDom(editor.getBody());
       const contentAreaElement = () => SugarElement.fromDom(editor.getContentAreaContainer());
       const lazyUseEditableAreaAnchor = () => useFixedToolbarContainer || !isToolbarTop();
       return {
         inlineDialog: getInlineDialogAnchor(contentAreaElement, lazyAnchorbar, lazyUseEditableAreaAnchor),
+        inlineBottomDialog: getInlineBottomDialogAnchor(editor.inline, contentAreaElement, lazyBottomAnchorBar, lazyUseEditableAreaAnchor),
         banner: getBannerAnchor(contentAreaElement, lazyAnchorbar, lazyUseEditableAreaAnchor),
         cursor: getCursorAnchor(editor, bodyElement),
         node: getNodeAnchor$1(bodyElement)
@@ -18221,7 +18286,7 @@
       getUrlPicker: filetype => getUrlPicker(editor, filetype)
     });
 
-    const init$6 = (lazySinks, editor, lazyAnchorbar) => {
+    const init$6 = (lazySinks, editor, lazyAnchorbar, lazyBottomAnchorBar) => {
       const contextMenuState = Cell(false);
       const toolbar = HeaderBackstage(editor);
       const providers = {
@@ -18240,7 +18305,7 @@
       const commonBackstage = {
         shared: {
           providers,
-          anchors: getAnchors(editor, lazyAnchorbar, toolbar.isPositionedAtTop),
+          anchors: getAnchors(editor, lazyAnchorbar, lazyBottomAnchorBar, toolbar.isPositionedAtTop),
           header: toolbar
         },
         urlinput,
@@ -19588,11 +19653,13 @@
       }
       state.clear();
     };
+    const isBlocked = (component, blockingConfig, blockingState) => blockingState.isBlocked();
 
     var BlockingApis = /*#__PURE__*/Object.freeze({
         __proto__: null,
         block: block,
-        unblock: unblock
+        unblock: unblock,
+        isBlocked: isBlocked
     });
 
     var BlockingSchema = [
@@ -21186,7 +21253,7 @@
       },
       tools: {
         title: 'Tools',
-        items: 'spellchecker spellcheckerlanguage | autocorrect capitalization | a11ycheck code typography wordcount addtemplate'
+        items: 'aidialog aishortcuts | spellchecker spellcheckerlanguage | autocorrect capitalization | a11ycheck code typography wordcount addtemplate'
       },
       table: {
         title: 'Table',
@@ -22546,6 +22613,13 @@
         items: [
           'undo',
           'redo'
+        ]
+      },
+      {
+        name: 'ai',
+        items: [
+          'aidialog',
+          'aishortcuts'
         ]
       },
       {
@@ -25816,16 +25890,23 @@
           classes: ['tox-anchorbar']
         }
       });
+      const memBottomAnchorBar = record({
+        dom: {
+          tag: 'div',
+          classes: ['tox-bottom-anchorbar']
+        }
+      });
       const lazyHeader = () => lazyUiRefs.mainUi.get().map(ui => ui.outerContainer).bind(OuterContainer.getHeader);
       const lazyDialogSinkResult = () => Result.fromOption(lazyUiRefs.dialogUi.get().map(ui => ui.sink), 'UI has not been rendered');
       const lazyPopupSinkResult = () => Result.fromOption(lazyUiRefs.popupUi.get().map(ui => ui.sink), '(popup) UI has not been rendered');
       const lazyAnchorBar = lazyUiRefs.lazyGetInOuterOrDie('anchor bar', memAnchorBar.getOpt);
+      const lazyBottomAnchorBar = lazyUiRefs.lazyGetInOuterOrDie('bottom anchor bar', memBottomAnchorBar.getOpt);
       const lazyToolbar = lazyUiRefs.lazyGetInOuterOrDie('toolbar', OuterContainer.getToolbar);
       const lazyThrobber = lazyUiRefs.lazyGetInOuterOrDie('throbber', OuterContainer.getThrobber);
       const backstages = init$6({
         popup: lazyPopupSinkResult,
         dialog: lazyDialogSinkResult
-      }, editor, lazyAnchorBar);
+      }, editor, lazyAnchorBar, lazyBottomAnchorBar);
       const makeHeaderPart = () => {
         const verticalDirAttributes = { attributes: { [Attribute]: isToolbarBottom ? AttributeValue.BottomToTop : AttributeValue.TopToBottom } };
         const partMenubar = OuterContainer.parts.menubar({
@@ -26008,7 +26089,10 @@
         const editorContainer = OuterContainer.parts.editorContainer({
           components: flatten([
             editorComponents,
-            isInline ? [] : statusbar.toArray()
+            isInline ? [] : [
+              memBottomAnchorBar.asSpec(),
+              ...statusbar.toArray()
+            ]
           ])
         });
         const isHidden = isDistractionFree(editor);
@@ -26244,7 +26328,7 @@
           behaviours: derive$1([
             Focusing.config({}),
             config('dialog-blocker-events', [runOnSource(focusin(), () => {
-                Keying.focusIn(dialog);
+                Blocking.isBlocked(dialog) ? noop() : Keying.focusIn(dialog);
               })])
           ])
         });
@@ -26260,7 +26344,7 @@
         });
       };
       const getDialogBody = dialog => getPartOrDie(dialog, detail, 'body');
-      const getDialogFooter = dialog => getPartOrDie(dialog, detail, 'footer');
+      const getDialogFooter = dialog => getPart(dialog, detail, 'footer');
       const setBusy = (dialog, getBusySpec) => {
         Blocking.block(dialog, getBusySpec);
       };
@@ -26484,7 +26568,9 @@
     const htmlPanelSchema = objOf(htmlPanelFields);
 
     const iframeFields = formComponentWithLabelFields.concat([
+      defaultedBoolean('border', false),
       defaultedBoolean('sandboxed', true),
+      defaultedBoolean('streamContent', false),
       defaultedBoolean('transparent', true)
     ]);
     const iframeSchema = objOf(iframeFields);
@@ -26510,7 +26596,12 @@
     const createLabelFields = itemsField => [
       type,
       label,
-      itemsField
+      itemsField,
+      defaultedStringEnum('align', 'start', [
+        'start',
+        'center',
+        'end'
+      ])
     ];
 
     const listBoxSingleItemFields = [
@@ -26676,7 +26767,7 @@
         tabpanel: tabPanelSchema
       })),
       defaultedString('size', 'normal'),
-      requiredArrayOf('buttons', dialogButtonSchema),
+      defaultedArrayOf('buttons', [], dialogButtonSchema),
       defaulted('initialData', {}),
       defaultedFunction('onAction', noop),
       defaultedFunction('onChange', noop),
@@ -29111,7 +29202,7 @@
         modalBehaviours: derive$1([
           Focusing.config({}),
           config('dialog-events', spec.dialogEvents.concat([runOnSource(focusin(), (comp, _se) => {
-              Keying.focusIn(comp);
+              Blocking.isBlocked(comp) ? noop() : Keying.focusIn(comp);
             })])),
           config('scroll-lock', [
             runOnAttached(() => {
@@ -29215,7 +29306,7 @@
       title: backstage.shared.providers.translate(title),
       draggable: backstage.dialog.isDraggableModal()
     }, dialogId, backstage.shared.providers);
-    const getBusySpec = (message, bs, providers) => ({
+    const getBusySpec = (message, bs, providers, headerHeight) => ({
       dom: {
         tag: 'div',
         classes: ['tox-dialog__busy-spinner'],
@@ -29224,7 +29315,7 @@
           left: '0px',
           right: '0px',
           bottom: '0px',
-          top: '0px',
+          top: `${ headerHeight.getOr(0) }px`,
           position: 'absolute'
         }
       },
@@ -29234,7 +29325,8 @@
     const getEventExtras = (lazyDialog, providers, extra) => ({
       onClose: () => extra.closeWindow(),
       onBlock: blockEvent => {
-        ModalDialog.setBusy(lazyDialog(), (_comp, bs) => getBusySpec(blockEvent.message, bs, providers));
+        const headerHeight = descendant(lazyDialog().element, '.tox-dialog__header').map(header => get$d(header));
+        ModalDialog.setBusy(lazyDialog(), (_comp, bs) => getBusySpec(blockEvent.message, bs, providers, headerHeight));
       },
       onUnblock: () => {
         ModalDialog.setIdle(lazyDialog());
@@ -29450,7 +29542,7 @@
         const form = Composing.getCurrent(access.getFormWrapper()).getOr(access.getFormWrapper());
         return Form.getField(form, name).orThunk(() => {
           const footer = access.getFooter();
-          const footerState = Reflecting.getState(footer).get();
+          const footerState = footer.bind(f => Reflecting.getState(f).get());
           return footerState.bind(f => f.lookupByName(name));
         });
       } else {
@@ -29577,14 +29669,14 @@
       }, dialogId, backstage);
       const storedMenuButtons = mapMenuButtons(internalDialog.buttons);
       const objOfCells = extractCellsToObject(storedMenuButtons);
-      const footer = renderModalFooter({ buttons: storedMenuButtons }, dialogId, backstage);
+      const footer = someIf(storedMenuButtons.length !== 0, renderModalFooter({ buttons: storedMenuButtons }, dialogId, backstage));
       const dialogEvents = SilverDialogEvents.initDialog(() => instanceApi, getEventExtras(() => dialog, backstage.shared.providers, extra), backstage.shared.getSink);
       const dialogSize = getDialogSizeClasses(internalDialog.size);
       const spec = {
         id: dialogId,
         header,
         body,
-        footer: Optional.some(footer),
+        footer,
         extraClasses: dialogSize,
         extraBehaviours: [],
         extraStyles: {}
@@ -29622,11 +29714,20 @@
       };
     };
 
-    const renderInlineDialog = (dialogInit, extra, backstage, ariaAttrs) => {
+    const getInlineDialogSizeClass = size => {
+      switch (size) {
+      case 'medium':
+        return Optional.some('tox-dialog--width-md');
+      default:
+        return Optional.none();
+      }
+    };
+    const renderInlineDialog = (dialogInit, extra, backstage, ariaAttrs = false) => {
       const dialogId = generate$6('dialog');
       const dialogLabelId = generate$6('dialog-label');
       const dialogContentId = generate$6('dialog-content');
       const internalDialog = dialogInit.internalDialog;
+      const dialogSize = getInlineDialogSizeClass(internalDialog.size);
       const updateState = (_comp, incoming) => Optional.some(incoming);
       const memHeader = record(renderInlineHeader({
         title: internalDialog.title,
@@ -29638,10 +29739,13 @@
       }, dialogId, dialogContentId, backstage, ariaAttrs));
       const storagedMenuButtons = mapMenuButtons(internalDialog.buttons);
       const objOfCells = extractCellsToObject(storagedMenuButtons);
-      const memFooter = record(renderInlineFooter({ buttons: storagedMenuButtons }, dialogId, backstage));
+      const optMemFooter = someIf(storagedMenuButtons.length !== 0, record(renderInlineFooter({ buttons: storagedMenuButtons }, dialogId, backstage)));
       const dialogEvents = SilverDialogEvents.initDialog(() => instanceApi, {
         onBlock: event => {
-          Blocking.block(dialog, (_comp, bs) => getBusySpec(event.message, bs, backstage.shared.providers));
+          Blocking.block(dialog, (_comp, bs) => {
+            const headerHeight = memHeader.getOpt(dialog).map(dialog => get$d(dialog.element));
+            return getBusySpec(event.message, bs, backstage.shared.providers, headerHeight);
+          });
         },
         onUnblock: () => {
           Blocking.unblock(dialog);
@@ -29654,7 +29758,8 @@
           tag: 'div',
           classes: [
             'tox-dialog',
-            inlineClass
+            inlineClass,
+            ...dialogSize.toArray()
           ],
           attributes: {
             role: 'dialog',
@@ -29698,7 +29803,7 @@
         components: [
           memHeader.asSpec(),
           memBody.asSpec(),
-          memFooter.asSpec()
+          ...optMemFooter.map(memFooter => memFooter.asSpec()).toArray()
         ]
       });
       const toggleFullscreen = () => {
@@ -29715,7 +29820,7 @@
       const instanceApi = getDialogApi({
         getId: constant$1(dialogId),
         getRoot: constant$1(dialog),
-        getFooter: () => memFooter.get(dialog),
+        getFooter: () => optMemFooter.map(memFooter => memFooter.get(dialog)),
         getBody: () => memBody.get(dialog),
         getFormWrapper: () => {
           const body = memBody.get(dialog);
@@ -30004,13 +30109,16 @@
       const alertDialog = setup$2(extras.backstages.dialog);
       const confirmDialog = setup$1(extras.backstages.dialog);
       const open = (config, params, closeWindow) => {
-        if (params !== undefined && params.inline === 'toolbar') {
-          return openInlineDialog(config, extras.backstages.popup.shared.anchors.inlineDialog(), closeWindow, params.ariaAttrs);
-        } else if (params !== undefined && params.inline === 'cursor') {
-          return openInlineDialog(config, extras.backstages.popup.shared.anchors.cursor(), closeWindow, params.ariaAttrs);
-        } else {
-          return openModalDialog(config, closeWindow);
+        if (!isUndefined(params)) {
+          if (params.inline === 'toolbar') {
+            return openInlineDialog(config, extras.backstages.popup.shared.anchors.inlineDialog(), closeWindow, params);
+          } else if (params.inline === 'bottom') {
+            return openBottomInlineDialog(config, extras.backstages.popup.shared.anchors.inlineBottomDialog(), closeWindow, params);
+          } else if (params.inline === 'cursor') {
+            return openInlineDialog(config, extras.backstages.popup.shared.anchors.cursor(), closeWindow, params);
+          }
         }
+        return openModalDialog(config, closeWindow);
       };
       const openUrl = (config, closeWindow) => openModalUrlDialog(config, closeWindow);
       const openModalUrlDialog = (config, closeWindow) => {
@@ -30047,7 +30155,7 @@
         };
         return DialogManager.open(factory, config);
       };
-      const openInlineDialog = (config$1, anchor, closeWindow, ariaAttrs = false) => {
+      const openInlineDialog = (config$1, anchor, closeWindow, windowParams) => {
         const factory = (contents, internalInitialData, dataValidator) => {
           const initialData = validateData(internalInitialData, dataValidator);
           const inlineDialog = value$2();
@@ -30069,14 +30177,14 @@
               inlineDialog.clear();
               closeWindow(dialogUi.instanceApi);
             }
-          }, extras.backstages.popup, ariaAttrs);
+          }, extras.backstages.popup, windowParams.ariaAttrs);
           const inlineDialogComp = build$1(InlineView.sketch({
             lazySink: extras.backstages.popup.shared.getSink,
             dom: {
               tag: 'div',
               classes: []
             },
-            fireDismissalEventInstead: {},
+            fireDismissalEventInstead: windowParams.persistent ? { event: 'doNotDismissYet' } : {},
             ...isToolbarLocationTop ? {} : { fireRepositionEventInstead: {} },
             inlineBehaviours: derive$1([
               config('window-manager-inline-events', [run$1(dismissRequested(), (_comp, _se) => {
@@ -30097,6 +30205,92 @@
             Docking.refresh(inlineDialogComp);
             editor.on('ResizeEditor', refreshDocking);
           }
+          dialogUi.instanceApi.setData(initialData);
+          Keying.focusIn(dialogUi.dialog);
+          return dialogUi.instanceApi;
+        };
+        return DialogManager.open(factory, config$1);
+      };
+      const openBottomInlineDialog = (config$1, anchor, closeWindow, windowParams) => {
+        const factory = (contents, internalInitialData, dataValidator) => {
+          const initialData = validateData(internalInitialData, dataValidator);
+          const inlineDialog = value$2();
+          const isToolbarLocationTop = extras.backstages.popup.shared.header.isPositionedAtTop();
+          const dialogInit = {
+            dataValidator,
+            initialData,
+            internalDialog: contents
+          };
+          const refreshDocking = () => inlineDialog.on(dialog => {
+            InlineView.reposition(dialog);
+            Docking.refresh(dialog);
+          });
+          const dialogUi = renderInlineDialog(dialogInit, {
+            redial: DialogManager.redial,
+            closeWindow: () => {
+              inlineDialog.on(InlineView.hide);
+              editor.off('ResizeEditor ScrollWindow ElementScroll', refreshDocking);
+              inlineDialog.clear();
+              closeWindow(dialogUi.instanceApi);
+            }
+          }, extras.backstages.popup, windowParams.ariaAttrs);
+          const inlineDialogComp = build$1(InlineView.sketch({
+            lazySink: extras.backstages.popup.shared.getSink,
+            dom: {
+              tag: 'div',
+              classes: []
+            },
+            fireDismissalEventInstead: windowParams.persistent ? { event: 'doNotDismissYet' } : {},
+            ...isToolbarLocationTop ? {} : { fireRepositionEventInstead: {} },
+            inlineBehaviours: derive$1([
+              config('window-manager-inline-events', [run$1(dismissRequested(), (_comp, _se) => {
+                  emit(dialogUi.dialog, formCancelEvent);
+                })]),
+              Docking.config({
+                contextual: {
+                  lazyContext: () => Optional.some(box$1(SugarElement.fromDom(editor.getContentAreaContainer()))),
+                  fadeInClass: 'tox-dialog-dock-fadein',
+                  fadeOutClass: 'tox-dialog-dock-fadeout',
+                  transitionClass: 'tox-dialog-dock-transition'
+                },
+                modes: [
+                  'top',
+                  'bottom'
+                ],
+                lazyViewport: comp => {
+                  const optScrollingContext = detectWhenSplitUiMode(editor, comp.element);
+                  return optScrollingContext.map(sc => {
+                    const combinedBounds = getBoundsFrom(sc);
+                    return {
+                      bounds: combinedBounds,
+                      optScrollEnv: Optional.some({
+                        currentScrollTop: sc.element.dom.scrollTop,
+                        scrollElmTop: absolute$3(sc.element).top
+                      })
+                    };
+                  }).getOrThunk(() => ({
+                    bounds: win(),
+                    optScrollEnv: Optional.none()
+                  }));
+                }
+              })
+            ]),
+            isExtraPart: (_comp, target) => isAlertOrConfirmDialog(target)
+          }));
+          inlineDialog.set(inlineDialogComp);
+          const getInlineDialogBounds = () => {
+            return extras.backstages.popup.shared.getSink().toOptional().bind(s => {
+              const optScrollingContext = detectWhenSplitUiMode(editor, s.element);
+              const margin = 15;
+              const bounds$1 = optScrollingContext.map(sc => getBoundsFrom(sc)).getOr(win());
+              const contentAreaContainer = box$1(SugarElement.fromDom(editor.getContentAreaContainer()));
+              const constrainedBounds = constrain(contentAreaContainer, bounds$1);
+              return Optional.some(bounds(constrainedBounds.x, constrainedBounds.y, constrainedBounds.width, constrainedBounds.height - margin));
+            });
+          };
+          InlineView.showWithinBounds(inlineDialogComp, premade(dialogUi.dialog), { anchor }, getInlineDialogBounds);
+          Docking.refresh(inlineDialogComp);
+          editor.on('ResizeEditor ScrollWindow ElementScroll', refreshDocking);
           dialogUi.instanceApi.setData(initialData);
           Keying.focusIn(dialogUi.dialog);
           return dialogUi.instanceApi;
