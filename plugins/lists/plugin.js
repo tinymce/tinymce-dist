@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 6.6.0 (2023-07-12)
+ * TinyMCE version 6.6.1 (2023-08-02)
  */
 
 (function () {
@@ -1377,7 +1377,7 @@
     };
     const toggleList = (editor, listName, _detail) => {
       const parentList = getParentList(editor);
-      if (isWithinNonEditableList(editor, parentList) || !editor.hasEditableRoot()) {
+      if (isWithinNonEditableList(editor, parentList)) {
         return;
       }
       const selectedSubLists = getSelectedSubLists(editor);

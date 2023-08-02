@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 6.6.0 (2023-07-12)
+ * TinyMCE version 6.6.1 (2023-08-02)
  */
 
 (function () {
@@ -1487,7 +1487,7 @@
         onAction: Dialog(editor).open,
         onSetup: onSetupEditable(editor)
       });
-      editor.ui.registry.addContextMenu('image', { update: element => isFigure(element) || isImage(element) && !isPlaceholderImage(element) ? ['image'] : [] });
+      editor.ui.registry.addContextMenu('image', { update: element => editor.selection.isEditable() && (isFigure(element) || isImage(element) && !isPlaceholderImage(element)) ? ['image'] : [] });
     };
 
     var Plugin = () => {
