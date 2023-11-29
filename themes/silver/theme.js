@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 6.8.0 (2023-11-22)
+ * TinyMCE version 6.8.1 (2023-11-29)
  */
 
 (function () {
@@ -6060,7 +6060,7 @@
       return contains$2(keys, raw.which);
     };
     const and = preds => event => forall(preds, pred => pred(event));
-    const isShift = event => {
+    const isShift$1 = event => {
       const raw = event.raw;
       return raw.shiftKey === true;
     };
@@ -6068,7 +6068,7 @@
       const raw = event.raw;
       return raw.ctrlKey === true;
     };
-    const isNotShift = not(isShift);
+    const isNotShift = not(isShift$1);
 
     const rule = (matches, action) => ({
       matches,
@@ -6228,7 +6228,7 @@
       const exit = (component, simulatedEvent, tabbingConfig) => tabbingConfig.onEscape.bind(f => f(component, simulatedEvent));
       const getKeydownRules = constant$1([
         rule(and([
-          isShift,
+          isShift$1,
           inSet(TAB)
         ]), goBackwards),
         rule(inSet(TAB), goForwards),
@@ -6409,7 +6409,7 @@
       rule(inSet(UP), north$1(moveNorth$1)),
       rule(inSet(DOWN), south$1(moveSouth$1)),
       rule(and([
-        isShift,
+        isShift$1,
         inSet(TAB)
       ]), handleTab),
       rule(and([
@@ -6583,7 +6583,7 @@
       rule(inSet(UP), move$1(moveUp)),
       rule(inSet(DOWN), move$1(moveDown)),
       rule(and([
-        isShift,
+        isShift$1,
         inSet(TAB)
       ]), fireShiftTab),
       rule(and([
@@ -6617,11 +6617,11 @@
         inSet(ENTER)
       ]), specialInfo.onEnter),
       rule(and([
-        isShift,
+        isShift$1,
         inSet(ENTER)
       ]), specialInfo.onShiftEnter),
       rule(and([
-        isShift,
+        isShift$1,
         inSet(TAB)
       ]), specialInfo.onShiftTab),
       rule(and([
@@ -12531,7 +12531,11 @@
 
     const cellOverEvent = generate$6('cell-over');
     const cellExecuteEvent = generate$6('cell-execute');
-    const makeAnnouncementText = backstage => (row, col) => backstage.shared.providers.translate(`${ col } columns, ${ row } rows`);
+    const makeAnnouncementText = backstage => (row, col) => backstage.shared.providers.translate([
+      '{0} columns, {1} rows',
+      col,
+      row
+    ]);
     const makeCell = (row, col, label) => {
       const emitCellOver = c => emitWith(c, cellOverEvent, {
         row,
@@ -14749,6 +14753,7 @@
         };
       }
     });
+    const isShift = event => isShift$1(event.event);
     const spectrumPart = required({
       schema: [customField('mouseIsDown', () => Cell(false))],
       name: 'spectrum',
@@ -14760,11 +14765,12 @@
           behaviours: derive$1([
             Keying.config({
               mode: 'special',
-              onLeft: spectrum => model.onLeft(spectrum, detail),
-              onRight: spectrum => model.onRight(spectrum, detail),
-              onUp: spectrum => model.onUp(spectrum, detail),
-              onDown: spectrum => model.onDown(spectrum, detail)
+              onLeft: (spectrum, event) => model.onLeft(spectrum, detail, isShift(event)),
+              onRight: (spectrum, event) => model.onRight(spectrum, detail, isShift(event)),
+              onUp: (spectrum, event) => model.onUp(spectrum, detail, isShift(event)),
+              onDown: (spectrum, event) => model.onDown(spectrum, detail, isShift(event))
             }),
+            Tabstopping.config({}),
             Focusing.config({})
           ]),
           events: derive$2([
@@ -14822,7 +14828,7 @@
     const yRange = detail => range(detail, maxY, minY);
     const halfX = detail => xRange(detail) / 2;
     const halfY = detail => yRange(detail) / 2;
-    const step = detail => detail.stepSize;
+    const step = (detail, useMultiplier) => useMultiplier ? detail.stepSize * detail.speedMultiplier : detail.stepSize;
     const snap = detail => detail.snapToGrid;
     const snapStart = detail => detail.snapStart;
     const rounded = detail => detail.rounded;
@@ -15025,13 +15031,13 @@
       const max = maxX(detail);
       fireSliderChange$2(spectrum, max);
     };
-    const moveBy$2 = (direction, spectrum, detail) => {
+    const moveBy$2 = (direction, spectrum, detail, useMultiplier) => {
       const f = direction > 0 ? increaseBy : reduceBy;
-      const xValue = f(currentValue(detail), minX(detail), maxX(detail), step(detail));
+      const xValue = f(currentValue(detail), minX(detail), maxX(detail), step(detail, useMultiplier));
       fireSliderChange$2(spectrum, xValue);
       return Optional.some(xValue);
     };
-    const handleMovement$2 = direction => (spectrum, detail) => moveBy$2(direction, spectrum, detail).map(always);
+    const handleMovement$2 = direction => (spectrum, detail, useMultiplier) => moveBy$2(direction, spectrum, detail, useMultiplier).map(always);
     const getValueFromEvent$2 = simulatedEvent => {
       const pos = getEventSource(simulatedEvent);
       return pos.map(p => p.left);
@@ -15133,13 +15139,13 @@
       const max = maxY(detail);
       fireSliderChange$1(spectrum, max);
     };
-    const moveBy$1 = (direction, spectrum, detail) => {
+    const moveBy$1 = (direction, spectrum, detail, useMultiplier) => {
       const f = direction > 0 ? increaseBy : reduceBy;
-      const yValue = f(currentValue(detail), minY(detail), maxY(detail), step(detail));
+      const yValue = f(currentValue(detail), minY(detail), maxY(detail), step(detail, useMultiplier));
       fireSliderChange$1(spectrum, yValue);
       return Optional.some(yValue);
     };
-    const handleMovement$1 = direction => (spectrum, detail) => moveBy$1(direction, spectrum, detail).map(always);
+    const handleMovement$1 = direction => (spectrum, detail, useMultiplier) => moveBy$1(direction, spectrum, detail, useMultiplier).map(always);
     const getValueFromEvent$1 = simulatedEvent => {
       const pos = getEventSource(simulatedEvent);
       return pos.map(p => {
@@ -15222,14 +15228,14 @@
       fireSliderChange(spectrum, val);
       return val;
     };
-    const moveBy = (direction, isVerticalMovement, spectrum, detail) => {
+    const moveBy = (direction, isVerticalMovement, spectrum, detail, useMultiplier) => {
       const f = direction > 0 ? increaseBy : reduceBy;
-      const xValue = isVerticalMovement ? currentValue(detail).x : f(currentValue(detail).x, minX(detail), maxX(detail), step(detail));
-      const yValue = !isVerticalMovement ? currentValue(detail).y : f(currentValue(detail).y, minY(detail), maxY(detail), step(detail));
+      const xValue = isVerticalMovement ? currentValue(detail).x : f(currentValue(detail).x, minX(detail), maxX(detail), step(detail, useMultiplier));
+      const yValue = !isVerticalMovement ? currentValue(detail).y : f(currentValue(detail).y, minY(detail), maxY(detail), step(detail, useMultiplier));
       fireSliderChange(spectrum, sliderValue(xValue, yValue));
       return Optional.some(xValue);
     };
-    const handleMovement = (direction, isVerticalMovement) => (spectrum, detail) => moveBy(direction, isVerticalMovement, spectrum, detail).map(always);
+    const handleMovement = (direction, isVerticalMovement) => (spectrum, detail, useMultiplier) => moveBy(direction, isVerticalMovement, spectrum, detail, useMultiplier).map(always);
     const setToMin = (spectrum, detail) => {
       const mX = minX(detail);
       const mY = minY(detail);
@@ -15281,6 +15287,7 @@
 
     const SliderSchema = [
       defaulted('stepSize', 1),
+      defaulted('speedMultiplier', 10),
       defaulted('onChange', noop),
       defaulted('onChoose', noop),
       defaulted('onInit', noop),
@@ -15382,6 +15389,9 @@
         detail.onDragEnd(slider, getThumb(slider));
         choose(slider);
       };
+      const focusWidget = component => {
+        getPart(component, detail, 'spectrum').map(Keying.focusIn);
+      };
       return {
         uid: detail.uid,
         dom: detail.dom,
@@ -15389,9 +15399,7 @@
         behaviours: augment(detail.sliderBehaviours, [
           Keying.config({
             mode: 'special',
-            focusIn: slider => {
-              return getPart(slider, detail, 'spectrum').map(Keying.focusIn).map(always);
-            }
+            focusIn: focusWidget
           }),
           Representing.config({
             store: {
@@ -15418,7 +15426,10 @@
           }),
           run$1(touchstart(), onDragStart),
           run$1(touchend(), onDragEnd),
-          run$1(mousedown(), onDragStart),
+          run$1(mousedown(), (component, event) => {
+            focusWidget(component);
+            onDragStart(component, event);
+          }),
           run$1(mouseup(), onDragEnd)
         ]),
         apis: {
@@ -15475,7 +15486,12 @@
         dom: {
           tag: 'div',
           classes: [getClass('hue-slider')],
-          attributes: { role: 'presentation' }
+          attributes: {
+            'role': 'slider',
+            'aria-valuemin': 0,
+            'aria-valuemax': 360,
+            'aria-valuenow': 120
+          }
         },
         rounded: false,
         model: {
@@ -15488,6 +15504,7 @@
         ],
         sliderBehaviours: derive$1([Focusing.config({})]),
         onChange: (slider, _thumb, value) => {
+          set$9(slider.element, 'aria-valuenow', Math.floor(360 - value * 3.6));
           emitWith(slider, sliderUpdate, { value });
         }
       });
@@ -15774,7 +15791,7 @@
       return rgbFormSketcher;
     };
 
-    const paletteFactory = (_translate, getClass) => {
+    const paletteFactory = (translate, getClass) => {
       const spectrumPart = Slider.parts.spectrum({
         dom: {
           tag: 'canvas',
@@ -15821,6 +15838,11 @@
           x: hsv.saturation,
           y: 100 - hsv.value
         });
+        set$9(slider.element, 'aria-valuetext', translate([
+          'Saturation {0}%, Brightness {1}%',
+          hsv.saturation,
+          hsv.value
+        ]));
       };
       const factory = _detail => {
         const getInitialValue = constant$1({
@@ -15828,6 +15850,13 @@
           y: 0
         });
         const onChange = (slider, _thumb, value) => {
+          if (!isNumber(value)) {
+            set$9(slider.element, 'aria-valuetext', translate([
+              'Saturation {0}%, Brightness {1}%',
+              Math.floor(value.x),
+              Math.floor(100 - value.y)
+            ]));
+          }
           emitWith(slider, paletteUpdate, { value });
         };
         const onInit = (_slider, _thumb, spectrum, _value) => {
@@ -15840,7 +15869,14 @@
         return Slider.sketch({
           dom: {
             tag: 'div',
-            attributes: { role: 'presentation' },
+            attributes: {
+              'role': 'slider',
+              'aria-valuetext': translate([
+                'Saturation {0}%, Brightness {1}%',
+                0,
+                0
+              ])
+            },
             classes: [getClass('sv-palette')]
           },
           model: {
@@ -16047,7 +16083,11 @@
       'aria.input.invalid': 'Invalid input'
     };
     const translate$1 = providerBackstage => key => {
-      return providerBackstage.translate(english[key]);
+      if (isString(key)) {
+        return providerBackstage.translate(english[key]);
+      } else {
+        return providerBackstage.translate(key);
+      }
     };
     const renderColorPicker = (_spec, providerBackstage, initialData) => {
       const getClass = key => 'tox-' + key;
