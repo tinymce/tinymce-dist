@@ -1726,6 +1726,9 @@ button::-moz-focus-inner {
   position: absolute;
   z-index: 1;
 }
+.tox .tox-navobj-bordered iframe {
+  border-radius: 3px;
+}
 .tox .tox-navobj-bordered-focus.tox-navobj-bordered::before {
   border-color: #207ab7;
   box-shadow: none;
