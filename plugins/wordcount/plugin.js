@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 7.3.0 (2024-08-07)
+ * TinyMCE version 7.4.0 (2024-10-09)
  */
 
 (function () {
@@ -389,12 +389,14 @@
       editor.ui.registry.addButton('wordcount', {
         tooltip: 'Word count',
         icon: 'character-count',
-        onAction
+        onAction,
+        context: 'any'
       });
       editor.ui.registry.addMenuItem('wordcount', {
         text: 'Word count',
         icon: 'character-count',
-        onAction
+        onAction,
+        context: 'any'
       });
     };
 
