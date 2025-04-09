@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 7.7.2 (2025-03-19)
+ * TinyMCE version 7.8.0 (TBD)
  */
 
 (function () {
@@ -780,7 +780,8 @@
       const getPluginKeys = editor => {
         const keys$1 = keys(editor.plugins);
         const forcedPlugins = getForcedPlugins(editor);
-        return isUndefined(forcedPlugins) ? keys$1 : filter(keys$1, k => !contains(forcedPlugins, k));
+        const hiddenPlugins = isUndefined(forcedPlugins) ? ['onboarding'] : forcedPlugins.concat(['onboarding']);
+        return filter(keys$1, k => !contains(hiddenPlugins, k));
       };
       const pluginLister = editor => {
         const pluginKeys = getPluginKeys(editor);

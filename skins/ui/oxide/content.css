@@ -680,7 +680,7 @@ table[style*="border-width: 0px"] caption,
   all: initial;
   display: inline-block;
   position: relative;
-  width: 600px;
+  width: min(100%, 600px);
   height: 80px;
   --tox-uploadcare-placeholder--content-cursor: auto !important;
   --tox-uploadcare-placeholder--content-color: rgba(34, 47, 62, 0.7);
@@ -694,6 +694,7 @@ table[style*="border-width: 0px"] caption,
   --tox-uploadcare-placeholder--content-justify-content: center;
   --tox-uploadcare-placeholder--content-gap: 8px;
   --tox-uploadcare-placeholder--icon-fill: rgba(34, 47, 62, 0.7);
+  --tox-uploadcare-placeholder--icon-min-width: 24px;
   --tox-uc-loading-spinner-wrapper-display-none: none;
   --tox-uc-loading-spinner-wrapper-display: flex;
   --tox-uc-loading-spinner-wrapper-position: absolute;
@@ -854,6 +855,8 @@ table[style*="border-width: 0px"] caption,
 [data-ephox-foam-a11y-violation][data-ephox-foam-a11y-current-violation] {
   outline-width: 4px;
   transition: outline-width 0.1s ease-in-out, background-color 0.1s ease-in-out;
+  box-shadow: 0 0 0 99999px #222f3e80;
+  z-index: 1;
 }
 [data-ephox-foam-a11y-violation][data-ephox-foam-a11y-severity-info] {
   outline-color: #006ce7;
@@ -875,6 +878,9 @@ table[style*="border-width: 0px"] caption,
 [data-ephox-foam-a11y-violation][data-ephox-foam-a11y-current-violation="error"] {
   outline-color: #c00;
   background-color: #fae6e6;
+}
+[data-ephox-foam-a11y-violation][data-ephox-foam-a11y-current-violation]:is(td, th, tr) {
+  position: static;
 }
 body {
   font-family: sans-serif;
