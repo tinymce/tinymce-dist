@@ -130,7 +130,7 @@ button::-moz-focus-inner {
   justify-content: space-between;
 }
 .tox .accessibility-issue__description > div {
-  padding-bottom: 16px;
+  padding-bottom: 4px;
 }
 .tox .accessibility-issue__description > div > div {
   align-items: center;
@@ -141,8 +141,8 @@ button::-moz-focus-inner {
   display: block;
 }
 .tox #accessibility-issue__contentID {
-  margin-top: 16px;
-  margin-bottom: 16px;
+  margin-top: 8px;
+  margin-bottom: 8px;
 }
 .tox #accessibility-issue__contentID span:first-child {
   font-weight: bold;
@@ -2366,6 +2366,10 @@ body.tox-dialog__disable-scroll {
 .tox .tox-lock:not(.tox-locked) .tox-lock-icon__lock {
   display: none;
 }
+.tox .tox-context-form__group .tox-button--icon.tox-lock-context-form-size-input {
+  margin-left: 8px;
+  margin-right: 8px;
+}
 .tox .tox-textfield,
 .tox .tox-toolbar-textfield,
 .tox .tox-listboxfield .tox-listbox--select,
@@ -2520,6 +2524,10 @@ body.tox-dialog__disable-scroll {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
+}
+.tox .tox-selectfield select option:checked {
+  background-color: revert;
+  color: revert;
 }
 .tox:not([dir=rtl]) .tox-selectfield select[size="0"],
 .tox:not([dir=rtl]) .tox-selectfield select[size="1"] {
@@ -2789,6 +2797,39 @@ body.tox-dialog__disable-scroll {
 }
 .tox[dir=rtl] .tox-insert-table-picker > div:nth-child(10n+1) {
   border-right: 0;
+}
+.tox-mentions__card-common {
+  z-index: 1200;
+}
+.tox.tox-mentions__card {
+  background: #fff;
+  border: 1px solid #cccccc;
+  display: flex;
+  padding: 4px 8px;
+}
+.tox.tox-mentions__card .tox-mentions__container {
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  margin: 0 4px;
+}
+.tox .tox-mentions__avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  margin-right: 4px;
+}
+.tox .tox-mentions__username {
+  font-size: 14px;
+  line-height: 21px;
+}
+.tox .tox-mentions__description {
+  font-size: 12px;
+  line-height: 21px;
+  color: rgba(34, 47, 62, 0.7);
+}
+.tox .tox-collection__item--active .tox-mentions__description {
+  color: inherit;
 }
 .tox {
   /* stylelint-disable */
@@ -3795,10 +3836,15 @@ body.tox-dialog__disable-scroll {
 .tox .tox-statusbar__branding a:focus:not(:disabled):not([aria-disabled=true]) svg {
   fill: #222f3e;
 }
+.tox .tox-statusbar__resize-cursor-default {
+  cursor: ns-resize;
+}
+.tox .tox-statusbar__resize-cursor-both {
+  cursor: nwse-resize;
+}
 .tox .tox-statusbar__resize-handle {
   align-items: flex-end;
   align-self: stretch;
-  cursor: nwse-resize;
   display: flex;
   flex: 0 0 auto;
   justify-content: flex-end;
