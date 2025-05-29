@@ -1,3 +1,16 @@
+/* This file is bundled with the code from the following third party libraries */
+
+/**
+ * http://prismjs.com/
+ * @license MIT <https://opensource.org/licenses/MIT>
+ * @author Lea Verou <https://lea.verou.me>
+ * @see https://github.com/PrismJS/prism/blob/master/LICENSE
+ *
+ * Dracula Theme originally by Zeno Rocha [@zenorocha]
+ * https://draculatheme.com/
+ *
+ * Ported for PrismJS by Albert Vallverdu [@byverdu]
+ */
 .mce-content-body .mce-item-anchor {
   background: transparent url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D'8'%20height%3D'12'%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%3E%3Cpath%20d%3D'M0%200L8%200%208%2012%204.09117821%209%200%2012z'%20fill%3D%22%23cccccc%22%2F%3E%3C%2Fsvg%3E%0A") no-repeat center;
 }
