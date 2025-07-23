@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 7.9.1 (2025-05-29)
+ * TinyMCE version 8.0.0 (TBD)
  */
 
 (function () {
@@ -292,7 +292,6 @@
     Optional.singletonNone = new Optional(false);
 
     const nativeIndexOf = Array.prototype.indexOf;
-    /* eslint-enable */
     const rawIndexOf = (ts, t) => nativeIndexOf.call(ts, t);
     const contains = (xs, x) => rawIndexOf(xs, x) > -1;
     const findUntil = (xs, pred, until) => {
@@ -395,6 +394,7 @@
         const stylesContainsAliasMap = map(listStyleTypeAliases, (alias) => contains(styles, alias));
         editor.ui.registry.addSplitButton(id, {
             tooltip,
+            chevronTooltip: `${tooltip} menu`,
             icon: nodeName === "OL" /* ListType.OrderedList */ ? 'ordered-list' : 'unordered-list',
             presets: 'listpreview',
             columns: nodeName === "OL" /* ListType.OrderedList */ ? 3 : 4,

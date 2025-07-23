@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 7.9.1 (2025-05-29)
+ * TinyMCE version 8.0.0 (TBD)
  */
 
 (function () {
@@ -139,6 +139,7 @@
         editor.ui.registry.addSplitButton('insertdatetime', {
             icon: 'insert-time',
             tooltip: 'Insert date/time',
+            chevronTooltip: 'Insert date/time menu',
             select: (value) => value === defaultFormat.get(),
             fetch: (done) => {
                 done(global.map(formats, (format) => ({ type: 'choiceitem', text: getDateTime(editor, format), value: format })));

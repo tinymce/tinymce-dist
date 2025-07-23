@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 7.9.1 (2025-05-29)
+ * TinyMCE version 8.0.0 (TBD)
  */
 
 (function () {
@@ -32,7 +32,8 @@
                 items: [
                     {
                         type: 'textarea',
-                        name: 'code'
+                        name: 'code',
+                        spellcheck: false,
                     }
                 ]
             },

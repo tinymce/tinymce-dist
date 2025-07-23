@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 7.9.1 (2025-05-29)
+ * TinyMCE version 8.0.0 (TBD)
  */
 
 (function () {
@@ -298,10 +298,8 @@
     // reuse the same object
     Optional.singletonNone = new Optional(false);
 
-    /* eslint-disable @typescript-eslint/unbound-method */
     const nativeSlice = Array.prototype.slice;
     const nativeIndexOf = Array.prototype.indexOf;
-    /* eslint-enable */
     const rawIndexOf = (ts, t) => nativeIndexOf.call(ts, t);
     const contains = (xs, x) => rawIndexOf(xs, x) > -1;
     const map = (xs, f) => {
@@ -352,7 +350,6 @@
     //
     // Use the native keys if it is available (IE9+), otherwise fall back to manually filtering
     const keys = Object.keys;
-    // eslint-disable-next-line @typescript-eslint/unbound-method
     const hasOwnProperty = Object.hasOwnProperty;
     const get$1 = (obj, key) => {
         return has(obj, key) ? Optional.from(obj[key]) : Optional.none();
@@ -620,6 +617,7 @@
         { key: 'powerpaste', name: 'PowerPaste', type: "premium" /* PluginType.Premium */, slug: 'introduction-to-powerpaste' },
         { key: 'revisionhistory', name: 'Revision History', type: "premium" /* PluginType.Premium */ },
         { key: 'tinymcespellchecker', name: 'Spell Checker', type: "premium" /* PluginType.Premium */, slug: 'introduction-to-tiny-spellchecker' },
+        { key: 'suggestededits', name: 'Suggested Edits', type: "premium" /* PluginType.Premium */ },
         { key: 'autocorrect', name: 'Spelling Autocorrect', type: "premium" /* PluginType.Premium */ },
         { key: 'tableofcontents', name: 'Table of Contents', type: "premium" /* PluginType.Premium */ },
         { key: 'advtemplate', name: 'Templates', type: "premium" /* PluginType.Premium */, slug: 'advanced-templates' },
@@ -667,7 +665,7 @@
         }, (x) => {
             // We know this plugin, so use our stored details.
             const name = x.type === "premium" /* PluginUrls.PluginType.Premium */ ? `${x.name}*` : x.name;
-            const html = makeLink({ name, url: `https://www.tiny.cloud/docs/tinymce/7/${x.slug}/` });
+            const html = makeLink({ name, url: `https://www.tiny.cloud/docs/tinymce/${tinymce.majorVersion}/${x.slug}/` });
             return { name, html };
         });
         const getPluginKeys = (editor) => {

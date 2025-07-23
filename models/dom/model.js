@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 7.9.1 (2025-05-29)
+ * TinyMCE version 8.0.0 (TBD)
  */
 
 (function () {
@@ -67,7 +67,6 @@
     const tripleEquals = (a, b) => {
         return a === b;
     };
-    // eslint-disable-next-line prefer-arrow/prefer-arrow-functions
     function curry(fn, ...initialArgs) {
         return (...restArgs) => {
             const all = initialArgs.concat(restArgs);
@@ -337,11 +336,9 @@
     // reuse the same object
     Optional.singletonNone = new Optional(false);
 
-    /* eslint-disable @typescript-eslint/unbound-method */
     const nativeSlice = Array.prototype.slice;
     const nativeIndexOf = Array.prototype.indexOf;
     const nativePush = Array.prototype.push;
-    /* eslint-enable */
     const rawIndexOf = (ts, t) => nativeIndexOf.call(ts, t);
     const contains$2 = (xs, x) => rawIndexOf(xs, x) > -1;
     const exists = (xs, pred) => {
@@ -503,7 +500,6 @@
     //
     // Use the native keys if it is available (IE9+), otherwise fall back to manually filtering
     const keys = Object.keys;
-    // eslint-disable-next-line @typescript-eslint/unbound-method
     const hasOwnProperty = Object.hasOwnProperty;
     const each$1 = (obj, f) => {
         const props = keys(obj);
@@ -1972,9 +1968,7 @@
 
     // some elements, such as mathml, don't have style attributes
     // others, such as angular elements, have style attributes that aren't a CSSStyleDeclaration
-    const isSupported = (dom) => 
-    // eslint-disable-next-line @typescript-eslint/unbound-method
-    dom.style !== undefined && isFunction(dom.style.getPropertyValue);
+    const isSupported = (dom) => dom.style !== undefined && isFunction(dom.style.getPropertyValue);
 
     // Node.contains() is very, very, very good performance
     // http://jsperf.com/closest-vs-contains/5
@@ -2185,10 +2179,7 @@
     const getOuter$1 = (element) => api$2.getOuter(element);
     const getRuntime$1 = getHeight$1;
 
-    const api$1 = Dimension('width', (element) => 
-    // IMO passing this function is better than using dom['offset' + 'width']
-    element.dom.offsetWidth);
-    Dimension('width', (element) => {
+    const api$1 = Dimension('width', (element) => {
         const dom = element.dom;
         return inBody(element) ? dom.getBoundingClientRect().width : dom.offsetWidth;
     });
@@ -3467,7 +3458,7 @@
     const getPercentageWidth = (cell) => getPercentSize(cell, get$7, getInner);
     const getPixelWidth$1 = (cell) => 
     // For col elements use the computed width as col elements aren't affected by borders, padding, etc...
-    isCol$2(cell) ? get$7(cell) : getRuntime(cell);
+    isCol$2(cell) ? Math.round(get$7(cell)) : getRuntime(cell);
     const getHeight = (cell) => {
         return isRow$2(cell) ? get$8(cell) : get$2(cell, 'rowspan', getTotalHeight);
     };
@@ -3519,7 +3510,7 @@
                 else {
                     // Invalid column so fallback to trying to get the computed width from the cell
                     const cell = bindFrom(columnCells[c], identity);
-                    return getDimension(cell, c, backups, colFilter, (cell) => fallback(Optional.some(get$7(cell))), fallback);
+                    return getDimension(cell, c, backups, colFilter, (cell) => fallback(Optional.some(Math.round(get$7(cell)))), fallback);
                 }
             }, fallback);
         });

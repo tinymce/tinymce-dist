@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 7.9.1 (2025-05-29)
+ * TinyMCE version 8.0.0 (TBD)
  */
 
 (function () {
@@ -313,7 +313,6 @@
     // reuse the same object
     Optional.singletonNone = new Optional(false);
 
-    /* eslint-disable @typescript-eslint/unbound-method */
     const nativeSlice = Array.prototype.slice;
     const nativePush = Array.prototype.push;
     const flatten = (xs) => {
@@ -349,7 +348,6 @@
     //
     // Use the native keys if it is available (IE9+), otherwise fall back to manually filtering
     const keys = Object.keys;
-    // eslint-disable-next-line @typescript-eslint/unbound-method
     const hasOwnProperty = Object.hasOwnProperty;
     const each = (obj, f) => {
         const props = keys(obj);
@@ -768,7 +766,18 @@
     const getBorderStyle = (image) => { var _a; return (_a = image.style.borderStyle) !== null && _a !== void 0 ? _a : ''; };
     const isFigure = (elm) => isNonNullable(elm) && elm.nodeName === 'FIGURE';
     const isImage = (elm) => elm.nodeName === 'IMG';
-    const getIsDecorative = (image) => DOM.getAttrib(image, 'alt').length === 0 && DOM.getAttrib(image, 'role') === 'presentation';
+    const getIsDecorative = (image) => {
+        const alt = DOM.getAttrib(image, 'alt');
+        const role = DOM.getAttrib(image, 'role');
+        // WCAG Technique H67: Using null alt text and no title attribute on img elements for images that AT should ignore
+        // Source: https://www.w3.org/TR/WCAG20-TECHS/H67.html
+        // Key point: Decorative images should have alt="" and either no title or empty title (title="")
+        // ARIA 1.2 Specification: Defines role="presentation" and role="none" as synonymous roles
+        // Source: https://www.w3.org/TR/wai-aria-1.2/
+        // Key point: These roles remove semantic meaning and prohibit aria-label and aria-labelledby
+        const hasAlt = image.hasAttribute('alt');
+        return (hasAlt && alt.length === 0) || (role === 'presentation') || (role === 'none');
+    };
     const getAlt = (image) => {
         if (getIsDecorative(image)) {
             return '';
@@ -930,7 +939,7 @@
         const elm = create((css) => normalizeCss$1(editor, css), data);
         editor.dom.setAttrib(elm, 'data-mce-id', '__mcenew');
         editor.focus();
-        editor.selection.setContent(elm.outerHTML);
+        editor.insertContent(elm.outerHTML);
         const insertedElm = editor.dom.select('*[data-mce-id="__mcenew"]')[0];
         editor.dom.setAttrib(insertedElm, 'data-mce-id', null);
         if (isFigure(insertedElm)) {
