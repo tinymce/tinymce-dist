@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.0.0 (TBD)
+ * TinyMCE version 8.0.1 (2025-07-28)
  */
 
 (function () {
@@ -716,7 +716,7 @@
     const tab = () => {
         const getVersion = (major, minor) => major.indexOf('@') === 0 ? 'X.X.X' : major + '.' + minor;
         const version = getVersion(global.majorVersion, global.minorVersion);
-        const changeLogLink = '<a data-alloy-tabstop="true" tabindex="-1" href="https://www.tiny.cloud/docs/tinymce/7/changelog/?utm_campaign=help_dialog_version_tab&utm_source=tiny&utm_medium=referral" rel="noopener" target="_blank">TinyMCE ' + version + '</a>';
+        const changeLogLink = '<a data-alloy-tabstop="true" tabindex="-1" href="https://www.tiny.cloud/docs/tinymce/8/changelog/?utm_campaign=help_dialog_version_tab&utm_source=tiny&utm_medium=referral" rel="noopener" target="_blank">TinyMCE ' + version + '</a>';
         const htmlPanel = {
             type: 'htmlpanel',
             html: '<p>' + global$2.translate(['You are using {0}', changeLogLink]) + '</p>',
