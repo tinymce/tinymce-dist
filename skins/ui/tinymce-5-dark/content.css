@@ -712,6 +712,26 @@ iframe.tox-suggestededits__annotation--removed__selected {
   outline: 0.125em solid #006ce7;
   padding: 0em;
 }
+div.tox-suggestededits__annotation:has(> hr) {
+  padding: 0.25em;
+}
+div.tox-suggestededits__annotation--removed__highlight > hr {
+  border-color: #861313;
+}
+div.tox-suggestededits__annotation--added__highlight > hr {
+  border-color: #4f851a;
+}
+.mce-pagebreak.tox-suggestededits__annotation--added__selected,
+.mce-pagebreak.tox-suggestededits__annotation--removed__selected,
+.mce-pagebreak.tox-suggestededits__annotation--modified__selected {
+  border: 1px dashed #aaa;
+  box-shadow: none;
+}
+.mce-pagebreak.tox-suggestededits__annotation--added__highlight,
+.mce-pagebreak.tox-suggestededits__annotation--modified__highlight,
+.mce-pagebreak.tox-suggestededits__annotation--removed__highlight {
+  padding: 0;
+}
 .mce-toc {
   border: 1px solid gray;
 }

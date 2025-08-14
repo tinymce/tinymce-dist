@@ -4452,7 +4452,7 @@ body.tox-dialog__disable-scroll {
 .tox .tox-split-button__main {
   border-radius: 3px 0 0 3px;
   margin-right: 0;
-  width: auto;
+  width: 34px;
 }
 .tox .tox-split-button__main:focus {
   border: 0;
@@ -4480,13 +4480,11 @@ body.tox-dialog__disable-scroll {
 }
 .tox .tox-split-button__chevron {
   width: 16px;
-  border-left: 1px solid #e3e3e3;
   border-radius: 0 3px 3px 0;
   margin-left: 0;
 }
 .tox .tox-split-button__chevron:focus {
   border: 0;
-  border-left: 1px solid #e3e3e3;
   box-shadow: none;
   background: #dee0e2;
   color: #222f3e;
@@ -4509,9 +4507,6 @@ body.tox-dialog__disable-scroll {
     border: 2px solid highlight;
   }
 }
-.tox .tox-split-button__chevron:hover {
-  border-left: 1px solid #e3e3e3;
-}
 .tox .tox-split-button__chevron svg {
   fill: rgba(34, 47, 62, 0.5);
 }
@@ -4525,13 +4520,6 @@ body.tox-dialog__disable-scroll {
 }
 .tox.tox-platform-touch .tox-split-button__chevron {
   width: 20px;
-  border-left: 1px solid #e3e3e3;
-}
-.tox.tox-platform-touch .tox-split-button__chevron:hover {
-  border-left: 1px solid #e3e3e3;
-}
-.tox.tox-platform-touch .tox-split-button__chevron:focus {
-  border-left: 1px solid #e3e3e3;
 }
 .tox .tox-split-button__main.tox-tbtn--disabled,
 .tox .tox-split-button__chevron.tox-tbtn--disabled {
@@ -4550,15 +4538,6 @@ body.tox-dialog__disable-scroll {
   background: #fff;
   box-shadow: none;
   color: rgba(34, 47, 62, 0.5);
-}
-.tox .tox-split-button__chevron.tox-tbtn--disabled {
-  border-left: 1px solid #e3e3e3;
-}
-.tox .tox-split-button__chevron.tox-tbtn--disabled:hover {
-  border-left: 1px solid #e3e3e3;
-}
-.tox .tox-split-button__chevron.tox-tbtn--disabled:focus {
-  border-left: 1px solid #e3e3e3;
 }
 .tox .tox-split-button__main.tox-tbtn--disabled svg .tox-icon-text-color__color,
 .tox .tox-split-button__main.tox-tbtn--disabled svg .tox-icon-highlight-bg-color__color {
