@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.0.2 (2025-08-14)
+ * TinyMCE version 8.1.0 (2025-09-17)
  */
 
 (function () {
@@ -24886,8 +24886,7 @@
             inputClasses: ['tox-textfield'],
             sandboxClasses: ['tox-dialog__popups'],
             inputAttributes: {
-                'aria-errormessage': errorId,
-                'type': 'url'
+                type: 'url'
             },
             minChars: 0,
             responseTime: 0,
@@ -24922,10 +24921,12 @@
                             return FutureResult.nu((completer) => {
                                 handler({ type: spec.filetype, url: urlEntry.value }, (validation) => {
                                     if (validation.status === 'invalid') {
+                                        set$9(input.element, 'aria-errormessage', errorId);
                                         const err = Result.error(validation.message);
                                         completer(err);
                                     }
                                     else {
+                                        remove$8(input.element, 'aria-errormessage');
                                         const val = Result.value(validation.message);
                                         completer(val);
                                     }
