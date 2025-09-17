@@ -39,12 +39,15 @@ export interface Classes {
   "tox-anchorbar": string;
   "tox-bottom-anchorbar": string;
   "tox-bar": string;
+  "tox-button--enabled": string;
+  "tox-button--icon-and-text": string;
+  "tox-button--secondary": string;
   "tox-icon--success": string;
   "tox-icon--error": string;
-  "tox-button--stretch": string;
   "tox-context-form__group": string;
-  "tox-button--enabled": string;
-  "tox-button--secondary": string;
+  "tox-button-link": string;
+  "tox-button-link--sm": string;
+  "tox-button--stretch": string;
   "tox-button--secondary--outline": string;
   "tox-checkbox": string;
   "tox-checkbox__input": string;
