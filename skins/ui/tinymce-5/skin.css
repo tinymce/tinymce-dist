@@ -3569,7 +3569,7 @@ body.tox-dialog__disable-scroll {
 .tox .tox-sidebar--sliding-shrinking {
   transition: width 0.5s ease, opacity 0.5s ease;
 }
-.tox-sidebar-content {
+.tox .tox-sidebar-content {
   display: flex;
   flex-direction: column;
   position: relative;
@@ -3579,7 +3579,7 @@ body.tox-dialog__disable-scroll {
   width: 300px;
   border-left: 1px solid var(--tox-private-sidebar-border-color, #e3e3e3);
 }
-.tox-sidebar-content__header {
+.tox .tox-sidebar-content__header {
   align-items: center;
   display: flex;
   justify-content: space-between;
@@ -3588,10 +3588,10 @@ body.tox-dialog__disable-scroll {
   background: var(--tox-private-background-color, #fff);
   z-index: 1;
 }
-.tox-sidebar-content__header .tox-sidebar-content__header-close-button {
+.tox .tox-sidebar-content__header .tox-sidebar-content__header-close-button {
   margin-left: auto;
 }
-.tox-sidebar-content__title {
+.tox .tox-sidebar-content__title {
   font-size: var(--tox-private-font-size-lg, 20px);
   font-weight: var(--tox-private-font-weight-normal, normal);
   padding: var(--tox-private-pad-sm, 8px) 0 var(--tox-private-pad-sm, 8px) 0;
