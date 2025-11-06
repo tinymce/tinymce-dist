@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.2.0 (2025-10-23)
+ * TinyMCE version 8.2.1 (2025-11-06)
  */
 
 (function () {
@@ -620,6 +620,7 @@
         { key: 'suggestededits', name: 'Suggested Edits', type: "premium" /* PluginType.Premium */ },
         { key: 'autocorrect', name: 'Spelling Autocorrect', type: "premium" /* PluginType.Premium */ },
         { key: 'tableofcontents', name: 'Table of Contents', type: "premium" /* PluginType.Premium */ },
+        { key: 'fullpagehtml', name: 'Fullpage HTML', type: "premium" /* PluginType.Premium */ },
         { key: 'advtemplate', name: 'Templates', type: "premium" /* PluginType.Premium */, slug: 'advanced-templates' },
         { key: 'tinycomments', name: 'Tiny Comments', type: "premium" /* PluginType.Premium */, slug: 'introduction-to-tiny-comments' },
         { key: 'tinydrive', name: 'Tiny Drive', type: "premium" /* PluginType.Premium */, slug: 'tinydrive-introduction' },

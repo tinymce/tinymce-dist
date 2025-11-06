@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.2.0 (2025-10-23)
+ * TinyMCE version 8.2.1 (2025-11-06)
  */
 
 (function () {
@@ -32254,18 +32254,19 @@
         };
     };
     const getDimensions = (editor, deltas, resizeType, originalDimentions) => {
-        const dimensions = {
-            height: calcCappedSize(originalDimentions.height + deltas.top, getMinHeightOption(editor), getMaxHeightOption(editor)),
-            width: resizeType === ResizeTypes.Both
-                ? calcCappedSize(originalDimentions.width + deltas.left, getMinWidthOption(editor), getMaxWidthOption(editor))
-                : originalDimentions.width,
-        };
-        return dimensions;
+        const height = calcCappedSize(originalDimentions.height + deltas.top, getMinHeightOption(editor), getMaxHeightOption(editor));
+        if (resizeType === ResizeTypes.Both) {
+            return {
+                height,
+                width: calcCappedSize(originalDimentions.width + deltas.left, getMinWidthOption(editor), getMaxWidthOption(editor))
+            };
+        }
+        return { height };
     };
     const resize = (editor, deltas, resizeType) => {
         const container = SugarElement.fromDom(editor.getContainer());
-        const originalDimentions = getOriginalDimensions(editor);
-        const dimensions = getDimensions(editor, deltas, resizeType, originalDimentions);
+        const originalDimensions = getOriginalDimensions(editor);
+        const dimensions = getDimensions(editor, deltas, resizeType, originalDimensions);
         each(dimensions, (val, dim) => {
             if (isNumber(val)) {
                 set$7(container, dim, numToPx(val));
