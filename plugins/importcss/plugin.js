@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.3.2 (2026-01-14)
+ * TinyMCE version 7.9.2 (2026-02-11)
  */
 
 (function () {
@@ -9,12 +9,13 @@
 
     /* eslint-disable @typescript-eslint/no-wrapper-object-types */
     const hasProto = (v, constructor, predicate) => {
+        var _a;
         if (predicate(v, constructor.prototype)) {
             return true;
         }
         else {
             // String-based fallback time
-            return v.constructor?.name === constructor.name;
+            return ((_a = v.constructor) === null || _a === void 0 ? void 0 : _a.name) === constructor.name;
         }
     };
     const typeOf = (x) => {
@@ -39,6 +40,7 @@
     const isArray = isType('array');
     const isFunction = isSimpleType('function');
 
+    /* eslint-disable @typescript-eslint/unbound-method */
     const nativeSlice = Array.prototype.slice;
     const nativePush = Array.prototype.push;
     const map = (xs, f) => {
@@ -201,7 +203,7 @@
             try {
                 rules = styleSheet.cssRules || styleSheet.rules;
             }
-            catch {
+            catch (_a) {
                 // Firefox fails on rules to remote domain for example:
                 // @import url(//fonts.googleapis.com/css?family=Pathway+Gothic+One);
             }
@@ -229,7 +231,7 @@
                 append(styleSheet);
             });
         }
-        catch {
+        catch (_a) {
             // Ignore
         }
         return selectors;

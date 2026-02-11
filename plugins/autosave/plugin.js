@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.3.2 (2026-01-14)
+ * TinyMCE version 7.9.2 (2026-02-11)
  */
 
 (function () {
@@ -9,12 +9,13 @@
 
     /* eslint-disable @typescript-eslint/no-wrapper-object-types */
     const hasProto = (v, constructor, predicate) => {
+        var _a;
         if (predicate(v, constructor.prototype)) {
             return true;
         }
         else {
             // String-based fallback time
-            return v.constructor?.name === constructor.name;
+            return ((_a = v.constructor) === null || _a === void 0 ? void 0 : _a.name) === constructor.name;
         }
     };
     const typeOf = (x) => {
@@ -117,7 +118,8 @@
         }
     };
     const hasDraft = (editor) => {
-        const time = parseInt(global$2.getItem(getAutoSavePrefix(editor) + 'time') ?? '0', 10) || 0;
+        var _a;
+        const time = parseInt((_a = global$2.getItem(getAutoSavePrefix(editor) + 'time')) !== null && _a !== void 0 ? _a : '0', 10) || 0;
         if (new Date().getTime() - time > getAutoSaveRetention(editor)) {
             removeDraft(editor, false);
             return false;
@@ -141,9 +143,10 @@
         }
     };
     const restoreDraft = (editor) => {
+        var _a;
         const prefix = getAutoSavePrefix(editor);
         if (hasDraft(editor)) {
-            editor.setContent(global$2.getItem(prefix + 'draft') ?? '', { format: 'raw' });
+            editor.setContent((_a = global$2.getItem(prefix + 'draft')) !== null && _a !== void 0 ? _a : '', { format: 'raw' });
             fireRestoreDraft(editor);
         }
     };

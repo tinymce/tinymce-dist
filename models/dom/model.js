@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.3.2 (2026-01-14)
+ * TinyMCE version 7.9.2 (2026-02-11)
  */
 
 (function () {
@@ -9,12 +9,13 @@
 
     /* eslint-disable @typescript-eslint/no-wrapper-object-types */
     const hasProto = (v, constructor, predicate) => {
+        var _a;
         if (predicate(v, constructor.prototype)) {
             return true;
         }
         else {
             // String-based fallback time
-            return v.constructor?.name === constructor.name;
+            return ((_a = v.constructor) === null || _a === void 0 ? void 0 : _a.name) === constructor.name;
         }
     };
     const typeOf = (x) => {
@@ -66,6 +67,7 @@
     const tripleEquals = (a, b) => {
         return a === b;
     };
+    // eslint-disable-next-line prefer-arrow/prefer-arrow-functions
     function curry(fn, ...initialArgs) {
         return (...restArgs) => {
             const all = initialArgs.concat(restArgs);
@@ -100,11 +102,6 @@
      * strict-null-checks
      */
     class Optional {
-        tag;
-        value;
-        // Sneaky optimisation: every instance of Optional.none is identical, so just
-        // reuse the same object
-        static singletonNone = new Optional(false);
         // The internal representation has a `tag` and a `value`, but both are
         // private: able to be console.logged, but not able to be accessed by code
         constructor(tag, value) {
@@ -272,7 +269,7 @@
          */
         getOrDie(message) {
             if (!this.tag) {
-                throw new Error(message ?? 'Called getOrDie on None');
+                throw new Error(message !== null && message !== void 0 ? message : 'Called getOrDie on None');
             }
             else {
                 return this.value;
@@ -336,10 +333,15 @@
             return this.tag ? `some(${this.value})` : 'none()';
         }
     }
+    // Sneaky optimisation: every instance of Optional.none is identical, so just
+    // reuse the same object
+    Optional.singletonNone = new Optional(false);
 
+    /* eslint-disable @typescript-eslint/unbound-method */
     const nativeSlice = Array.prototype.slice;
     const nativeIndexOf = Array.prototype.indexOf;
     const nativePush = Array.prototype.push;
+    /* eslint-enable */
     const rawIndexOf = (ts, t) => nativeIndexOf.call(ts, t);
     const contains$2 = (xs, x) => rawIndexOf(xs, x) > -1;
     const exists = (xs, pred) => {
@@ -501,6 +503,7 @@
     //
     // Use the native keys if it is available (IE9+), otherwise fall back to manually filtering
     const keys = Object.keys;
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     const hasOwnProperty = Object.hasOwnProperty;
     const each$1 = (obj, f) => {
         const props = keys(obj);
@@ -1351,7 +1354,7 @@
     const detectBrowser$1 = (browsers, userAgentData) => {
         return findMap(userAgentData.brands, (uaBrand) => {
             const lcBrand = uaBrand.brand.toLowerCase();
-            return find$1(browsers, (browser) => lcBrand === browser.brand?.toLowerCase())
+            return find$1(browsers, (browser) => { var _a; return lcBrand === ((_a = browser.brand) === null || _a === void 0 ? void 0 : _a.toLowerCase()); })
                 .map((info) => ({
                 current: info.name,
                 version: Version.nu(parseInt(uaBrand.version, 10), 0)
@@ -1969,7 +1972,9 @@
 
     // some elements, such as mathml, don't have style attributes
     // others, such as angular elements, have style attributes that aren't a CSSStyleDeclaration
-    const isSupported = (dom) => dom.style !== undefined && isFunction(dom.style.getPropertyValue);
+    const isSupported = (dom) => 
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    dom.style !== undefined && isFunction(dom.style.getPropertyValue);
 
     // Node.contains() is very, very, very good performance
     // http://jsperf.com/closest-vs-contains/5
@@ -2180,7 +2185,10 @@
     const getOuter$1 = (element) => api$2.getOuter(element);
     const getRuntime$1 = getHeight$1;
 
-    const api$1 = Dimension('width', (element) => {
+    const api$1 = Dimension('width', (element) => 
+    // IMO passing this function is better than using dom['offset' + 'width']
+    element.dom.offsetWidth);
+    Dimension('width', (element) => {
         const dom = element.dom;
         return inBody(element) ? dom.getBoundingClientRect().width : dom.offsetWidth;
     });
@@ -2221,8 +2229,8 @@
         if (body === element.dom) {
             return SugarPosition(body.offsetLeft, body.offsetTop);
         }
-        const scrollTop = firstDefinedOrZero(win?.pageYOffset, html.scrollTop);
-        const scrollLeft = firstDefinedOrZero(win?.pageXOffset, html.scrollLeft);
+        const scrollTop = firstDefinedOrZero(win === null || win === void 0 ? void 0 : win.pageYOffset, html.scrollTop);
+        const scrollLeft = firstDefinedOrZero(win === null || win === void 0 ? void 0 : win.pageXOffset, html.scrollLeft);
         const clientTop = firstDefinedOrZero(html.clientTop, body.clientTop);
         const clientLeft = firstDefinedOrZero(html.clientLeft, body.clientLeft);
         return viewport(element).translate(scrollLeft - clientLeft, scrollTop - clientTop);
@@ -2576,18 +2584,21 @@
         range
     };
 
-    const caretPositionFromPoint = (doc, x, y) => Optional.from(doc.caretPositionFromPoint?.(x, y))
-        .bind((pos) => {
-        // It turns out that Firefox can return null for pos.offsetNode
-        if (pos.offsetNode === null) {
-            return Optional.none();
-        }
-        const r = doc.createRange();
-        r.setStart(pos.offsetNode, pos.offset);
-        r.collapse();
-        return Optional.some(r);
-    });
-    const caretRangeFromPoint = (doc, x, y) => Optional.from(doc.caretRangeFromPoint?.(x, y));
+    const caretPositionFromPoint = (doc, x, y) => {
+        var _a;
+        return Optional.from((_a = doc.caretPositionFromPoint) === null || _a === void 0 ? void 0 : _a.call(doc, x, y))
+            .bind((pos) => {
+            // It turns out that Firefox can return null for pos.offsetNode
+            if (pos.offsetNode === null) {
+                return Optional.none();
+            }
+            const r = doc.createRange();
+            r.setStart(pos.offsetNode, pos.offset);
+            r.collapse();
+            return Optional.some(r);
+        });
+    };
+    const caretRangeFromPoint = (doc, x, y) => { var _a; return Optional.from((_a = doc.caretRangeFromPoint) === null || _a === void 0 ? void 0 : _a.call(doc, x, y)); };
     const availableSearch = (doc, x, y) => {
         if (doc.caretPositionFromPoint) {
             return caretPositionFromPoint(doc, x, y); // defined standard, firefox only
@@ -2661,7 +2672,7 @@
                     try {
                         setLegacyRtlRange(win, selection, start, soffset, finish, foffset);
                     }
-                    catch {
+                    catch (_a) {
                         // If it does fail, try again with ltr.
                         doSetRange(win, finish, foffset, start, soffset);
                     }
@@ -3456,7 +3467,7 @@
     const getPercentageWidth = (cell) => getPercentSize(cell, get$7, getInner);
     const getPixelWidth$1 = (cell) => 
     // For col elements use the computed width as col elements aren't affected by borders, padding, etc...
-    isCol$2(cell) ? Math.round(get$7(cell)) : getRuntime(cell);
+    isCol$2(cell) ? get$7(cell) : getRuntime(cell);
     const getHeight = (cell) => {
         return isRow$2(cell) ? get$8(cell) : get$2(cell, 'rowspan', getTotalHeight);
     };
@@ -3508,7 +3519,7 @@
                 else {
                     // Invalid column so fallback to trying to get the computed width from the cell
                     const cell = bindFrom(columnCells[c], identity);
-                    return getDimension(cell, c, backups, colFilter, (cell) => fallback(Optional.some(Math.round(get$7(cell)))), fallback);
+                    return getDimension(cell, c, backups, colFilter, (cell) => fallback(Optional.some(get$7(cell))), fallback);
                 }
             }, fallback);
         });
@@ -3866,7 +3877,7 @@
     };
     const run = (operation, extract, adjustment, postAction, genWrappers, table, target, generators, behaviours) => {
         const warehouse = Warehouse.fromTable(table);
-        const tableSection = Optional.from(behaviours?.section).getOrThunk(TableSection.fallback);
+        const tableSection = Optional.from(behaviours === null || behaviours === void 0 ? void 0 : behaviours.section).getOrThunk(TableSection.fallback);
         const output = extract(warehouse, target).map((info) => {
             const model = fromWarehouse(warehouse, generators);
             const result = operation(model, info, eq$1, genWrappers(generators), tableSection);
@@ -3881,8 +3892,8 @@
         });
         return output.bind((out) => {
             const newElements = render$1(table, out.grid);
-            const tableSizing = Optional.from(behaviours?.sizing).getOrThunk(() => TableSize.getTableSize(table));
-            const resizing = Optional.from(behaviours?.resize).getOrThunk(preserveTable);
+            const tableSizing = Optional.from(behaviours === null || behaviours === void 0 ? void 0 : behaviours.sizing).getOrThunk(() => TableSize.getTableSize(table));
+            const resizing = Optional.from(behaviours === null || behaviours === void 0 ? void 0 : behaviours.resize).getOrThunk(preserveTable);
             adjustment(table, out.grid, out.info, { sizing: tableSizing, resize: resizing, section: tableSection });
             postAction(table);
             // Update locked cols attribute
@@ -5821,8 +5832,9 @@
         return someIf(isEditable(elem), elem);
     }));
     const elementFromGrid = (grid, row, column) => {
+        var _a, _b;
         const rows = extractGridDetails(grid).rows;
-        return Optional.from(rows[row]?.cells[column]?.element)
+        return Optional.from((_b = (_a = rows[row]) === null || _a === void 0 ? void 0 : _a.cells[column]) === null || _b === void 0 ? void 0 : _b.element)
             .filter(isEditable)
             // Fallback to the first valid position in the table
             .orThunk(() => findEditableCursorPosition(rows));
@@ -6428,7 +6440,6 @@
         };
         const div = SugarElement.fromTag('div');
         set$2(div, 'role', 'presentation');
-        set$2(div, 'data-mce-bogus', 'all');
         setAll(div, {
             position: 'fixed',
             left: '0px',
@@ -6492,7 +6503,8 @@
     });
 
     const transform = (mutation, settings = {}) => {
-        const mode = settings.mode ?? MouseDrag;
+        var _a;
+        const mode = (_a = settings.mode) !== null && _a !== void 0 ? _a : MouseDrag;
         return setup(mutation, mode, settings);
     };
 
@@ -6809,9 +6821,10 @@
     // Note: This is also contained in the table plugin Options.ts file
     const defaultWidth = '100%';
     const getPixelForcedWidth = (editor) => {
+        var _a;
         // Determine the inner size of the parent block element where the table will be inserted
         const dom = editor.dom;
-        const parentBlock = dom.getParent(editor.selection.getStart(), dom.isBlock) ?? editor.getBody();
+        const parentBlock = (_a = dom.getParent(editor.selection.getStart(), dom.isBlock)) !== null && _a !== void 0 ? _a : editor.getBody();
         return getInner(SugarElement.fromDom(parentBlock)) + 'px';
     };
     // Note: This is also contained in the table plugin Options.ts file
@@ -8380,7 +8393,8 @@
         global.write([fakeClipboardItem]);
     };
     const getData = (type) => {
-        const items = global.read() ?? [];
+        var _a;
+        const items = (_a = global.read()) !== null && _a !== void 0 ? _a : [];
         return findMap(items, (item) => Optional.from(item.getType(type)));
     };
     const clearData = (type) => {

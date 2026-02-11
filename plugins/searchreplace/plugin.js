@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.3.2 (2026-01-14)
+ * TinyMCE version 7.9.2 (2026-02-11)
  */
 
 (function () {
@@ -7,12 +7,13 @@
 
     /* eslint-disable @typescript-eslint/no-wrapper-object-types */
     const hasProto = (v, constructor, predicate) => {
+        var _a;
         if (predicate(v, constructor.prototype)) {
             return true;
         }
         else {
             // String-based fallback time
-            return v.constructor?.name === constructor.name;
+            return ((_a = v.constructor) === null || _a === void 0 ? void 0 : _a.name) === constructor.name;
         }
     };
     const typeOf = (x) => {
@@ -63,11 +64,6 @@
      * strict-null-checks
      */
     class Optional {
-        tag;
-        value;
-        // Sneaky optimisation: every instance of Optional.none is identical, so just
-        // reuse the same object
-        static singletonNone = new Optional(false);
         // The internal representation has a `tag` and a `value`, but both are
         // private: able to be console.logged, but not able to be accessed by code
         constructor(tag, value) {
@@ -235,7 +231,7 @@
          */
         getOrDie(message) {
             if (!this.tag) {
-                throw new Error(message ?? 'Called getOrDie on None');
+                throw new Error(message !== null && message !== void 0 ? message : 'Called getOrDie on None');
             }
             else {
                 return this.value;
@@ -299,7 +295,11 @@
             return this.tag ? `some(${this.value})` : 'none()';
         }
     }
+    // Sneaky optimisation: every instance of Optional.none is identical, so just
+    // reuse the same object
+    Optional.singletonNone = new Optional(false);
 
+    /* eslint-disable @typescript-eslint/unbound-method */
     const nativeSlice = Array.prototype.slice;
     const nativePush = Array.prototype.push;
     const map = (xs, f) => {
@@ -391,6 +391,7 @@
         return copy;
     };
 
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     const hasOwnProperty = Object.hasOwnProperty;
     const has = (obj, key) => hasOwnProperty.call(obj, key);
 
@@ -657,11 +658,12 @@
         }
     };
     const collectTextToBoundary = (dom, section, node, rootNode, forwards) => {
+        var _a;
         // Don't bother collecting text nodes if we're already at a boundary
         if (isBoundary(dom, node)) {
             return;
         }
-        const rootBlock = dom.getParent(rootNode, dom.isBlock) ?? dom.getRoot();
+        const rootBlock = (_a = dom.getParent(rootNode, dom.isBlock)) !== null && _a !== void 0 ? _a : dom.getRoot();
         const walker = new global(node, rootBlock);
         const walkerFn = forwards ? walker.next.bind(walker) : walker.prev.bind(walker);
         // Walk over and add text nodes to the section and increase the offsets
@@ -869,11 +871,12 @@
         }
     };
     const unwrap = (node) => {
+        var _a;
         const parentNode = node.parentNode;
         if (node.firstChild) {
             parentNode.insertBefore(node.firstChild, node);
         }
-        node.parentNode?.removeChild(node);
+        (_a = node.parentNode) === null || _a === void 0 ? void 0 : _a.removeChild(node);
     };
     const findSpansByIndex = (editor, index) => {
         const spans = [];

@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.3.2 (2026-01-14)
+ * TinyMCE version 7.9.2 (2026-02-11)
  */
 
 (function () {
@@ -99,10 +99,10 @@
 
     const register$1 = (editor) => {
         editor.addCommand('mceInsertDate', (_ui, value) => {
-            insertDateTime(editor, value ?? getDateFormat(editor));
+            insertDateTime(editor, value !== null && value !== void 0 ? value : getDateFormat(editor));
         });
         editor.addCommand('mceInsertTime', (_ui, value) => {
-            insertDateTime(editor, value ?? getTimeFormat(editor));
+            insertDateTime(editor, value !== null && value !== void 0 ? value : getTimeFormat(editor));
         });
     };
 
@@ -139,7 +139,6 @@
         editor.ui.registry.addSplitButton('insertdatetime', {
             icon: 'insert-time',
             tooltip: 'Insert date/time',
-            chevronTooltip: 'Insert date/time menu',
             select: (value) => value === defaultFormat.get(),
             fetch: (done) => {
                 done(global.map(formats, (format) => ({ type: 'choiceitem', text: getDateTime(editor, format), value: format })));
