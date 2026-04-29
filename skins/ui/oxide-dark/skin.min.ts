@@ -385,9 +385,6 @@ export interface Classes {
   "tox-ai-model-selection-button": string;
   "tox-ai__footer-note": string;
   "tox-ai__models-menu": string;
-  "tox-ai__models-menu__item": string;
-  "tox-ai__models-menu__item__checkmark": string;
-  "tox-ai__models-menu__item--selected": string;
   "tox-ai__models-menu__item__description": string;
   "tox-ai__models-menu__item__description__title": string;
   "tox-ai__models-menu__item__description__content": string;
@@ -457,6 +454,9 @@ export interface Classes {
   "tox-ai__review-sidebar-container": string;
   "tox-ai__review-initializing": string;
   "tox-ai__review-description": string;
+  "tox-ai__review-choose-container": string;
+  "tox-ai__review-custom-input": string;
+  "tox-ai__review-custom-actions": string;
   "tox-ai__review-input-container": string;
   "tox-ai__review-input-button": string;
   "tox-ai__review-dropdown-content": string;

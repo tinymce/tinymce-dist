@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.4.0 (2026-03-31)
+ * TinyMCE version 8.5.0 (2026-04-29)
  */
 
 (function () {
@@ -13285,6 +13285,7 @@
         defaulted('useTabstopAt', always),
         defaulted('firstTabstop', 0),
         defaulted('eventOrder', {}),
+        defaultedStringEnum('role', 'dialog', ['dialog', 'alertdialog']),
         field('modalBehaviours', [Keying]),
         onKeyboardHandler('onExecute'),
         onStrictKeyboardHandler('onEscape')
@@ -13419,7 +13420,7 @@
             eventOrder,
             domModification: {
                 attributes: {
-                    'role': 'dialog',
+                    'role': detail.role,
                     'aria-modal': 'true'
                 }
             },
@@ -13440,11 +13441,13 @@
                         // TINY-10808 - Workaround to address the dialog header not being announced on VoiceOver with aria-labelledby, ideally we should use the aria-labelledby
                         const titleElm = getPartOrDie(c, detail, 'title').element;
                         const title = get$6(titleElm);
-                        if (browser.os.isMacOS() && isNonNullable(title)) {
-                            set$9(c.element, 'aria-label', title);
-                        }
-                        else {
-                            labelledBy(c.element, titleElm);
+                        if (isNonNullable(title) && title !== '') {
+                            if (browser.os.isMacOS()) {
+                                set$9(c.element, 'aria-label', title);
+                            }
+                            else {
+                                labelledBy(c.element, titleElm);
+                            }
                         }
                     })
                 ])
@@ -33490,6 +33493,7 @@
         const blockerBackdropClass = blockerClass + '__backdrop';
         const scrollLockClass = dialogClass + '__disable-scroll';
         return ModalDialog.sketch({
+            role: spec.role,
             lazySink: spec.lazySink,
             onEscape: (comp) => {
                 spec.onEscape(comp);
@@ -34378,6 +34382,7 @@
             const titleSpec = pUntitled();
             const closeSpec = pClose(closeDialog, sharedBackstage.providers);
             const alertDialog = build$1(renderDialog$1({
+                role: 'alertdialog',
                 lazySink: () => sharedBackstage.getSink(),
                 header: hiddenHeader(titleSpec, closeSpec),
                 body: pBodyMessage(message, sharedBackstage.providers),
@@ -34389,7 +34394,11 @@
                 extraBehaviours: [],
                 extraStyles: {},
                 dialogEvents: [
-                    run$1(formCancelEvent, closeDialog)
+                    run$1(formCancelEvent, closeDialog),
+                    runOnAttached((c) => {
+                        const bodyElm = ModalDialog.getBody(c);
+                        describedBy(c.element, bodyElm.element);
+                    }),
                 ],
                 eventOrder: {}
             }));
@@ -34433,6 +34442,7 @@
             const titleSpec = pUntitled();
             const closeSpec = pClose(() => closeDialog(false), sharedBackstage.providers);
             const confirmDialog = build$1(renderDialog$1({
+                role: 'alertdialog',
                 lazySink: () => sharedBackstage.getSink(),
                 header: hiddenHeader(titleSpec, closeSpec),
                 body: pBodyMessage(message, sharedBackstage.providers),
@@ -34446,7 +34456,11 @@
                 extraStyles: {},
                 dialogEvents: [
                     run$1(formCancelEvent, () => closeDialog(false)),
-                    run$1(formSubmitEvent, () => closeDialog(true))
+                    run$1(formSubmitEvent, () => closeDialog(true)),
+                    runOnAttached((c) => {
+                        const bodyElm = ModalDialog.getBody(c);
+                        describedBy(c.element, bodyElm.element);
+                    }),
                 ],
                 eventOrder: {}
             }));
