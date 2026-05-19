@@ -1,51 +1,22 @@
 /**
- * TinyMCE version 8.5.0 (2026-04-29)
+ * TinyMCE version 7.9.3 (2026-05-19)
  */
 
 (function () {
     'use strict';
 
+    var global$1 = tinymce.util.Tools.resolve('tinymce.PluginManager');
+
     /* eslint-disable @typescript-eslint/no-wrapper-object-types */
-    const hasProto = (v, constructor, predicate) => {
-        if (predicate(v, constructor.prototype)) {
-            return true;
-        }
-        else {
-            // String-based fallback time
-            return v.constructor?.name === constructor.name;
-        }
-    };
-    const typeOf = (x) => {
-        const t = typeof x;
-        if (x === null) {
-            return 'null';
-        }
-        else if (t === 'object' && Array.isArray(x)) {
-            return 'array';
-        }
-        else if (t === 'object' && hasProto(x, String, (o, proto) => proto.isPrototypeOf(o))) {
-            return 'string';
-        }
-        else {
-            return t;
-        }
-    };
-    const isType = (type) => (value) => typeOf(value) === type;
-    const isSimpleType = (type) => (value) => typeof value === type;
     const eq = (t) => (a) => t === a;
-    const isString = isType('string');
     const isUndefined = eq(undefined);
     const isNullable = (a) => a === null || a === undefined;
     const isNonNullable = (a) => !isNullable(a);
-    const isFunction = isSimpleType('function');
 
     const constant = (value) => {
         return () => {
             return value;
         };
-    };
-    const identity = (x) => {
-        return x;
     };
     const never = constant(false);
 
@@ -65,11 +36,6 @@
      * strict-null-checks
      */
     class Optional {
-        tag;
-        value;
-        // Sneaky optimisation: every instance of Optional.none is identical, so just
-        // reuse the same object
-        static singletonNone = new Optional(false);
         // The internal representation has a `tag` and a `value`, but both are
         // private: able to be console.logged, but not able to be accessed by code
         constructor(tag, value) {
@@ -237,7 +203,7 @@
          */
         getOrDie(message) {
             if (!this.tag) {
-                throw new Error(message ?? 'Called getOrDie on None');
+                throw new Error(message !== null && message !== void 0 ? message : 'Called getOrDie on None');
             }
             else {
                 return this.value;
@@ -301,31 +267,10 @@
             return this.tag ? `some(${this.value})` : 'none()';
         }
     }
+    // Sneaky optimisation: every instance of Optional.none is identical, so just
+    // reuse the same object
+    Optional.singletonNone = new Optional(false);
 
-    const nativeSlice = Array.prototype.slice;
-    const nativeIndexOf = Array.prototype.indexOf;
-    const rawIndexOf = (ts, t) => nativeIndexOf.call(ts, t);
-    const contains$1 = (xs, x) => rawIndexOf(xs, x) > -1;
-    const exists = (xs, pred) => {
-        for (let i = 0, len = xs.length; i < len; i++) {
-            const x = xs[i];
-            if (pred(x, i)) {
-                return true;
-            }
-        }
-        return false;
-    };
-    const map = (xs, f) => {
-        // pre-allocating array size when it's guaranteed to be known
-        // http://jsperf.com/push-allocated-vs-dynamic/22
-        const len = xs.length;
-        const r = new Array(len);
-        for (let i = 0; i < len; i++) {
-            const x = xs[i];
-            r[i] = f(x, i);
-        }
-        return r;
-    };
     const findUntil = (xs, pred, until) => {
         for (let i = 0, len = xs.length; i < len; i++) {
             const x = xs[i];
@@ -341,7 +286,6 @@
     const find$1 = (xs, pred) => {
         return findUntil(xs, pred, never);
     };
-    isFunction(Array.from) ? Array.from : (x) => nativeSlice.call(x);
     const findMap = (arr, f) => {
         for (let i = 0; i < arr.length; i++) {
             const r = f(arr[i], i);
@@ -350,43 +294,6 @@
             }
         }
         return Optional.none();
-    };
-    const unique = (xs, comparator) => {
-        const r = [];
-        const isDuplicated = isFunction(comparator) ?
-            (x) => exists(r, (i) => comparator(i, x)) :
-            (x) => contains$1(r, x);
-        for (let i = 0, len = xs.length; i < len; i++) {
-            const x = xs[i];
-            if (!isDuplicated(x)) {
-                r.push(x);
-            }
-        }
-        return r;
-    };
-
-    // There are many variations of Object iteration that are faster than the 'for-in' style:
-    // http://jsperf.com/object-keys-iteration/107
-    //
-    // Use the native keys if it is available (IE9+), otherwise fall back to manually filtering
-    const keys = Object.keys;
-    const each = (obj, f) => {
-        const props = keys(obj);
-        for (let k = 0, len = props.length; k < len; k++) {
-            const i = props[k];
-            const x = obj[i];
-            f(x, i);
-        }
-    };
-    const mapToArray = (obj, f) => {
-        const r = [];
-        each(obj, (value, name) => {
-            r.push(f(value, name));
-        });
-        return r;
-    };
-    const values = (obj) => {
-        return mapToArray(obj, identity);
     };
 
     const contains = (str, substr, start = 0, end) => {
@@ -410,8 +317,6 @@
             return r;
         };
     };
-
-    var global$2 = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
     const DeviceType = (os, browser, userAgent, mediaMatch) => {
         const isiPad = os.isiOS() && /ipad/i.test(userAgent) === true;
@@ -476,7 +381,7 @@
     const detectBrowser$1 = (browsers, userAgentData) => {
         return findMap(userAgentData.brands, (uaBrand) => {
             const lcBrand = uaBrand.brand.toLowerCase();
-            return find$1(browsers, (browser) => lcBrand === browser.brand?.toLowerCase())
+            return find$1(browsers, (browser) => { var _a; return lcBrand === ((_a = browser.brand) === null || _a === void 0 ? void 0 : _a.toLowerCase()); })
                 .map((info) => ({
                 current: info.name,
                 version: Version.nu(parseInt(uaBrand.version, 10), 0)
@@ -750,8 +655,6 @@
         return `<script>(${fn.toString()})(${isMacOSOrIOS})</script>`;
     };
 
-    var global$1 = tinymce.util.Tools.resolve('tinymce.dom.ScriptLoader');
-
     var global = tinymce.util.Tools.resolve('tinymce.util.Tools');
 
     const option = (name) => (editor) => editor.options.get(name);
@@ -760,31 +663,19 @@
     const getBodyClass = option('body_class');
     const getBodyId = option('body_id');
 
-    const getComponentScriptsHtml = (editor) => {
-        const urls = unique(values(editor.schema.getComponentUrls()));
-        return map(urls, (url) => {
-            const attrs = mapToArray(global$1.ScriptLoader.getScriptAttributes(url), (v, k) => ` ${editor.dom.encode(k)}="${editor.dom.encode(v)}"`);
-            return `<script src="${editor.dom.encode(url)}"${attrs.join('')}></script>`;
-        }).join('');
-    };
-    const getPreviewHtml = (editor, contentCssResources) => {
+    const getPreviewHtml = (editor) => {
+        var _a;
         let headHtml = '';
         const encode = editor.dom.encode;
-        const contentStyle = getContentStyle(editor) ?? '';
+        const contentStyle = (_a = getContentStyle(editor)) !== null && _a !== void 0 ? _a : '';
         headHtml += `<base href="${encode(editor.documentBaseURI.getURI())}">`;
         const cors = shouldUseContentCssCors(editor) ? ' crossorigin="anonymous"' : '';
-        global.each(contentCssResources, (resource) => {
-            if (resource.type === 'bundled') {
-                headHtml += '<style type="text/css">' + resource.content + '</style>';
-            }
-            else {
-                headHtml += '<link type="text/css" rel="stylesheet" href="' + encode(resource.url) + '"' + cors + '>';
-            }
+        global.each(editor.contentCSS, (url) => {
+            headHtml += '<link type="text/css" rel="stylesheet" href="' + encode(editor.documentBaseURI.toAbsolute(url)) + '"' + cors + '>';
         });
         if (contentStyle) {
             headHtml += '<style type="text/css">' + contentStyle + '</style>';
         }
-        headHtml += getComponentScriptsHtml(editor);
         const bodyId = getBodyId(editor);
         const bodyClass = getBodyClass(editor);
         const directionality = editor.getBody().dir;
@@ -802,8 +693,8 @@
         return previewHtml;
     };
 
-    const open = (editor, contentCssResources) => {
-        const content = getPreviewHtml(editor, contentCssResources);
+    const open = (editor) => {
+        const content = getPreviewHtml(editor);
         const dataApi = editor.windowManager.open({
             title: 'Preview',
             size: 'large',
@@ -835,9 +726,9 @@
         dataApi.focus('close');
     };
 
-    const register$1 = (editor, getContentCssResources) => {
+    const register$1 = (editor) => {
         editor.addCommand('mcePreview', () => {
-            open(editor, getContentCssResources());
+            open(editor);
         });
     };
 
@@ -858,12 +749,8 @@
     };
 
     var Plugin = () => {
-        global$2.add('preview', (editor) => {
-            const getContentCssResources = () => map(editor.contentCSS, (key) => Optional.from(tinymce.Resource.get(key))
-                .filter(isString)
-                .map((content) => ({ type: 'bundled', content }))
-                .getOr({ type: 'link', url: editor.documentBaseURI.toAbsolute(key) }));
-            register$1(editor, getContentCssResources);
+        global$1.add('preview', (editor) => {
+            register$1(editor);
             register(editor);
         });
     };

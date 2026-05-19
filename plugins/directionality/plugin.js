@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.5.0 (2026-04-29)
+ * TinyMCE version 7.9.3 (2026-05-19)
  */
 
 (function () {
@@ -9,12 +9,13 @@
 
     /* eslint-disable @typescript-eslint/no-wrapper-object-types */
     const hasProto = (v, constructor, predicate) => {
+        var _a;
         if (predicate(v, constructor.prototype)) {
             return true;
         }
         else {
             // String-based fallback time
-            return v.constructor?.name === constructor.name;
+            return ((_a = v.constructor) === null || _a === void 0 ? void 0 : _a.name) === constructor.name;
         }
     };
     const typeOf = (x) => {
@@ -48,9 +49,6 @@
             return value;
         };
     };
-    const tripleEquals = (a, b) => {
-        return a === b;
-    };
     const never = constant(false);
 
     /**
@@ -69,11 +67,6 @@
      * strict-null-checks
      */
     class Optional {
-        tag;
-        value;
-        // Sneaky optimisation: every instance of Optional.none is identical, so just
-        // reuse the same object
-        static singletonNone = new Optional(false);
         // The internal representation has a `tag` and a `value`, but both are
         // private: able to be console.logged, but not able to be accessed by code
         constructor(tag, value) {
@@ -241,7 +234,7 @@
          */
         getOrDie(message) {
             if (!this.tag) {
-                throw new Error(message ?? 'Called getOrDie on None');
+                throw new Error(message !== null && message !== void 0 ? message : 'Called getOrDie on None');
             }
             else {
                 return this.value;
@@ -305,7 +298,11 @@
             return this.tag ? `some(${this.value})` : 'none()';
         }
     }
+    // Sneaky optimisation: every instance of Optional.none is identical, so just
+    // reuse the same object
+    Optional.singletonNone = new Optional(false);
 
+    /* eslint-disable @typescript-eslint/unbound-method */
     const nativeSlice = Array.prototype.slice;
     const map = (xs, f) => {
         // pre-allocating array size when it's guaranteed to be known
@@ -338,16 +335,6 @@
         return r;
     };
     isFunction(Array.from) ? Array.from : (x) => nativeSlice.call(x);
-
-    /**
-     * **Is** the value stored inside this Optional object equal to `rhs`?
-     */
-    const is$1 = (lhs, rhs, comparator = tripleEquals) => lhs.exists((left) => comparator(left, rhs));
-
-    const blank = (r) => (s) => s.replace(r, '');
-    /** removes all leading and trailing spaces */
-    const trim = blank(/^\s+|\s+$/g);
-    const isNotEmpty = (s) => s.length > 0;
 
     const fromHtml = (html, scope) => {
         const doc = scope || document;
@@ -431,6 +418,7 @@
     const isDocumentFragment = isType(DOCUMENT_FRAGMENT);
     const isTag = (tag) => (e) => isElement(e) && name(e) === tag;
 
+    const parent = (element) => Optional.from(element.dom.parentNode).map(SugarElement.fromDom);
     const children$2 = (element) => map(element.dom.childNodes, SugarElement.fromDom);
 
     /**
@@ -471,19 +459,15 @@
     const set = (element, key, value) => {
         rawSet(element.dom, key, value);
     };
-    const get$1 = (element, key) => {
-        const v = element.dom.getAttribute(key);
-        // undefined is the more appropriate value for JS, and this matches JQuery
-        return v === null ? undefined : v;
-    };
-    const getOpt = (element, key) => Optional.from(get$1(element, key));
-    const remove$1 = (element, key) => {
+    const remove = (element, key) => {
         element.dom.removeAttribute(key);
     };
 
     // some elements, such as mathml, don't have style attributes
     // others, such as angular elements, have style attributes that aren't a CSSStyleDeclaration
-    const isSupported = (dom) => dom.style !== undefined && isFunction(dom.style.getPropertyValue);
+    const isSupported = (dom) => 
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    dom.style !== undefined && isFunction(dom.style.getPropertyValue);
 
     // Node.contains() is very, very, very good performance
     // http://jsperf.com/closest-vs-contains/5
@@ -500,17 +484,6 @@
         return getShadowRoot(SugarElement.fromDom(dom)).fold(() => doc.body.contains(dom), compose1(inBody, getShadowHost));
     };
 
-    const internalRemove = (dom, property) => {
-        /*
-         * IE9 and above - MDN doesn't have details, but here's a couple of random internet claims
-         *
-         * http://help.dottoro.com/ljopsjck.php
-         * http://stackoverflow.com/a/7901886/7546
-         */
-        if (isSupported(dom)) {
-            dom.style.removeProperty(property);
-        }
-    };
     /*
      * NOTE: For certain properties, this returns the "used value" which is subtly different to the "computed value" (despite calling getComputedStyle).
      * Blame CSS 2.0.
@@ -537,14 +510,6 @@
     // removed: support for dom().style[property] where prop is camel case instead of normal property name
     // empty string is what the browsers (IE11 and Chrome) return when the propertyValue doesn't exists.
     const getUnsafeProperty = (dom, property) => isSupported(dom) ? dom.style.getPropertyValue(property) : '';
-    const remove = (element, property) => {
-        const dom = element.dom;
-        internalRemove(dom, property);
-        if (is$1(getOpt(element, 'style').map(trim), '')) {
-            // No more styles left, remove the style attribute as well
-            remove$1(element, 'style');
-        }
-    };
 
     const getDirection = (element) => get(element, 'direction') === 'rtl' ? 'rtl' : 'ltr';
 
@@ -573,6 +538,7 @@
     // TODO: Avoid all the wrapping and unwrapping
     children$1(scope, (e) => is(e, selector));
 
+    const getParentElement = (element) => parent(element).filter(isElement);
     // if the block is a list item, we need to get the parent of the list itself
     const getNormalizedBlock = (element, isListItem) => {
         const normalizedElement = isListItem ? ancestor(element, 'ol,ul') : Optional.some(element);
@@ -584,29 +550,32 @@
             const blockElement = SugarElement.fromDom(block);
             const isBlockElementListItem = isListItem(blockElement);
             const normalizedBlock = getNormalizedBlock(blockElement, isBlockElementListItem);
-            const attrDir = get$1(normalizedBlock, 'dir');
-            const styleDir = Optional.from(dom.getStyle(normalizedBlock.dom, 'direction', false))
-                .filter(isNotEmpty);
-            if (attrDir === dir || styleDir.exists((d) => d === dir)) {
-                // If already set to given dir, toggle dir off
-                remove$1(normalizedBlock, 'dir');
-                remove(normalizedBlock, 'direction');
-            }
-            else if (attrDir !== dir) {
-                set(normalizedBlock, 'dir', dir); // Set the dir attribute to the desired direction
-                if (styleDir.exists((d) => d !== dir) || getDirection(normalizedBlock) !== dir) {
-                    // Also set the inline direction style if it was already set or if necessary to override inherited direction
+            const normalizedBlockParent = getParentElement(normalizedBlock);
+            normalizedBlockParent.each((parent) => {
+                // TINY-9314: Remove any inline direction style to ensure that it is only set when necessary and that
+                // the dir attribute is favored
+                dom.setStyle(normalizedBlock.dom, 'direction', null);
+                const parentDirection = getDirection(parent);
+                if (parentDirection === dir) {
+                    remove(normalizedBlock, 'dir');
+                }
+                else {
+                    set(normalizedBlock, 'dir', dir);
+                }
+                // TINY-9314: Set an inline direction style if computed css direction is still not as desired. This can
+                // happen when the direction style is derived from a stylesheet.
+                if (getDirection(normalizedBlock) !== dir) {
                     dom.setStyle(normalizedBlock.dom, 'direction', dir);
                 }
-            }
-            // Remove dir attr and direction style from list children
-            if (isBlockElementListItem) {
-                const listItems = children(normalizedBlock, 'li[dir],li[style]');
-                each(listItems, (listItem) => {
-                    remove$1(listItem, 'dir');
-                    dom.setStyle(listItem.dom, 'direction', null);
-                });
-            }
+                // Remove dir attr and direction style from list children
+                if (isBlockElementListItem) {
+                    const listItems = children(normalizedBlock, 'li[dir],li[style]');
+                    each(listItems, (listItem) => {
+                        remove(listItem, 'dir');
+                        dom.setStyle(listItem.dom, 'direction', null);
+                    });
+                }
+            });
         });
     };
     const setDir = (editor, dir) => {
@@ -625,31 +594,28 @@
         });
     };
 
-    const register = (editor) => {
-        const setupHandler = (dir) => (api) => {
-            const nodeChangeHandler = (e) => {
-                const block = editor.dom.isBlock(e.element) ? e.element : editor.dom.getParent(e.element, editor.dom.isBlock);
-                if (block) {
-                    const direction = editor.dom.getStyle(block, 'direction') || editor.dom.getAttrib(block, 'dir');
-                    api.setActive(direction === dir);
-                }
-            };
-            editor.on('NodeChange', nodeChangeHandler);
-            return () => editor.off('NodeChange', nodeChangeHandler);
+    const getNodeChangeHandler = (editor, dir) => (api) => {
+        const nodeChangeHandler = (e) => {
+            const element = SugarElement.fromDom(e.element);
+            api.setActive(getDirection(element) === dir);
+            api.setEnabled(editor.selection.isEditable());
         };
+        editor.on('NodeChange', nodeChangeHandler);
+        api.setEnabled(editor.selection.isEditable());
+        return () => editor.off('NodeChange', nodeChangeHandler);
+    };
+    const register = (editor) => {
         editor.ui.registry.addToggleButton('ltr', {
             tooltip: 'Left to right',
             icon: 'ltr',
-            context: 'editable',
             onAction: () => editor.execCommand('mceDirectionLTR'),
-            onSetup: setupHandler('ltr'),
+            onSetup: getNodeChangeHandler(editor, 'ltr')
         });
         editor.ui.registry.addToggleButton('rtl', {
             tooltip: 'Right to left',
             icon: 'rtl',
-            context: 'editable',
             onAction: () => editor.execCommand('mceDirectionRTL'),
-            onSetup: setupHandler('rtl')
+            onSetup: getNodeChangeHandler(editor, 'rtl')
         });
     };
 
