@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.6.0 (2026-06-03)
+ * TinyMCE version 8.7.0 (2026-07-01)
  */
 
 (function () {
@@ -512,7 +512,7 @@
     				if (typeof document === 'undefined') {
     					return null;
     				}
-    				if ('currentScript' in document && 1 < 2 /* hack to trip TS' flow analysis */) {
+    				if (document.currentScript && document.currentScript.tagName === 'SCRIPT' && 1 < 2 /* hack to trip TS' flow analysis */) {
     					return /** @type {any} */ (document.currentScript);
     				}
 

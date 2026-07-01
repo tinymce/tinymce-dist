@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.6.0 (2026-06-03)
+ * TinyMCE version 8.7.0 (2026-07-01)
  */
 
 (function () {
@@ -3577,6 +3577,10 @@
     const transitionend = constant('transitionend');
     const transitionstart = constant('transitionstart');
     const selectstart = constant('selectstart');
+    const pointerdown = constant('pointerdown');
+    const pointermove = constant('pointermove');
+    const pointerup = constant('pointerup');
+    const lostpointercapture = constant('lostpointercapture');
 
     const prefixName = (name) => constant$1('alloy.' + name);
     const alloy = { tap: prefixName('tap') };
@@ -4776,7 +4780,7 @@
     // AlloyEventKeyAndHandler type argument needs to be any here to satisfy an array of handlers
     // where each item can be any subtype of EventFormat we can't use <T extends EventFormat> since
     // then each item would have to be the same type
-    const events$i = (name, eventHandlers) => {
+    const events$j = (name, eventHandlers) => {
         const events = derive$2(eventHandlers);
         return create$3({
             fields: [
@@ -4789,7 +4793,7 @@
         });
     };
     const config = (name, eventHandlers) => {
-        const me = events$i(name, eventHandlers);
+        const me = events$j(name, eventHandlers);
         return {
             key: name,
             value: {
@@ -4850,7 +4854,7 @@
         };
         return nu$2(mod);
     };
-    const events$h = (focusConfig) => derive$2([
+    const events$i = (focusConfig) => derive$2([
         run$1(focus$3(), (component, simulatedEvent) => {
             focus$2(component, focusConfig);
             simulatedEvent.stop();
@@ -4868,7 +4872,7 @@
     var ActiveFocus = /*#__PURE__*/Object.freeze({
         __proto__: null,
         exhibit: exhibit$6,
-        events: events$h
+        events: events$i
     });
 
     var FocusSchema = [
@@ -5026,7 +5030,7 @@
         const last = items.length > 0 ? Optional.some(items[items.length - 1]) : Optional.none();
         return last.bind((c) => component.getSystem().getByDom(c).toOptional());
     };
-    const getDelta$2 = (component, hConfig, hState, delta) => {
+    const getDelta$3 = (component, hConfig, hState, delta) => {
         const items = descendants(component.element, '.' + hConfig.itemClass);
         const current = findIndex$1(items, (item) => has(item, hConfig.highlightClass));
         return current.bind((selected) => {
@@ -5034,8 +5038,8 @@
             return component.getSystem().getByDom(items[dest]).toOptional();
         });
     };
-    const getPrevious = (component, hConfig, hState) => getDelta$2(component, hConfig, hState, -1);
-    const getNext = (component, hConfig, hState) => getDelta$2(component, hConfig, hState, +1);
+    const getPrevious = (component, hConfig, hState) => getDelta$3(component, hConfig, hState, -1);
+    const getNext = (component, hConfig, hState) => getDelta$3(component, hConfig, hState, +1);
     const getCandidates = (component, hConfig, _hState) => {
         const items = descendants(component.element, '.' + hConfig.itemClass);
         return cat(map$2(items, (i) => component.getSystem().getByDom(i).toOptional()));
@@ -5278,7 +5282,7 @@
     // keyup also. This does make the name confusing, though.
     const stopEventForFirefox = (_component, _simulatedEvent) => Optional.some(true);
 
-    const schema$y = [
+    const schema$z = [
         defaulted('execute', defaultExecute),
         defaulted('useSpace', false),
         defaulted('useEnter', true),
@@ -5300,7 +5304,7 @@
     const getKeyupRules$5 = (component, _simulatedEvent, executeConfig, _executeState) => executeConfig.useSpace && !inside(component.element) ?
         [rule(inSet(SPACE), stopEventForFirefox)] :
         [];
-    var ExecutionType = typical(schema$y, NoState.init, getKeydownRules$5, getKeyupRules$5, () => Optional.none());
+    var ExecutionType = typical(schema$z, NoState.init, getKeydownRules$5, getKeyupRules$5, () => Optional.none());
 
     const flatgrid$1 = () => {
         const dimensions = value$2();
@@ -5401,7 +5405,7 @@
     const cycleUp$1 = (values, index, numRows, numCols) => cycleVertical$1(values, index, numRows, numCols, -1);
     const cycleDown$1 = (values, index, numRows, numCols) => cycleVertical$1(values, index, numRows, numCols, +1);
 
-    const schema$x = [
+    const schema$y = [
         required$1('selector'),
         defaulted('execute', defaultExecute),
         onKeyboardHandler('onEscape'),
@@ -5438,7 +5442,7 @@
         rule(inSet(ESCAPE), doEscape$1),
         rule(inSet(SPACE), stopEventForFirefox)
     ]);
-    var FlatgridType = typical(schema$x, flatgrid$1, getKeydownRules$4, getKeyupRules$4, () => Optional.some(focusIn$4));
+    var FlatgridType = typical(schema$y, flatgrid$1, getKeydownRules$4, getKeyupRules$4, () => Optional.some(focusIn$4));
 
     const f = (container, selector, current, delta, getNewIndex) => {
         const isDisabledButton = (candidate) => name$3(candidate) === 'button' && get$g(candidate, 'disabled') === 'disabled';
@@ -5462,7 +5466,7 @@
         return newIndex === prevIndex ? Optional.none() : onNewIndex(newIndex);
     });
 
-    const schema$w = [
+    const schema$x = [
         required$1('selector'),
         defaulted('getInitial', Optional.none),
         defaulted('execute', defaultExecute),
@@ -5501,7 +5505,7 @@
         rule(inSet(SPACE), stopEventForFirefox),
         rule(inSet(ESCAPE), doEscape)
     ]);
-    var FlowType = typical(schema$w, NoState.init, getKeydownRules$3, getKeyupRules$3, () => Optional.some(focusIn$3));
+    var FlowType = typical(schema$x, NoState.init, getKeydownRules$3, getKeyupRules$3, () => Optional.some(focusIn$3));
 
     const toCell = (matrix, rowIndex, columnIndex) => Optional.from(matrix[rowIndex]).bind((row) => Optional.from(row[columnIndex]).map((cell) => ({
         rowIndex,
@@ -5542,7 +5546,7 @@
     const moveUp$1 = (matrix, startRow, startCol) => moveVertical(matrix, startCol, startRow, -1);
     const moveDown$1 = (matrix, startRow, startCol) => moveVertical(matrix, startCol, startRow, +1);
 
-    const schema$v = [
+    const schema$w = [
         requiredObjOf('selectors', [
             required$1('row'),
             required$1('cell')
@@ -5591,12 +5595,11 @@
     const getKeyupRules$2 = constant$1([
         rule(inSet(SPACE), stopEventForFirefox)
     ]);
-    var MatrixType = typical(schema$v, NoState.init, getKeydownRules$2, getKeyupRules$2, () => Optional.some(focusIn$2));
+    var MatrixType = typical(schema$w, NoState.init, getKeydownRules$2, getKeyupRules$2, () => Optional.some(focusIn$2));
 
-    const schema$u = [
+    const schema$v = [
         required$1('selector'),
-        defaulted('execute', defaultExecute),
-        defaulted('moveOnTab', false)
+        defaulted('execute', defaultExecute)
     ];
     const execute = (component, simulatedEvent, menuConfig) => menuConfig.focusManager.get(component).bind((focused) => menuConfig.execute(component, simulatedEvent, focused));
     const focusIn$1 = (component, menuConfig, _state) => {
@@ -5607,22 +5610,18 @@
     };
     const moveUp = (element, focused, info) => horizontal(element, info.selector, focused, -1);
     const moveDown = (element, focused, info) => horizontal(element, info.selector, focused, +1);
-    const fireShiftTab = (component, simulatedEvent, menuConfig, menuState) => menuConfig.moveOnTab ? move$1(moveUp)(component, simulatedEvent, menuConfig, menuState) : Optional.none();
-    const fireTab = (component, simulatedEvent, menuConfig, menuState) => menuConfig.moveOnTab ? move$1(moveDown)(component, simulatedEvent, menuConfig, menuState) : Optional.none();
     const getKeydownRules$1 = constant$1([
         rule(inSet(UP), move$1(moveUp)),
         rule(inSet(DOWN), move$1(moveDown)),
-        rule(and([isShift$1, inSet(TAB)]), fireShiftTab),
-        rule(and([isNotShift, inSet(TAB)]), fireTab),
         rule(inSet(ENTER), execute),
         rule(inSet(SPACE), execute)
     ]);
     const getKeyupRules$1 = constant$1([
         rule(inSet(SPACE), stopEventForFirefox)
     ]);
-    var MenuType = typical(schema$u, NoState.init, getKeydownRules$1, getKeyupRules$1, () => Optional.some(focusIn$1));
+    var MenuType = typical(schema$v, NoState.init, getKeydownRules$1, getKeyupRules$1, () => Optional.some(focusIn$1));
 
-    const schema$t = [
+    const schema$u = [
         onKeyboardHandler('onSpace'),
         onKeyboardHandler('onEnter'),
         onKeyboardHandler('onShiftEnter'),
@@ -5652,7 +5651,7 @@
         ...(specialInfo.stopSpaceKeyup ? [rule(inSet(SPACE), stopEventForFirefox)] : []),
         rule(inSet(ESCAPE), specialInfo.onEscape)
     ];
-    var SpecialType = typical(schema$t, NoState.init, getKeydownRules, getKeyupRules, (specialInfo) => specialInfo.focusIn);
+    var SpecialType = typical(schema$u, NoState.init, getKeydownRules, getKeyupRules, (specialInfo) => specialInfo.focusIn);
 
     const acyclic = AcyclicType.schema();
     const cyclic = CyclicType.schema();
@@ -6036,7 +6035,7 @@
     // as the element receiving it, and it wasn't its own target, then stop the focus call
     // and log a warning.
     const isRecursive = (component, originator, target) => eq(originator, component.element) && !eq(originator, target);
-    const events$g = derive$2([
+    const events$h = derive$2([
         can(focus$3(), (component, simulatedEvent) => {
             // originator may not always be there. Will need to check this.
             const event = simulatedEvent.event;
@@ -6058,7 +6057,7 @@
 
     var DefaultEvents = /*#__PURE__*/Object.freeze({
         __proto__: null,
-        events: events$g
+        events: events$h
     });
 
     const prefix$1 = constant$1('alloy-id-');
@@ -6145,7 +6144,7 @@
         };
     };
     const getBehaviours$3 = (bData) => bData.list;
-    const getData$2 = (bData) => bData.data;
+    const getData$3 = (bData) => bData.data;
 
     const byInnerKey = (data, tuple) => {
         const r = {};
@@ -6290,7 +6289,7 @@
     };
 
     const baseBehaviour = 'alloy.base.behaviour';
-    const schema$s = objOf([
+    const schema$t = objOf([
         field$1('dom', 'dom', required$2(), objOf([
             // Note, no children.
             required$1('tag'),
@@ -6319,7 +6318,7 @@
         }), anyValue()),
         option$3('domModification')
     ]);
-    const toInfo = (spec) => asRaw('custom.definition', schema$s, spec);
+    const toInfo = (spec) => asRaw('custom.definition', schema$t, spec);
     const toDefinition = (detail) => 
     // EFFICIENCY: Consider not merging here.
     ({
@@ -6464,7 +6463,7 @@
         const info = getOrDie(toInfo(spec));
         const bBlob = generate$3(spec);
         const bList = getBehaviours$3(bBlob);
-        const bData = getData$2(bBlob);
+        const bData = getData$3(bBlob);
         const modDefinition = getDomDefinition(info, bList, bData);
         const item = renderToDom(modDefinition, obsoleted);
         const events = getEvents(info, bList, bData);
@@ -6828,7 +6827,7 @@
         // if we use "aria-disabled" or just "disabled"
         classes: disableConfig.disabled() ? disableConfig.disableClass.toArray() : []
     });
-    const events$f = (disableConfig, disableState) => derive$2([
+    const events$g = (disableConfig, disableState) => derive$2([
         abort(execute$5(), (component, _simulatedEvent) => isDisabled$1(component, disableConfig)),
         loadEvent(disableConfig, disableState, onLoad$5)
     ]);
@@ -6836,7 +6835,7 @@
     var ActiveDisable = /*#__PURE__*/Object.freeze({
         __proto__: null,
         exhibit: exhibit$5,
-        events: events$f
+        events: events$g
     });
 
     var DisableSchema = [
@@ -7227,7 +7226,7 @@
         forceDockToBottom: forceDockToBottom
     });
 
-    const events$e = (dockInfo, dockState) => derive$2([
+    const events$f = (dockInfo, dockState) => derive$2([
         runOnSource(transitionend(), (component, simulatedEvent) => {
             dockInfo.contextual.each((contextInfo) => {
                 if (has(component.element, contextInfo.transitionClass)) {
@@ -7251,7 +7250,7 @@
 
     var ActiveDocking = /*#__PURE__*/Object.freeze({
         __proto__: null,
-        events: events$e
+        events: events$f
     });
 
     var DockingSchema = [
@@ -7723,11 +7722,11 @@
         defaulted('mustSnap', false)
     ]);
 
-    const schema$r = [
+    const schema$s = [
         // Is this used?
         defaulted('useFixed', never),
-        required$1('blockerClass'),
         defaulted('getTarget', identity),
+        defaulted('onDragStart', noop),
         defaulted('onDrag', noop),
         defaulted('repositionTarget', true),
         defaulted('onDrop', noop),
@@ -7817,7 +7816,12 @@
     };
     const handlers = (events) => (dragConfig, dragState) => {
         const updateStartState = (comp) => {
+            const isBeingDragged = dragState.getStartData().isSome();
             dragState.setStartData(calcStartData(dragConfig, comp));
+            if (!isBeingDragged) {
+                const target = dragConfig.getTarget(comp.element);
+                dragConfig.onDragStart(comp, target);
+            }
         };
         return derive$2([
             run$1(windowScroll(), (comp) => {
@@ -7845,18 +7849,18 @@
         run$1(mouseout(), dragApi.delayDrop)
     ]);
 
-    const getData$1 = (event) => Optional.from(SugarPosition(event.x, event.y));
+    const getData$2 = (event) => Optional.from(SugarPosition(event.x, event.y));
     // When dragging with the mouse, the delta is simply the difference
     // between the two position (previous/old and next/nu)
-    const getDelta$1 = (old, nu) => SugarPosition(nu.left - old.left, nu.top - old.top);
+    const getDelta$2 = (old, nu) => SugarPosition(nu.left - old.left, nu.top - old.top);
 
     var MouseData = /*#__PURE__*/Object.freeze({
         __proto__: null,
-        getData: getData$1,
-        getDelta: getDelta$1
+        getData: getData$2,
+        getDelta: getDelta$2
     });
 
-    const events$d = (dragConfig, dragState, updateStartState) => [
+    const events$e = (dragConfig, dragState, updateStartState) => [
         run$1(mousedown(), (component, simulatedEvent) => {
             const raw = simulatedEvent.event.raw;
             if (raw.button !== 0) {
@@ -7885,10 +7889,11 @@
             start();
         })
     ];
-    const schema$q = [
-        ...schema$r,
+    const schema$r = [
+        ...schema$s,
+        required$1('blockerClass'),
         output$1('dragger', {
-            handlers: handlers(events$d)
+            handlers: handlers(events$e)
         })
     ];
 
@@ -7911,22 +7916,22 @@
         const touch = touches[0];
         return Optional.some(SugarPosition(touch.clientX, touch.clientY));
     };
-    const getData = (event) => {
+    const getData$1 = (event) => {
         const raw = event.raw;
         const touches = raw.touches;
         return touches.length === 1 ? getDataFrom(touches) : Optional.none();
     };
     // When dragging the touch, the delta is simply the difference
     // between the two touch positions (previous/old and next/nu)
-    const getDelta = (old, nu) => SugarPosition(nu.left - old.left, nu.top - old.top);
+    const getDelta$1 = (old, nu) => SugarPosition(nu.left - old.left, nu.top - old.top);
 
     var TouchData = /*#__PURE__*/Object.freeze({
         __proto__: null,
-        getData: getData,
-        getDelta: getDelta
+        getData: getData$1,
+        getDelta: getDelta$1
     });
 
-    const events$c = (dragConfig, dragState, updateStartState) => {
+    const events$d = (dragConfig, dragState, updateStartState) => {
         const blockerSingleton = value$2();
         const stopBlocking = (component) => {
             stop(component, blockerSingleton.get(), dragConfig, dragState);
@@ -7967,33 +7972,95 @@
             run$1(touchcancel(), stopBlocking)
         ];
     };
+    const schema$q = [
+        ...schema$s,
+        required$1('blockerClass'),
+        output$1('dragger', {
+            handlers: handlers(events$d)
+        })
+    ];
+
+    const events$c = (dragConfig, dragState, updateStartState) => [
+        ...events$e(dragConfig, dragState, updateStartState),
+        ...events$d(dragConfig, dragState, updateStartState)
+    ];
     const schema$p = [
-        ...schema$r,
+        ...schema$s,
+        required$1('blockerClass'),
         output$1('dragger', {
             handlers: handlers(events$c)
         })
     ];
 
-    const events$b = (dragConfig, dragState, updateStartState) => [
-        ...events$d(dragConfig, dragState, updateStartState),
-        ...events$c(dragConfig, dragState, updateStartState)
-    ];
+    const getData = (event) => Optional.from(SugarPosition(event.x, event.y));
+    const getDelta = (old, nu) => SugarPosition(nu.left - old.left, nu.top - old.top);
+
+    var PointerData = /*#__PURE__*/Object.freeze({
+        __proto__: null,
+        getData: getData,
+        getDelta: getDelta
+    });
+
+    const isLeftClick = (e) => e.button === 0;
+    const events$b = (dragConfig, dragState, updateStartState) => {
+        return [
+            run$1(pointerdown(), (component, simulatedEvent) => {
+                const raw = simulatedEvent.event.raw;
+                if (!isLeftClick(raw)) {
+                    return;
+                }
+                if (dragState.getStartData().isNone()) {
+                    simulatedEvent.stop();
+                    component.element.dom.setPointerCapture(raw.pointerId);
+                    dragState.setActivePointerId(raw.pointerId);
+                    updateStartState(component);
+                }
+            }),
+            run$1(pointermove(), (component, simulatedEvent) => {
+                const pointerId = simulatedEvent.event.raw.pointerId;
+                lift2(dragState.getStartData(), dragState.getActivePointerId(), (_startData, activePointerId) => {
+                    if (pointerId === activePointerId) {
+                        move(component, dragConfig, dragState, PointerData, simulatedEvent.event);
+                    }
+                });
+            }),
+            run$1(pointerup(), (component, simulatedEvent) => {
+                const pointerId = simulatedEvent.event.raw.pointerId;
+                lift2(dragState.getStartData(), dragState.getActivePointerId(), (_startData, activePointerId) => {
+                    if (pointerId === activePointerId) {
+                        component.element.dom.releasePointerCapture(pointerId);
+                        stop(component, Optional.none(), dragConfig, dragState);
+                    }
+                });
+            }),
+            // Safety net — if capture is lost unexpectedly.
+            // It sometimes happens that pointer capture is lost without pointerup event being emitted.
+            // I could observe that using touchpad in chrome
+            run$1(lostpointercapture(), (component) => {
+                dragState.getStartData().each(() => {
+                    stop(component, Optional.none(), dragConfig, dragState);
+                });
+            })
+        ];
+    };
     const schema$o = [
-        ...schema$r,
+        ...schema$s,
         output$1('dragger', {
             handlers: handlers(events$b)
         })
     ];
 
-    const mouse = schema$q;
-    const touch = schema$p;
-    const mouseOrTouch = schema$o;
+    const mouse = schema$r;
+    const touch = schema$q;
+    const mouseOrTouch = schema$p;
+    const pointer = schema$o;
 
     var DraggingBranches = /*#__PURE__*/Object.freeze({
         __proto__: null,
         mouse: mouse,
         touch: touch,
-        mouseOrTouch: mouseOrTouch
+        mouseOrTouch: mouseOrTouch,
+        pointer: pointer
     });
 
     // NOTE: mode refers to the way that information is retrieved from
@@ -8002,34 +8069,45 @@
         // Dragging operates on the difference between the previous user
         // interaction and the next user interaction. Therefore, we store
         // the previous interaction so that we can compare it.
-        let previous = Optional.none();
+        const previous = value$2();
         // Dragging requires calculating the bounds, so we store that data initially
         // to reduce the amount of computation each mouse movement
-        let startData = Optional.none();
+        const startData = value$2();
+        // In a multitouch environment, `pointerId` is used to distinguish pointers
+        // (e.g. different fingers on a touchscreen).
+        // This property is only used by pointer-event branches.
+        const activePointerId = value$2();
         const reset = () => {
-            previous = Optional.none();
-            startData = Optional.none();
+            previous.clear();
+            startData.clear();
+            activePointerId.clear();
         };
         // Return position delta between previous position and nu position,
         // or None if this is the first. Set the previous position to nu.
         const calculateDelta = (mode, nu) => {
-            const result = previous.map((old) => mode.getDelta(old, nu));
-            previous = Optional.some(nu);
+            const result = previous.get().map((old) => mode.getDelta(old, nu));
+            previous.set(nu);
             return result;
         };
         // NOTE: This dragEvent is the DOM touch event or mouse event
         const update = (mode, dragEvent) => mode.getData(dragEvent).bind((nuData) => calculateDelta(mode, nuData));
         const setStartData = (data) => {
-            startData = Optional.some(data);
+            startData.set(data);
         };
-        const getStartData = () => startData;
+        const getStartData = () => startData.get();
+        const setActivePointerId = (id) => {
+            activePointerId.set(id);
+        };
+        const getActivePointerId = () => activePointerId.get();
         const readState = constant$1({});
         return nu$4({
             readState,
             reset,
             update,
             getStartData,
-            setStartData
+            setStartData,
+            setActivePointerId,
+            getActivePointerId
         });
     };
 
@@ -10363,7 +10441,11 @@
             'mouseover',
             'mousemove',
             'mouseout',
-            'click'
+            'click',
+            'pointerdown',
+            'pointermove',
+            'pointerup',
+            'lostpointercapture'
         ];
         const tapEvent = monitor(settings);
         // These events are just passed through ... no additional processing
@@ -11207,10 +11289,9 @@
         previousSelector: movementInfo.previousSelector,
         focusManager: detail.focusManager
     });
-    const configureMenu = (detail, movementInfo) => ({
+    const configureMenu = (detail, _movementInfo) => ({
         mode: 'menu',
         selector: '.' + detail.markers.item,
-        moveOnTab: movementInfo.moveOnTab,
         focusManager: detail.focusManager
     });
     const parts$d = constant$1([
@@ -11253,12 +11334,7 @@
         defaulted('eventOrder', {}),
         field('menuBehaviours', [Highlighting, Representing, Composing, Keying]),
         defaultedOf('movement', {
-            // When you don't specify movement for a Menu, this is what you get
-            // a "menu" type of movement that moves on tab. If you want finer-grained
-            // control, like disabling moveOnTab, then you need to specify
-            // your entire movement configuration when creating your MenuSpec.
-            mode: 'menu',
-            moveOnTab: true
+            mode: 'menu'
         }, choose$1('mode', {
             grid: [
                 initSize(),
@@ -11270,7 +11346,6 @@
                 defaulted('previousSelector', Optional.none),
             ],
             menu: [
-                defaulted('moveOnTab', true),
                 output$1('config', configureMenu)
             ]
         })),
@@ -11837,6 +11912,8 @@
                     onRight: keyOnItem(onRight),
                     onLeft: keyOnItem(onLeft),
                     onEscape: keyOnItem(onEscape),
+                    onTab: detail.onTab,
+                    onShiftTab: detail.onShiftTab,
                     focusIn: (container, _keyInfo) => {
                         layeredState.getPrimary().each((primary) => {
                             dispatch(container, primary.element, focusItem());
@@ -11883,6 +11960,8 @@
         configFields: [
             onStrictKeyboardHandler('onExecute'),
             onStrictKeyboardHandler('onEscape'),
+            onKeyboardHandler('onTab'),
+            onKeyboardHandler('onShiftTab'),
             onStrictHandler('onOpenMenu'),
             onStrictHandler('onOpenSubmenu'),
             onHandler('onRepositionMenu'),
@@ -12006,6 +12085,15 @@
     const openF = (detail, mapFetch, anchor, component, sandbox, externals, highlightOnOpen) => {
         const futureData = fetch$1(detail, mapFetch, component);
         const getLazySink = getSink(component, detail);
+        // When Tab or Shift+Tab bubbles up from inside an open menu, close the menu,
+        // refocus the trigger, and re-emit the keydown so the trigger's parent
+        // (toolbar, menubar, etc.) handles it via its own Keying config.
+        const onTabOutOfMenu = (_tmenu, se) => {
+            Focusing.focus(component);
+            emitWith(component, 'keydown', { raw: se.event.raw });
+            Sandboxing.close(sandbox);
+            return Optional.some(true);
+        };
         // TODO: Make this potentially a single menu also
         return futureData.map((tdata) => tdata.bind((data) => {
             const primaryMenu = data.menus[data.primary];
@@ -12050,7 +12138,9 @@
                     Focusing.focus(component);
                     Sandboxing.close(sandbox);
                     return Optional.some(true);
-                }
+                },
+                onTab: onTabOutOfMenu,
+                onShiftTab: onTabOutOfMenu
             }));
         }));
     };
@@ -19149,7 +19239,8 @@
     ];
     const tabPanelFields = [
         type,
-        requiredArrayOfObj('tabs', tabFields)
+        requiredArrayOfObj('tabs', tabFields),
+        defaultedBoolean('dynamicHeight', false)
     ];
     const tabPanelSchema = objOf(tabPanelFields);
 
@@ -21080,7 +21171,7 @@
     const deriveMenuMovement = (columns, presets) => {
         const menuMarkers = markers(presets);
         if (columns === 1) {
-            return { mode: 'menu', moveOnTab: true };
+            return { mode: 'menu' };
         }
         else if (columns === 'auto') {
             return {
@@ -21115,7 +21206,6 @@
         if (columns === 1) {
             return {
                 mode: 'menu',
-                moveOnTab: false,
                 selector: '.tox-collection__item'
             };
         }
@@ -23672,7 +23762,7 @@
                 Keying.config({
                     mode: 'special',
                     onLeft: onLeftOrRightInMenu,
-                    onRight: onLeftOrRightInMenu
+                    onRight: onLeftOrRightInMenu,
                 }),
                 config('dropdown-sandbox-events', [
                     run$1(refetchTriggerEvent, (originalSandboxComp, se) => {
@@ -30957,8 +31047,8 @@
             return {
                 bubble: nu$6(bubbleSize$1, 0, bubbleAlignments$1),
                 layouts: {
-                    onLtr: () => [east$2],
-                    onRtl: () => [west$2]
+                    onLtr: () => [east$2, west$2],
+                    onRtl: () => [west$2, east$2]
                 },
                 overrides: anchorOverrides
             };
@@ -32580,13 +32670,19 @@
             },
             behaviours: [
                 Dragging.config({
-                    mode: 'mouse',
+                    mode: 'pointer',
                     repositionTarget: false,
+                    onDragStart: (comp) => {
+                        Tooltipping.immediateOpenClose(comp, false);
+                        Tooltipping.setEnabled(comp, false);
+                    },
                     onDrag: (comp, _target, delta) => {
                         const newDimentions = resize(editor, delta, resizeType);
                         setAriaValuetext(comp, newDimentions, resizeType);
                     },
-                    blockerClass: 'tox-blocker'
+                    onDrop: (comp) => {
+                        Tooltipping.setEnabled(comp, true);
+                    },
                 }),
                 Keying.config({
                     mode: 'special',
@@ -32941,6 +33037,14 @@
                 ]
             };
         };
+        // TINY-14384: we want to restrict the bounds to the host element, rather than the entire window when the sink is attached in a ShadowDOM (ie: webcomponent)
+        const getSinkBounds = (sinkOpt) => sinkOpt.bind(({ sink }) => {
+            const rootNode = getRootNode(sink.element);
+            if (isShadowRoot(rootNode)) {
+                return Optional.some(box$1(getShadowHost(rootNode)));
+            }
+            return Optional.none();
+        }).getOr(win());
         const renderDialogUi = () => {
             const uiContainer = getUiContainer(editor);
             // TINY-3321: When the body is using a grid layout, we need to ensure the sink width is manually set
@@ -32955,8 +33059,9 @@
                 },
                 behaviours: derive$1([
                     Positioning.config({
-                        useFixed: () => header.isDocked(lazyHeader)
-                    })
+                        useFixed: () => header.isDocked(lazyHeader),
+                        getBounds: () => getSinkBounds(lazyUiRefs.dialogUi.get())
+                    }),
                 ])
             };
             const reactiveWidthSpec = {
@@ -33379,6 +33484,15 @@
             selectFirst
         };
     };
+    // Set tab heights within a dialog to vary according to their contents
+    const naiveMode = (_allTabs) => {
+        const extraEvents = [];
+        const selectFirst = true;
+        return {
+            extraEvents,
+            selectFirst
+        };
+    };
 
     const SendDataToSectionChannel = 'send-data-to-section';
     const SendDataToViewChannel = 'send-data-to-view';
@@ -33447,7 +33561,9 @@
             };
         });
         // Assign fixed height or variable height to the tabs
-        const tabMode = smartMode(allTabs);
+        const tabMode = spec.dynamicHeight
+            ? naiveMode() // Height is determined by the content of the tab, which may cause layout shifts when switching tabs.
+            : smartMode(allTabs); // Height is determined by the tallest tab, which prevents layout shifts but may cause excessive whitespace in shorter tabs.
         return TabSection.sketch({
             dom: {
                 tag: 'div',

@@ -14,9 +14,9 @@ export interface Classes {
   "tox-tinymceai__annotation": string;
   "mce-pagebreak": string;
   "tox-tinymceai": string;
-  "tox-tinymceai__preview-body": string;
-  "tox-tinymceai__preview-body--show-preview": string;
+  "tox-tinymceai-preview": string;
   "tox-tinymceai__annotation--preview-highlight": string;
+  "tox-tinymceai-preview--selectable": string;
   "tox-tinymceai__diff-focus-overlay": string;
   "tox-tinymceai__diff-focus-overlay-dim": string;
   "mce-content-body": string;

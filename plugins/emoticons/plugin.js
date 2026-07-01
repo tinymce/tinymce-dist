@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.6.0 (2026-06-03)
+ * TinyMCE version 8.7.0 (2026-07-01)
  */
 
 (function () {
@@ -17,12 +17,6 @@
     const isFunction = isSimpleType('function');
 
     const noop = () => { };
-    const constant = (value) => {
-        return () => {
-            return value;
-        };
-    };
-    const never = constant(false);
 
     /**
      * The `Optional` type represents a value (of any type) that potentially does
@@ -596,7 +590,6 @@
     const emojisFrom = (list, pattern, maxResults) => {
         const matches = [];
         const lowerCasePattern = pattern.toLowerCase();
-        const reachedLimit = maxResults.fold(() => never, (max) => (size) => size >= max);
         for (let i = 0; i < list.length; i++) {
             // TODO: more intelligent search by showing title matches at the top, keyword matches after that (use two arrays and concat at the end)
             if (pattern.length === 0 || emojiMatches(list[i], lowerCasePattern)) {
@@ -605,7 +598,7 @@
                     text: list[i].title,
                     icon: list[i].char
                 });
-                if (reachedLimit(matches.length)) {
+                if (maxResults.exists((max) => matches.length >= max)) {
                     break;
                 }
             }
@@ -617,14 +610,14 @@
     const open = (editor, database) => {
         const initialState = {
             pattern: '',
-            results: emojisFrom(database.listAll(), '', Optional.some(300))
+            results: emojisFrom(database.listAll(), '', Optional.none())
         };
         const currentTab = Cell(ALL_CATEGORY);
         const scan = (dialogApi) => {
             const dialogData = dialogApi.getData();
             const category = currentTab.get();
             const candidates = database.listCategory(category);
-            const results = emojisFrom(candidates, dialogData[patternName], category === ALL_CATEGORY ? Optional.some(300) : Optional.none());
+            const results = emojisFrom(candidates, dialogData[patternName], Optional.none());
             dialogApi.setData({
                 results
             });
@@ -646,6 +639,7 @@
         const getInitialState = () => {
             const body = {
                 type: 'tabpanel',
+                dynamicHeight: true,
                 // All tabs have the same fields.
                 tabs: map$1(database.listCategories(), (cat) => ({
                     title: cat,

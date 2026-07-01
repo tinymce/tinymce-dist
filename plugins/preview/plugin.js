@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.6.0 (2026-06-03)
+ * TinyMCE version 8.7.0 (2026-07-01)
  */
 
 (function () {
@@ -757,6 +757,7 @@
     const option = (name) => (editor) => editor.options.get(name);
     const getContentStyle = option('content_style');
     const shouldUseContentCssCors = option('content_css_cors');
+    const getCrossOrigin = option('crossorigin');
     const getBodyClass = option('body_class');
     const getBodyId = option('body_id');
 
@@ -767,17 +768,26 @@
             return `<script src="${editor.dom.encode(url)}"${attrs.join('')}></script>`;
         }).join('');
     };
+    const getStyleSheetCrossOrigin = (editor) => {
+        if (shouldUseContentCssCors(editor)) {
+            return constant('anonymous');
+        }
+        const crossOrigin = getCrossOrigin(editor);
+        return (url) => crossOrigin(url, 'stylesheet');
+    };
     const getPreviewHtml = (editor, contentCssResources) => {
         let headHtml = '';
         const encode = editor.dom.encode;
         const contentStyle = getContentStyle(editor) ?? '';
         headHtml += `<base href="${encode(editor.documentBaseURI.getURI())}">`;
-        const cors = shouldUseContentCssCors(editor) ? ' crossorigin="anonymous"' : '';
+        const styleSheetCrossOrigin = getStyleSheetCrossOrigin(editor);
         global.each(contentCssResources, (resource) => {
             if (resource.type === 'bundled') {
                 headHtml += '<style type="text/css">' + resource.content + '</style>';
             }
             else {
+                const corsValue = styleSheetCrossOrigin(resource.url);
+                const cors = corsValue ? ' crossorigin="' + encode(corsValue) + '"' : '';
                 headHtml += '<link type="text/css" rel="stylesheet" href="' + encode(resource.url) + '"' + cors + '>';
             }
         });

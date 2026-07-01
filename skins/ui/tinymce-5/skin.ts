@@ -95,6 +95,7 @@ export interface Classes {
   "tox-collection__item--enabled": string;
   "tox-collection--toolbar-lg": string;
   "tox-collection__item-label": string;
+  "tox-collection__item-separator": string;
   "tox-collection__item-accessory": string;
   "tox-collection__item-caret": string;
   "tox-collection--horizontal": string;
@@ -356,7 +357,6 @@ export interface Classes {
   "tox-sidebar-content__loader": string;
   "tox-sidebar-content__actions": string;
   "tox-ai__complete-review": string;
-  "tox-ai__review-menu-separator": string;
   "tox-ai__user-prompt": string;
   "tox-ai__user-prompt__context": string;
   "tox-tag": string;
@@ -570,10 +570,12 @@ export interface Classes {
   "tox-revisionhistory__card--selected": string;
   "tox-revisionhistory__card-label": string;
   "tox-revisionhistory__card-content": string;
+  "tox-revisionhistory__card-attribution": string;
+  "tox-revisionhistory__avatar": string;
+  "tox-revisionhistory__card-ai-icon": string;
   "tox-revisionhistory__card-info": string;
   "tox-revisionhistory__card-date-label": string;
   "tox-revisionhistory__card-author-name": string;
-  "tox-revisionhistory__avatar": string;
   "tox-revisionhistory__norevision": string;
   "tox-revisionhistory__card-check-icon": string;
   "tox-card": string;
@@ -607,7 +609,9 @@ export interface Classes {
   "tox-suggestededits__card--editor": string;
   "tox-suggestededits__card--header": string;
   "tox-suggestededits__card--user": string;
+  "tox-suggestededits__card--attribution": string;
   "tox-suggestededits__card--avatar": string;
+  "tox-suggestededits__card--ai-icon": string;
   "tox-suggestededits__card--details": string;
   "tox-suggestededits__card--name": string;
   "tox-suggestededits__card--feedback-user": string;
