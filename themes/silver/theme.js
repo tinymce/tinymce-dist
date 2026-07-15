@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.7.0 (2026-07-01)
+ * TinyMCE version 8.8.0 (2026-07-15)
  */
 
 (function () {
@@ -2650,7 +2650,7 @@
     const get$8 = (element) => read$2(element, 'class');
     const add$3 = (element, clazz) => add$4(element, 'class', clazz);
     const remove$4 = (element, clazz) => remove$5(element, 'class', clazz);
-    const toggle$5 = (element, clazz) => {
+    const toggle$4 = (element, clazz) => {
         if (contains$2(get$8(element), clazz)) {
             return remove$4(element, clazz);
         }
@@ -2692,8 +2692,8 @@
         }
         cleanClass(element);
     };
-    const toggle$4 = (element, clazz) => {
-        const result = supports(element) ? element.dom.classList.toggle(clazz) : toggle$5(element, clazz);
+    const toggle$3 = (element, clazz) => {
+        const result = supports(element) ? element.dom.classList.toggle(clazz) : toggle$4(element, clazz);
         cleanClass(element);
         return result;
     };
@@ -2713,9 +2713,9 @@
             remove$3(element, x);
         });
     };
-    const toggle$3 = (element, classes) => {
+    const toggle$2 = (element, classes) => {
         each$1(classes, (x) => {
-            toggle$4(element, x);
+            toggle$3(element, x);
         });
     };
     const hasAll = (element, classes) => forall(classes, (clazz) => has(element, clazz));
@@ -9942,7 +9942,7 @@
             toggleConfig.onToggled(component, state);
         }
     };
-    const toggle$2 = (component, toggleConfig, toggleState) => {
+    const toggle$1 = (component, toggleConfig, toggleState) => {
         set(component, toggleConfig, toggleState, !toggleState.get());
     };
     const on = (component, toggleConfig, toggleState) => {
@@ -9962,7 +9962,7 @@
     var ToggleApis = /*#__PURE__*/Object.freeze({
         __proto__: null,
         onLoad: onLoad,
-        toggle: toggle$2,
+        toggle: toggle$1,
         isOn: isOn,
         on: on,
         off: off,
@@ -9971,7 +9971,7 @@
 
     const exhibit$1 = () => nu$2({});
     const events$3 = (toggleConfig, toggleState) => {
-        const execute = executeEvent(toggleConfig, toggleState, toggle$2);
+        const execute = executeEvent(toggleConfig, toggleState, toggle$1);
         const load = loadEvent(toggleConfig, toggleState, onLoad);
         return derive$2(flatten([
             toggleConfig.toggleOnExecute ? [execute] : [],
@@ -12649,10 +12649,10 @@
     const shouldSkipFocus = value$2();
     const toggleWithoutFocusing = (button, externals) => {
         shouldSkipFocus.set(true);
-        toggle$1(button, externals);
+        toggle(button, externals);
         shouldSkipFocus.clear();
     };
-    const toggle$1 = (button, externals) => {
+    const toggle = (button, externals) => {
         const toolbarSandbox = Coupling.getCoupled(button, 'toolbarSandbox');
         if (Sandboxing.isOpen(toolbarSandbox)) {
             Sandboxing.close(toolbarSandbox);
@@ -12747,7 +12747,7 @@
         ...Button.sketch({
             ...externals.button(),
             action: (button) => {
-                toggle$1(button, externals);
+                toggle(button, externals);
             },
             buttonBehaviours: SketchBehaviours.augment({ dump: externals.button().buttonBehaviours }, [
                 Coupling.config({
@@ -12771,7 +12771,7 @@
                 });
             },
             toggle: (button) => {
-                toggle$1(button, externals);
+                toggle(button, externals);
             },
             toggleWithoutFocusing: (button) => {
                 toggleWithoutFocusing(button, externals);
@@ -15728,19 +15728,17 @@
 
     var global$7 = tinymce.util.Tools.resolve('tinymce.Env');
 
-    var ToolbarMode$1;
-    (function (ToolbarMode) {
-        ToolbarMode["default"] = "wrap";
-        ToolbarMode["floating"] = "floating";
-        ToolbarMode["sliding"] = "sliding";
-        ToolbarMode["scrolling"] = "scrolling";
-    })(ToolbarMode$1 || (ToolbarMode$1 = {}));
-    var ToolbarLocation$1;
-    (function (ToolbarLocation) {
-        ToolbarLocation["auto"] = "auto";
-        ToolbarLocation["top"] = "top";
-        ToolbarLocation["bottom"] = "bottom";
-    })(ToolbarLocation$1 || (ToolbarLocation$1 = {}));
+    const ToolbarMode$1 = {
+        default: 'wrap',
+        floating: 'floating',
+        sliding: 'sliding',
+        scrolling: 'scrolling'
+    };
+    const ToolbarLocation$1 = {
+        auto: 'auto',
+        top: 'top',
+        bottom: 'bottom'
+    };
     const option$2 = (name) => (editor) => editor.options.get(name);
     const wrapOptional = (fn) => (editor) => Optional.from(fn(editor));
     const register$f = (editor) => {
@@ -16077,63 +16075,63 @@
 
     var Options = /*#__PURE__*/Object.freeze({
         __proto__: null,
-        get ToolbarMode () { return ToolbarMode$1; },
-        get ToolbarLocation () { return ToolbarLocation$1; },
-        register: register$f,
-        getSkinUrl: getSkinUrl,
-        getSkinUrlOption: getSkinUrlOption,
-        isReadOnly: isReadOnly,
-        isDisabled: isDisabled,
-        getSkin: getSkin,
-        isSkinDisabled: isSkinDisabled,
-        getHeightOption: getHeightOption,
-        getWidthOption: getWidthOption,
-        getMinWidthOption: getMinWidthOption,
-        getMinHeightOption: getMinHeightOption,
-        getMaxWidthOption: getMaxWidthOption,
-        getMaxHeightOption: getMaxHeightOption,
-        getUserStyleFormats: getUserStyleFormats,
-        shouldMergeStyleFormats: shouldMergeStyleFormats,
-        shouldAutoHideStyleFormats: shouldAutoHideStyleFormats,
-        getLineHeightFormats: getLineHeightFormats,
+        ToolbarMode: ToolbarMode$1,
+        ToolbarLocation: ToolbarLocation$1,
+        getAnchorBottom: getAnchorBottom,
+        getAnchorTop: getAnchorTop,
         getContentLanguages: getContentLanguages,
-        getRemovedMenuItems: getRemovedMenuItems,
-        isMenubarEnabled: isMenubarEnabled,
-        isMultipleToolbars: isMultipleToolbars,
-        isToolbarEnabled: isToolbarEnabled,
-        isToolbarPersist: isToolbarPersist,
-        getMultipleToolbarsOption: getMultipleToolbarsOption,
-        getUiContainer: getUiContainer,
-        useFixedContainer: useFixedContainer,
-        isSplitUiMode: isSplitUiMode,
-        getToolbarMode: getToolbarMode,
-        isDraggableModal: isDraggableModal$1,
-        isDistractionFree: isDistractionFree,
-        isStickyToolbar: isStickyToolbar,
-        getStickyToolbarOffset: getStickyToolbarOffset,
-        getToolbarLocation: getToolbarLocation,
-        isToolbarLocationBottom: isToolbarLocationBottom,
-        getToolbarGroups: getToolbarGroups,
-        getMenus: getMenus,
-        getMenubar: getMenubar,
-        getToolbar: getToolbar,
+        getDefaultFontStack: getDefaultFontStack,
         getFilePickerCallback: getFilePickerCallback,
         getFilePickerTypes: getFilePickerTypes,
-        useTypeaheadUrls: useTypeaheadUrls,
-        getAnchorTop: getAnchorTop,
-        getAnchorBottom: getAnchorBottom,
         getFilePickerValidatorHandler: getFilePickerValidatorHandler,
         getFontSizeInputDefaultUnit: getFontSizeInputDefaultUnit,
-        useStatusBar: useStatusBar,
-        useElementPath: useElementPath,
-        promotionEnabled: promotionEnabled,
-        useBranding: useBranding,
-        getResize: getResize,
+        getHeightOption: getHeightOption,
+        getLineHeightFormats: getLineHeightFormats,
+        getMaxHeightOption: getMaxHeightOption,
+        getMaxWidthOption: getMaxWidthOption,
+        getMenubar: getMenubar,
+        getMenus: getMenus,
+        getMinHeightOption: getMinHeightOption,
+        getMinWidthOption: getMinWidthOption,
+        getMultipleToolbarsOption: getMultipleToolbarsOption,
         getPasteAsText: getPasteAsText,
+        getRemovedMenuItems: getRemovedMenuItems,
+        getResize: getResize,
         getSidebarShow: getSidebarShow,
+        getSkin: getSkin,
+        getSkinUrl: getSkinUrl,
+        getSkinUrlOption: getSkinUrlOption,
+        getStickyToolbarOffset: getStickyToolbarOffset,
+        getToolbar: getToolbar,
+        getToolbarGroups: getToolbarGroups,
+        getToolbarLocation: getToolbarLocation,
+        getToolbarMode: getToolbarMode,
+        getUiContainer: getUiContainer,
+        getUserStyleFormats: getUserStyleFormats,
         getViewShow: getViewShow,
+        getWidthOption: getWidthOption,
+        isDisabled: isDisabled,
+        isDistractionFree: isDistractionFree,
+        isDraggableModal: isDraggableModal$1,
+        isMenubarEnabled: isMenubarEnabled,
+        isMultipleToolbars: isMultipleToolbars,
+        isReadOnly: isReadOnly,
+        isSkinDisabled: isSkinDisabled,
+        isSplitUiMode: isSplitUiMode,
+        isStickyToolbar: isStickyToolbar,
+        isToolbarEnabled: isToolbarEnabled,
+        isToolbarLocationBottom: isToolbarLocationBottom,
+        isToolbarPersist: isToolbarPersist,
+        promotionEnabled: promotionEnabled,
+        register: register$f,
+        shouldAutoHideStyleFormats: shouldAutoHideStyleFormats,
+        shouldMergeStyleFormats: shouldMergeStyleFormats,
+        useBranding: useBranding,
+        useElementPath: useElementPath,
+        useFixedContainer: useFixedContainer,
         useHelpAccessibility: useHelpAccessibility,
-        getDefaultFontStack: getDefaultFontStack
+        useStatusBar: useStatusBar,
+        useTypeaheadUrls: useTypeaheadUrls
     });
 
     // See https://developer.mozilla.org/en-US/docs/Glossary/Scroll_container for what makes an element scrollable
@@ -16182,7 +16180,7 @@
         return sc.isFullscreen() ? win() : constrainByMany(box$1(sc.element), scrollableBoxes);
     };
 
-    /*! @license DOMPurify 3.4.5 | (c) Cure53 and other contributors | Released under the Apache license 2.0 and Mozilla Public License 2.0 | github.com/cure53/DOMPurify/blob/3.4.5/LICENSE */
+    /*! @license DOMPurify 3.4.11 | (c) Cure53 and other contributors | Released under the Apache license 2.0 and Mozilla Public License 2.0 | github.com/cure53/DOMPurify/blob/3.4.11/LICENSE */
 
     function _arrayLikeToArray(r, a) {
       (null == a || a > r.length) && (a = r.length);
@@ -16511,16 +16509,31 @@
     );
     const DOCTYPE_NAME = seal(/^html$/i);
     const CUSTOM_ELEMENT = seal(/^[a-z][.\w]*(-[.\w]+)+$/i);
+    // Markup-significant character probes used by _sanitizeElements.
+    // Shared module-level instances are safe despite the sticky /g flags:
+    // unapply() resets lastIndex for RegExp receivers before every call.
+    const ELEMENT_MARKUP_PROBE = seal(/<[/\w!]/g);
+    const COMMENT_MARKUP_PROBE = seal(/<[/\w]/g);
+    const FALLBACK_TAG_CLOSE = seal(/<\/no(script|embed|frames)/i);
+    const SELF_CLOSING_TAG = seal(/\/>/i);
 
-    /* eslint-disable @typescript-eslint/indent */
     // https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType
     const NODE_TYPE = {
       element: 1,
+      attribute: 2,
       text: 3,
+      cdataSection: 4,
+      entityReference: 5,
       // Deprecated
-      progressingInstruction: 7,
+      entityNode: 6,
+      // Deprecated
+      processingInstruction: 7,
       comment: 8,
-      document: 9};
+      document: 9,
+      documentType: 10,
+      documentFragment: 11,
+      notation: 12 // Deprecated
+    };
     const getGlobal = function getGlobal() {
       return typeof window === 'undefined' ? null : window;
     };
@@ -16575,10 +16588,25 @@
         uponSanitizeShadowNode: []
       };
     };
+    /**
+     * Resolve a set-valued configuration option: a fresh set built from
+     * cfg[key] when it is an own array property (seeded with a clone of
+     * options.base when given, case-normalized via options.transform),
+     * the fallback set otherwise.
+     *
+     * @param cfg the cloned, prototype-free configuration object
+     * @param key the configuration property to read
+     * @param fallback the set to use when the option is absent or not an array
+     * @param options transform and optional base set to merge into
+     * @returns the resolved set
+     */
+    const _resolveSetOption = function _resolveSetOption(cfg, key, fallback, options) {
+      return objectHasOwnProperty(cfg, key) && arrayIsArray(cfg[key]) ? addToSet(options.base ? clone(options.base) : {}, cfg[key], options.transform) : fallback;
+    };
     function createDOMPurify() {
       let window = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : getGlobal();
       const DOMPurify = root => createDOMPurify(root);
-      DOMPurify.version = '3.4.5';
+      DOMPurify.version = '3.4.11';
       DOMPurify.removed = [];
       if (!window || !window.document || window.document.nodeType !== NODE_TYPE.document || !window.Element) {
         // Not running in a browser, provide a factory function
@@ -16589,15 +16617,15 @@
       let document = window.document;
       const originalDocument = document;
       const currentScript = originalDocument.currentScript;
-      const DocumentFragment = window.DocumentFragment,
-        HTMLTemplateElement = window.HTMLTemplateElement,
+      window.DocumentFragment;
+        const HTMLTemplateElement = window.HTMLTemplateElement,
         Node = window.Node,
         Element = window.Element,
         NodeFilter = window.NodeFilter,
-        _window$NamedNodeMap = window.NamedNodeMap,
-        NamedNodeMap = _window$NamedNodeMap === void 0 ? window.NamedNodeMap || window.MozNamedAttrMap : _window$NamedNodeMap,
-        HTMLFormElement = window.HTMLFormElement,
-        DOMParser = window.DOMParser,
+        _window$NamedNodeMap = window.NamedNodeMap;
+        _window$NamedNodeMap === void 0 ? window.NamedNodeMap || window.MozNamedAttrMap : _window$NamedNodeMap;
+        window.HTMLFormElement;
+        const DOMParser = window.DOMParser,
         trustedTypes = window.trustedTypes;
       const ElementPrototype = Element.prototype;
       const cloneNode = lookupGetter(ElementPrototype, 'cloneNode');
@@ -16605,7 +16633,10 @@
       const getNextSibling = lookupGetter(ElementPrototype, 'nextSibling');
       const getChildNodes = lookupGetter(ElementPrototype, 'childNodes');
       const getParentNode = lookupGetter(ElementPrototype, 'parentNode');
+      const getShadowRoot = lookupGetter(ElementPrototype, 'shadowRoot');
+      const getAttributes = lookupGetter(ElementPrototype, 'attributes');
       const getNodeType = Node && Node.prototype ? lookupGetter(Node.prototype, 'nodeType') : null;
+      const getNodeName = Node && Node.prototype ? lookupGetter(Node.prototype, 'nodeName') : null;
       // As per issue #47, the web-components registry is inherited by a
       // new document created via createHTMLDocument. As per the spec
       // (http://w3c.github.io/webcomponents/spec/custom/#creating-and-passing-registries)
@@ -16620,6 +16651,54 @@
       }
       let trustedTypesPolicy;
       let emptyHTML = '';
+      // The instance's own internal Trusted Types policy. Unlike a caller-supplied
+      // `TRUSTED_TYPES_POLICY`, this is created at most once — Trusted Types throws
+      // on duplicate policy names — and is the only policy allowed to persist
+      // across configurations and survive `clearConfig()`.
+      let defaultTrustedTypesPolicy;
+      let defaultTrustedTypesPolicyResolved = false;
+      // Tracks whether we are already inside a call to the configured Trusted Types
+      // policy (`createHTML` or `createScriptURL`). If a supplied policy callback
+      // itself calls `DOMPurify.sanitize` (the cause of #1422), `sanitize` would
+      // re-enter the policy and recurse until the stack overflows. We detect that
+      // re-entry and throw a clear, actionable error instead. The guard is shared
+      // across both callbacks, because either one re-entering `sanitize` triggers
+      // the same unbounded recursion.
+      let IN_TRUSTED_TYPES_POLICY = 0;
+      const _assertNotInTrustedTypesPolicy = function _assertNotInTrustedTypesPolicy() {
+        if (IN_TRUSTED_TYPES_POLICY > 0) {
+          throw typeErrorCreate('A configured TRUSTED_TYPES_POLICY callback (createHTML or ' + 'createScriptURL) must not call DOMPurify.sanitize, as that causes ' + 'infinite recursion. Do not pass a policy whose callbacks wrap ' + 'DOMPurify as TRUSTED_TYPES_POLICY; see the "DOMPurify and Trusted ' + 'Types" section of the README.');
+        }
+      };
+      const _createTrustedHTML = function _createTrustedHTML(html) {
+        _assertNotInTrustedTypesPolicy();
+        IN_TRUSTED_TYPES_POLICY++;
+        try {
+          return trustedTypesPolicy.createHTML(html);
+        } finally {
+          IN_TRUSTED_TYPES_POLICY--;
+        }
+      };
+      const _createTrustedScriptURL = function _createTrustedScriptURL(scriptUrl) {
+        _assertNotInTrustedTypesPolicy();
+        IN_TRUSTED_TYPES_POLICY++;
+        try {
+          return trustedTypesPolicy.createScriptURL(scriptUrl);
+        } finally {
+          IN_TRUSTED_TYPES_POLICY--;
+        }
+      };
+      // Lazily resolve (and cache) the instance's internal default policy.
+      // Resolution is attempted at most once: a successful `createPolicy` cannot be
+      // repeated (Trusted Types throws on duplicate names), and a failed or
+      // unsupported attempt must not be retried on every parse.
+      const _getDefaultTrustedTypesPolicy = function _getDefaultTrustedTypesPolicy() {
+        if (!defaultTrustedTypesPolicyResolved) {
+          defaultTrustedTypesPolicy = _createTrustedTypesPolicy(trustedTypes, currentScript);
+          defaultTrustedTypesPolicyResolved = true;
+        }
+        return defaultTrustedTypesPolicy;
+      };
       const _document = document,
         implementation = _document.implementation,
         createNodeIterator = _document.createNodeIterator,
@@ -16716,6 +16795,13 @@
       let WHOLE_DOCUMENT = false;
       /* Track whether config is already set on this instance of DOMPurify. */
       let SET_CONFIG = false;
+      /* Pristine allowlist bindings captured at setConfig() time. On the
+       * persistent-config path sanitize() restores the sets from these before
+       * the per-walk hook clone-guard, so a hook's in-call widening cannot
+       * carry across calls. Null until setConfig() is called; reset by
+       * clearConfig(). */
+      let SET_CONFIG_ALLOWED_TAGS = null;
+      let SET_CONFIG_ALLOWED_ATTR = null;
       /* Decide if all elements (e.g. style, script) must be children of
        * document.body. By default, browsers might move them to document.head */
       let FORCE_BODY = false;
@@ -16758,7 +16844,17 @@
       let USE_PROFILES = {};
       /* Tags to ignore content of when KEEP_CONTENT is true */
       let FORBID_CONTENTS = null;
-      const DEFAULT_FORBID_CONTENTS = addToSet({}, ['annotation-xml', 'audio', 'colgroup', 'desc', 'foreignobject', 'head', 'iframe', 'math', 'mi', 'mn', 'mo', 'ms', 'mtext', 'noembed', 'noframes', 'noscript', 'plaintext', 'script', 'style', 'svg', 'template', 'thead', 'title', 'video', 'xmp']);
+      const DEFAULT_FORBID_CONTENTS = addToSet({}, ['annotation-xml', 'audio', 'colgroup', 'desc', 'foreignobject', 'head', 'iframe', 'math', 'mi', 'mn', 'mo', 'ms', 'mtext', 'noembed', 'noframes', 'noscript', 'plaintext', 'script',
+      // <selectedcontent> mirrors the selected <option>'s subtree, cloned by
+      // the UA (customizable <select>) — including any on* handlers — and the
+      // engine re-mirrors synchronously whenever a removal changes which
+      // option/selectedcontent is current, even inside DOMPurify's inert
+      // DOMParser document. Hoisting its children on removal re-inserts a fresh
+      // mirror target ahead of the walk, which the engine refills, looping
+      // forever (DoS) and amplifying output. Dropping its content on removal
+      // (rather than hoisting) breaks that cascade; the content is a duplicate
+      // of the option, which is sanitized on its own. See campaign-3 F1/F6.
+      'selectedcontent', 'style', 'svg', 'template', 'thead', 'title', 'video', 'xmp']);
       /* Tags that are safe for data: URIs */
       let DATA_URI_TAGS = null;
       const DEFAULT_DATA_URI_TAGS = addToSet({}, ['audio', 'video', 'img', 'source', 'image', 'track']);
@@ -16774,8 +16870,10 @@
       /* Allowed XHTML+XML namespaces */
       let ALLOWED_NAMESPACES = null;
       const DEFAULT_ALLOWED_NAMESPACES = addToSet({}, [MATHML_NAMESPACE, SVG_NAMESPACE, HTML_NAMESPACE], stringToString);
-      let MATHML_TEXT_INTEGRATION_POINTS = addToSet({}, ['mi', 'mo', 'mn', 'ms', 'mtext']);
-      let HTML_INTEGRATION_POINTS = addToSet({}, ['annotation-xml']);
+      const DEFAULT_MATHML_TEXT_INTEGRATION_POINTS = freeze(['mi', 'mo', 'mn', 'ms', 'mtext']);
+      let MATHML_TEXT_INTEGRATION_POINTS = addToSet({}, DEFAULT_MATHML_TEXT_INTEGRATION_POINTS);
+      const DEFAULT_HTML_INTEGRATION_POINTS = freeze(['annotation-xml']);
+      let HTML_INTEGRATION_POINTS = addToSet({}, DEFAULT_HTML_INTEGRATION_POINTS);
       // Certain elements are allowed in both SVG and HTML
       // namespace. We need to specify them explicitly
       // so that they don't get erroneously deleted from
@@ -16817,14 +16915,32 @@
         // HTML tags and attributes are not case-sensitive, converting to lowercase. Keeping XHTML as is.
         transformCaseFunc = PARSER_MEDIA_TYPE === 'application/xhtml+xml' ? stringToString : stringToLowerCase;
         /* Set configuration parameters */
-        ALLOWED_TAGS = objectHasOwnProperty(cfg, 'ALLOWED_TAGS') && arrayIsArray(cfg.ALLOWED_TAGS) ? addToSet({}, cfg.ALLOWED_TAGS, transformCaseFunc) : DEFAULT_ALLOWED_TAGS;
-        ALLOWED_ATTR = objectHasOwnProperty(cfg, 'ALLOWED_ATTR') && arrayIsArray(cfg.ALLOWED_ATTR) ? addToSet({}, cfg.ALLOWED_ATTR, transformCaseFunc) : DEFAULT_ALLOWED_ATTR;
-        ALLOWED_NAMESPACES = objectHasOwnProperty(cfg, 'ALLOWED_NAMESPACES') && arrayIsArray(cfg.ALLOWED_NAMESPACES) ? addToSet({}, cfg.ALLOWED_NAMESPACES, stringToString) : DEFAULT_ALLOWED_NAMESPACES;
-        URI_SAFE_ATTRIBUTES = objectHasOwnProperty(cfg, 'ADD_URI_SAFE_ATTR') && arrayIsArray(cfg.ADD_URI_SAFE_ATTR) ? addToSet(clone(DEFAULT_URI_SAFE_ATTRIBUTES), cfg.ADD_URI_SAFE_ATTR, transformCaseFunc) : DEFAULT_URI_SAFE_ATTRIBUTES;
-        DATA_URI_TAGS = objectHasOwnProperty(cfg, 'ADD_DATA_URI_TAGS') && arrayIsArray(cfg.ADD_DATA_URI_TAGS) ? addToSet(clone(DEFAULT_DATA_URI_TAGS), cfg.ADD_DATA_URI_TAGS, transformCaseFunc) : DEFAULT_DATA_URI_TAGS;
-        FORBID_CONTENTS = objectHasOwnProperty(cfg, 'FORBID_CONTENTS') && arrayIsArray(cfg.FORBID_CONTENTS) ? addToSet({}, cfg.FORBID_CONTENTS, transformCaseFunc) : DEFAULT_FORBID_CONTENTS;
-        FORBID_TAGS = objectHasOwnProperty(cfg, 'FORBID_TAGS') && arrayIsArray(cfg.FORBID_TAGS) ? addToSet({}, cfg.FORBID_TAGS, transformCaseFunc) : clone({});
-        FORBID_ATTR = objectHasOwnProperty(cfg, 'FORBID_ATTR') && arrayIsArray(cfg.FORBID_ATTR) ? addToSet({}, cfg.FORBID_ATTR, transformCaseFunc) : clone({});
+        ALLOWED_TAGS = _resolveSetOption(cfg, 'ALLOWED_TAGS', DEFAULT_ALLOWED_TAGS, {
+          transform: transformCaseFunc
+        });
+        ALLOWED_ATTR = _resolveSetOption(cfg, 'ALLOWED_ATTR', DEFAULT_ALLOWED_ATTR, {
+          transform: transformCaseFunc
+        });
+        ALLOWED_NAMESPACES = _resolveSetOption(cfg, 'ALLOWED_NAMESPACES', DEFAULT_ALLOWED_NAMESPACES, {
+          transform: stringToString
+        });
+        URI_SAFE_ATTRIBUTES = _resolveSetOption(cfg, 'ADD_URI_SAFE_ATTR', DEFAULT_URI_SAFE_ATTRIBUTES, {
+          transform: transformCaseFunc,
+          base: DEFAULT_URI_SAFE_ATTRIBUTES
+        });
+        DATA_URI_TAGS = _resolveSetOption(cfg, 'ADD_DATA_URI_TAGS', DEFAULT_DATA_URI_TAGS, {
+          transform: transformCaseFunc,
+          base: DEFAULT_DATA_URI_TAGS
+        });
+        FORBID_CONTENTS = _resolveSetOption(cfg, 'FORBID_CONTENTS', DEFAULT_FORBID_CONTENTS, {
+          transform: transformCaseFunc
+        });
+        FORBID_TAGS = _resolveSetOption(cfg, 'FORBID_TAGS', clone({}), {
+          transform: transformCaseFunc
+        });
+        FORBID_ATTR = _resolveSetOption(cfg, 'FORBID_ATTR', clone({}), {
+          transform: transformCaseFunc
+        });
         USE_PROFILES = objectHasOwnProperty(cfg, 'USE_PROFILES') ? cfg.USE_PROFILES && typeof cfg.USE_PROFILES === 'object' ? clone(cfg.USE_PROFILES) : cfg.USE_PROFILES : false;
         ALLOW_ARIA_ATTR = cfg.ALLOW_ARIA_ATTR !== false; // Default true
         ALLOW_DATA_ATTR = cfg.ALLOW_DATA_ATTR !== false; // Default true
@@ -16843,8 +16959,8 @@
         IN_PLACE = cfg.IN_PLACE || false; // Default false
         IS_ALLOWED_URI$1 = isRegex(cfg.ALLOWED_URI_REGEXP) ? cfg.ALLOWED_URI_REGEXP : IS_ALLOWED_URI; // Default regexp
         NAMESPACE = typeof cfg.NAMESPACE === 'string' ? cfg.NAMESPACE : HTML_NAMESPACE; // Default HTML namespace
-        MATHML_TEXT_INTEGRATION_POINTS = objectHasOwnProperty(cfg, 'MATHML_TEXT_INTEGRATION_POINTS') && cfg.MATHML_TEXT_INTEGRATION_POINTS && typeof cfg.MATHML_TEXT_INTEGRATION_POINTS === 'object' ? clone(cfg.MATHML_TEXT_INTEGRATION_POINTS) : addToSet({}, ['mi', 'mo', 'mn', 'ms', 'mtext']); // Default built-in map
-        HTML_INTEGRATION_POINTS = objectHasOwnProperty(cfg, 'HTML_INTEGRATION_POINTS') && cfg.HTML_INTEGRATION_POINTS && typeof cfg.HTML_INTEGRATION_POINTS === 'object' ? clone(cfg.HTML_INTEGRATION_POINTS) : addToSet({}, ['annotation-xml']); // Default built-in map
+        MATHML_TEXT_INTEGRATION_POINTS = objectHasOwnProperty(cfg, 'MATHML_TEXT_INTEGRATION_POINTS') && cfg.MATHML_TEXT_INTEGRATION_POINTS && typeof cfg.MATHML_TEXT_INTEGRATION_POINTS === 'object' ? clone(cfg.MATHML_TEXT_INTEGRATION_POINTS) : addToSet({}, DEFAULT_MATHML_TEXT_INTEGRATION_POINTS); // Default built-in map
+        HTML_INTEGRATION_POINTS = objectHasOwnProperty(cfg, 'HTML_INTEGRATION_POINTS') && cfg.HTML_INTEGRATION_POINTS && typeof cfg.HTML_INTEGRATION_POINTS === 'object' ? clone(cfg.HTML_INTEGRATION_POINTS) : addToSet({}, DEFAULT_HTML_INTEGRATION_POINTS); // Default built-in map
         const customElementHandling = objectHasOwnProperty(cfg, 'CUSTOM_ELEMENT_HANDLING') && cfg.CUSTOM_ELEMENT_HANDLING && typeof cfg.CUSTOM_ELEMENT_HANDLING === 'object' ? clone(cfg.CUSTOM_ELEMENT_HANDLING) : create$1(null);
         CUSTOM_ELEMENT_HANDLING = create$1(null);
         if (objectHasOwnProperty(customElementHandling, 'tagNameCheck') && isRegexOrFunction(customElementHandling.tagNameCheck)) {
@@ -16856,6 +16972,7 @@
         if (objectHasOwnProperty(customElementHandling, 'allowCustomizedBuiltInElements') && typeof customElementHandling.allowCustomizedBuiltInElements === 'boolean') {
           CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements = customElementHandling.allowCustomizedBuiltInElements; // Default undefined
         }
+        seal(CUSTOM_ELEMENT_HANDLING);
         if (SAFE_FOR_TEMPLATES) {
           ALLOW_DATA_ATTR = false;
         }
@@ -16939,6 +17056,13 @@
           addToSet(ALLOWED_TAGS, ['tbody']);
           delete FORBID_TAGS.tbody;
         }
+        // Re-derive the active Trusted Types policy from this configuration on
+        // every parse. The active policy must never be sticky closure state that
+        // outlives the config that set it: a caller-supplied policy left in place
+        // after `clearConfig()` — or after a later call that supplied none, or
+        // `TRUSTED_TYPES_POLICY: null` — could sign a subsequent "default"
+        // `RETURN_TRUSTED_TYPE` result with a foreign, possibly unsafe policy.
+        // See GHSA-vxr8-fq34-vvx9.
         if (cfg.TRUSTED_TYPES_POLICY) {
           if (typeof cfg.TRUSTED_TYPES_POLICY.createHTML !== 'function') {
             throw typeErrorCreate('TRUSTED_TYPES_POLICY configuration option must provide a "createHTML" hook.');
@@ -16946,18 +17070,45 @@
           if (typeof cfg.TRUSTED_TYPES_POLICY.createScriptURL !== 'function') {
             throw typeErrorCreate('TRUSTED_TYPES_POLICY configuration option must provide a "createScriptURL" hook.');
           }
-          // Overwrite existing TrustedTypes policy.
+          // A caller-supplied policy applies to this configuration only.
+          const previousTrustedTypesPolicy = trustedTypesPolicy;
           trustedTypesPolicy = cfg.TRUSTED_TYPES_POLICY;
-          // Sign local variables required by `sanitize`.
-          emptyHTML = trustedTypesPolicy.createHTML('');
-        } else {
-          // Uninitialized policy, attempt to initialize the internal dompurify policy.
-          if (trustedTypesPolicy === undefined) {
-            trustedTypesPolicy = _createTrustedTypesPolicy(trustedTypes, currentScript);
+          // Sign local variables required by `sanitize`. If the supplied policy's
+          // `createHTML` is circular (i.e. it calls `DOMPurify.sanitize`), this
+          // throws via the re-entrancy guard. Restore the previous policy first so
+          // the instance is not left in a poisoned state. See #1422.
+          try {
+            emptyHTML = _createTrustedHTML('');
+          } catch (error) {
+            trustedTypesPolicy = previousTrustedTypesPolicy;
+            throw error;
           }
-          // If creating the internal policy succeeded sign internal variables.
-          if (trustedTypesPolicy !== null && typeof emptyHTML === 'string') {
-            emptyHTML = trustedTypesPolicy.createHTML('');
+        } else if (cfg.TRUSTED_TYPES_POLICY === null) {
+          // Explicit opt-out for this call: perform no Trusted Types signing and
+          // create nothing (so a strict `trusted-types` CSP that disallows a
+          // `dompurify` policy can still call `sanitize` from inside its own
+          // policy — see #1422). Resetting to `undefined` rather than a sticky
+          // `null` also drops any previously retained caller policy, so it cannot
+          // resurface on a later call, while still allowing the next config-less
+          // call to restore the internal default policy. See GHSA-vxr8-fq34-vvx9.
+          trustedTypesPolicy = undefined;
+          emptyHTML = '';
+        } else {
+          // No policy supplied: keep the currently active policy if one is set — a
+          // previously supplied policy is intentionally sticky across config-less
+          // calls — otherwise fall back to the instance's own internal policy,
+          // created at most once. (A policy supplied for a *single* call still
+          // lingers by design; what must not linger is a policy whose configuration
+          // has been torn down via `clearConfig()`, which restores the default.)
+          if (trustedTypesPolicy === undefined) {
+            trustedTypesPolicy = _getDefaultTrustedTypesPolicy();
+          }
+          // Sign internal variables only when a policy is active. A falsy policy
+          // (Trusted Types unsupported, creation failed, or an explicit opt-out)
+          // leaves `emptyHTML` as a plain string, so we never call `.createHTML` on
+          // a non-policy and throw. See #1422.
+          if (trustedTypesPolicy && typeof emptyHTML === 'string') {
+            emptyHTML = _createTrustedHTML('');
           }
         }
         // Prevent further manipulation of configuration.
@@ -16972,6 +17123,77 @@
        * correctly. */
       const ALL_SVG_TAGS = addToSet({}, [...svg$1, ...svgFilters, ...svgDisallowed]);
       const ALL_MATHML_TAGS = addToSet({}, [...mathMl$1, ...mathMlDisallowed]);
+      /**
+       * Namespace rules for an element in the SVG namespace.
+       *
+       * @param tagName the element's lowercase tag name
+       * @param parent the (possibly simulated) parent node
+       * @param parentTagName the parent's lowercase tag name
+       * @returns true if a spec-compliant parser could produce this element
+       */
+      const _checkSvgNamespace = function _checkSvgNamespace(tagName, parent, parentTagName) {
+        // The only way to switch from HTML namespace to SVG
+        // is via <svg>. If it happens via any other tag, then
+        // it should be killed.
+        if (parent.namespaceURI === HTML_NAMESPACE) {
+          return tagName === 'svg';
+        }
+        // The only way to switch from MathML to SVG is via <svg>
+        // if the parent is either <annotation-xml> or a MathML
+        // text integration point.
+        if (parent.namespaceURI === MATHML_NAMESPACE) {
+          return tagName === 'svg' && (parentTagName === 'annotation-xml' || MATHML_TEXT_INTEGRATION_POINTS[parentTagName]);
+        }
+        // We only allow elements that are defined in SVG
+        // spec. All others are disallowed in SVG namespace.
+        return Boolean(ALL_SVG_TAGS[tagName]);
+      };
+      /**
+       * Namespace rules for an element in the MathML namespace.
+       *
+       * @param tagName the element's lowercase tag name
+       * @param parent the (possibly simulated) parent node
+       * @param parentTagName the parent's lowercase tag name
+       * @returns true if a spec-compliant parser could produce this element
+       */
+      const _checkMathMlNamespace = function _checkMathMlNamespace(tagName, parent, parentTagName) {
+        // The only way to switch from HTML namespace to MathML
+        // is via <math>. If it happens via any other tag, then
+        // it should be killed.
+        if (parent.namespaceURI === HTML_NAMESPACE) {
+          return tagName === 'math';
+        }
+        // The only way to switch from SVG to MathML is via
+        // <math> and HTML integration points
+        if (parent.namespaceURI === SVG_NAMESPACE) {
+          return tagName === 'math' && HTML_INTEGRATION_POINTS[parentTagName];
+        }
+        // We only allow elements that are defined in MathML
+        // spec. All others are disallowed in MathML namespace.
+        return Boolean(ALL_MATHML_TAGS[tagName]);
+      };
+      /**
+       * Namespace rules for an element in the HTML namespace.
+       *
+       * @param tagName the element's lowercase tag name
+       * @param parent the (possibly simulated) parent node
+       * @param parentTagName the parent's lowercase tag name
+       * @returns true if a spec-compliant parser could produce this element
+       */
+      const _checkHtmlNamespace = function _checkHtmlNamespace(tagName, parent, parentTagName) {
+        // The only way to switch from SVG to HTML is via
+        // HTML integration points, and from MathML to HTML
+        // is via MathML text integration points
+        if (parent.namespaceURI === SVG_NAMESPACE && !HTML_INTEGRATION_POINTS[parentTagName]) {
+          return false;
+        }
+        if (parent.namespaceURI === MATHML_NAMESPACE && !MATHML_TEXT_INTEGRATION_POINTS[parentTagName]) {
+          return false;
+        }
+        // We disallow tags that are specific for MathML
+        // or SVG and should never appear in HTML namespace
+        return !ALL_MATHML_TAGS[tagName] && (COMMON_SVG_AND_HTML_ELEMENTS[tagName] || !ALL_SVG_TAGS[tagName]);
+      };
       /**
        * @param element a DOM element whose namespace is being checked
        * @returns Return false if the element has a
@@ -16994,51 +17216,13 @@
           return false;
         }
         if (element.namespaceURI === SVG_NAMESPACE) {
-          // The only way to switch from HTML namespace to SVG
-          // is via <svg>. If it happens via any other tag, then
-          // it should be killed.
-          if (parent.namespaceURI === HTML_NAMESPACE) {
-            return tagName === 'svg';
-          }
-          // The only way to switch from MathML to SVG is via`
-          // svg if parent is either <annotation-xml> or MathML
-          // text integration points.
-          if (parent.namespaceURI === MATHML_NAMESPACE) {
-            return tagName === 'svg' && (parentTagName === 'annotation-xml' || MATHML_TEXT_INTEGRATION_POINTS[parentTagName]);
-          }
-          // We only allow elements that are defined in SVG
-          // spec. All others are disallowed in SVG namespace.
-          return Boolean(ALL_SVG_TAGS[tagName]);
+          return _checkSvgNamespace(tagName, parent, parentTagName);
         }
         if (element.namespaceURI === MATHML_NAMESPACE) {
-          // The only way to switch from HTML namespace to MathML
-          // is via <math>. If it happens via any other tag, then
-          // it should be killed.
-          if (parent.namespaceURI === HTML_NAMESPACE) {
-            return tagName === 'math';
-          }
-          // The only way to switch from SVG to MathML is via
-          // <math> and HTML integration points
-          if (parent.namespaceURI === SVG_NAMESPACE) {
-            return tagName === 'math' && HTML_INTEGRATION_POINTS[parentTagName];
-          }
-          // We only allow elements that are defined in MathML
-          // spec. All others are disallowed in MathML namespace.
-          return Boolean(ALL_MATHML_TAGS[tagName]);
+          return _checkMathMlNamespace(tagName, parent, parentTagName);
         }
         if (element.namespaceURI === HTML_NAMESPACE) {
-          // The only way to switch from SVG to HTML is via
-          // HTML integration points, and from MathML to HTML
-          // is via MathML text integration points
-          if (parent.namespaceURI === SVG_NAMESPACE && !HTML_INTEGRATION_POINTS[parentTagName]) {
-            return false;
-          }
-          if (parent.namespaceURI === MATHML_NAMESPACE && !MATHML_TEXT_INTEGRATION_POINTS[parentTagName]) {
-            return false;
-          }
-          // We disallow tags that are specific for MathML
-          // or SVG and should never appear in HTML namespace
-          return !ALL_MATHML_TAGS[tagName] && (COMMON_SVG_AND_HTML_ELEMENTS[tagName] || !ALL_SVG_TAGS[tagName]);
+          return _checkHtmlNamespace(tagName, parent, parentTagName);
         }
         // For XHTML and XML documents that support custom namespaces
         if (PARSER_MEDIA_TYPE === 'application/xhtml+xml' && ALLOWED_NAMESPACES[element.namespaceURI]) {
@@ -17063,7 +17247,74 @@
           // eslint-disable-next-line unicorn/prefer-dom-node-remove
           getParentNode(node).removeChild(node);
         } catch (_) {
+          /* The normal detach failed — this is reached for a parentless node
+             (getParentNode() is null, so .removeChild throws). Element.prototype
+             .remove() is itself a spec no-op on a parentless node, so a recorded
+             "removal" would otherwise hand the caller back an intact,
+             payload-bearing node (e.g. a detached IN_PLACE root the mXSS canary or
+             the style-with-element-child rule decided to kill). Fail closed by
+             throwing — exactly as a clobbered root does at the IN_PLACE entry —
+             rather than trying to "neutralize" the node via its own methods.
+             Neutralizing would mean calling getAttributeNames()/removeAttribute()
+             on the node, both of which a <form> root can clobber via a named child
+             (and _isClobbered does not even probe getAttributeNames), so the
+             neutralize step could itself be silently defeated, leaving the payload
+             intact. A throw touches only the cached, clobber-safe remove() and
+             getParentNode(). Generalizes GHSA-r47g-fvhr-h676 (clobbered-form root)
+             to every root-kill reason. REPORT-3.
+                    This lives inside the catch, so it never fires for a normally-removed
+             in-tree node: those have a parent, removeChild() succeeds, and the
+             catch is not entered. Only a kept (parentless) root reaches here. */
           remove(node);
+          if (!getParentNode(node)) {
+            throw typeErrorCreate('a node selected for removal could not be detached from its tree ' + 'and cannot be safely returned; refusing to sanitize in place');
+          }
+        }
+      };
+      /**
+       * _neutralizeRoot
+       *
+       * Fail-closed teardown of an in-place root after the sanitize walk aborts
+       * (campaign-3 F2). An internal throw mid-walk — e.g. a page-registered
+       * custom element's reaction detaches a node so `_forceRemove`'s deliberate
+       * parentless guard throws, or any other re-entrant engine mutation — would
+       * otherwise leave the caller's *live* tree half-sanitized, with everything
+       * after the abort point still carrying its handlers. There is no safe way
+       * to resume the walk (the tree mutated under us), so we strip the root bare:
+       * remove every child and every attribute, then let the caller's catch see
+       * the original error. Clobber-safe (cached `remove`/`childNodes`/`attributes`
+       * getters; the root was already clobber-pre-flighted at the IN_PLACE entry).
+       *
+       * @param root the in-place root to empty
+       */
+      const _neutralizeRoot = function _neutralizeRoot(root) {
+        const childNodes = getChildNodes(root);
+        if (childNodes) {
+          const snapshot = [];
+          arrayForEach(childNodes, child => {
+            arrayPush(snapshot, child);
+          });
+          arrayForEach(snapshot, child => {
+            try {
+              remove(child);
+            } catch (_) {
+              /* Best-effort teardown; a still-attached child is handled below */
+            }
+          });
+        }
+        const attributes = getAttributes(root);
+        if (attributes) {
+          for (let i = attributes.length - 1; i >= 0; --i) {
+            const attribute = attributes[i];
+            const name = attribute && attribute.name;
+            if (typeof name === 'string') {
+              try {
+                root.removeAttribute(name);
+              } catch (_) {
+                /* Clobbered removeAttribute — ignore (fail-closed best effort) */
+              }
+            }
+          }
         }
       };
       /**
@@ -17099,6 +17350,72 @@
         }
       };
       /**
+       * _stripDisallowedAttributes
+       *
+       * Removes every attribute the active configuration does not allow from a
+       * single element, using the same allowlist as the main attribute pass (so
+       * `on*` handlers go, but no `/^on/` blocklist is introduced). Used only to
+       * neutralise nodes that are being discarded from an in-place tree.
+       *
+       * @param element the element to strip
+       */
+      const _stripDisallowedAttributes = function _stripDisallowedAttributes(element) {
+        const attributes = getAttributes(element);
+        if (!attributes) {
+          return;
+        }
+        for (let i = attributes.length - 1; i >= 0; --i) {
+          const attribute = attributes[i];
+          const name = attribute && attribute.name;
+          if (typeof name !== 'string' || ALLOWED_ATTR[transformCaseFunc(name)]) {
+            continue;
+          }
+          try {
+            element.removeAttribute(name);
+          } catch (_) {
+            /* Clobbered removeAttribute on a doomed node — ignore */
+          }
+        }
+      };
+      /**
+       * _neutralizeSubtree
+       *
+       * Completes the audit-5 F1 fix across every removal path. The KEEP_CONTENT
+       * move-hoist neutralises only disallowed-tag removals; clobber, mXSS-canary,
+       * namespace, comment, processing-instruction and KEEP_CONTENT:false removals
+       * all drop their subtree wholesale via `_forceRemove`. On the IN_PLACE path
+       * those dropped nodes are detached from the caller's LIVE tree but a
+       * handler-bearing original among them (an `<img onerror>`/`<video>` that was
+       * loading) keeps its queued resource event, which fires in page scope after
+       * sanitize returns. This walks a removed subtree and strips every attribute
+       * the active configuration does not allow — so `on*` handlers are cancelled
+       * through the SAME allowlist that governs kept nodes, not a separate `/^on/`
+       * blocklist. Run synchronously before sanitize returns, i.e. before any
+       * queued event can fire. Hook-free by design: these nodes leave the output,
+       * so firing attribute hooks for them would be surprising. Clobber-safe reads;
+       * a doomed clobbered node may shadow `removeAttribute` (its own attributes are
+       * irrelevant — it is discarded — while its non-clobbered descendants, e.g.
+       * the `<img>`, are reached and scrubbed).
+       *
+       * @param root the root of a removed subtree to neutralise
+       */
+      const _neutralizeSubtree = function _neutralizeSubtree(root) {
+        const stack = [root];
+        while (stack.length > 0) {
+          const node = stack.pop();
+          const nodeType = getNodeType ? getNodeType(node) : node.nodeType;
+          if (nodeType === NODE_TYPE.element) {
+            _stripDisallowedAttributes(node);
+          }
+          const childNodes = getChildNodes(node);
+          if (childNodes) {
+            for (let i = childNodes.length - 1; i >= 0; --i) {
+              stack.push(childNodes[i]);
+            }
+          }
+        }
+      };
+      /**
        * _initDocument
        *
        * @param dirty - a string of dirty markup
@@ -17119,7 +17436,7 @@
           // Root of XHTML doc must contain xmlns declaration (see https://www.w3.org/TR/xhtml1/normative.html#strict)
           dirty = '<html xmlns="http://www.w3.org/1999/xhtml"><head></head><body>' + dirty + '</body></html>';
         }
-        const dirtyPayload = trustedTypesPolicy ? trustedTypesPolicy.createHTML(dirty) : dirty;
+        const dirtyPayload = trustedTypesPolicy ? _createTrustedHTML(dirty) : dirty;
         /*
          * Use the DOMParser API by default, fallback later if needs be
          * DOMParser not work for svg when has multiple root element.
@@ -17160,6 +17477,20 @@
         NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_COMMENT | NodeFilter.SHOW_TEXT | NodeFilter.SHOW_PROCESSING_INSTRUCTION | NodeFilter.SHOW_CDATA_SECTION, null);
       };
       /**
+       * Replace template expression syntax (mustache, ERB, template
+       * literal) with a space; shared by all SAFE_FOR_TEMPLATES scrub
+       * sites. Order matters: mustache, then ERB, then template literal.
+       *
+       * @param value the string to scrub
+       * @returns the scrubbed string
+       */
+      const _stripTemplateExpressions = function _stripTemplateExpressions(value) {
+        value = stringReplace(value, MUSTACHE_EXPR$1, ' ');
+        value = stringReplace(value, ERB_EXPR$1, ' ');
+        value = stringReplace(value, TMPLIT_EXPR$1, ' ');
+        return value;
+      };
+      /**
        * Strip template-engine expressions ({{...}}, ${...}, <%...%>) from the
        * character data of an element subtree. Used as the final safety net for
        * SAFE_FOR_TEMPLATES on every DOM-returning code path so that expressions
@@ -17178,29 +17509,100 @@
        *
        * @param node The root element whose character data should be scrubbed.
        */
-      const _scrubTemplateExpressions = function _scrubTemplateExpressions(node) {
+      const _scrubTemplateExpressions2 = function _scrubTemplateExpressions(node) {
+        var _node$querySelectorAl;
         node.normalize();
         const walker = createNodeIterator.call(node.ownerDocument || node, node,
         // eslint-disable-next-line no-bitwise
         NodeFilter.SHOW_TEXT | NodeFilter.SHOW_COMMENT | NodeFilter.SHOW_CDATA_SECTION | NodeFilter.SHOW_PROCESSING_INSTRUCTION, null);
         let currentNode = walker.nextNode();
         while (currentNode) {
-          let data = currentNode.data;
-          arrayForEach([MUSTACHE_EXPR$1, ERB_EXPR$1, TMPLIT_EXPR$1], expr => {
-            data = stringReplace(data, expr, ' ');
-          });
-          currentNode.data = data;
+          currentNode.data = _stripTemplateExpressions(currentNode.data);
           currentNode = walker.nextNode();
+        }
+        // NodeIterator does not descend into <template>.content per the DOM spec,
+        // so we must explicitly recurse into each template's content fragment,
+        // mirroring the approach used by _sanitizeShadowDOM.
+        const templates = (_node$querySelectorAl = node.querySelectorAll) === null || _node$querySelectorAl === void 0 ? void 0 : _node$querySelectorAl.call(node, 'template');
+        if (templates) {
+          arrayForEach(templates, tmpl => {
+            if (_isDocumentFragment(tmpl.content)) {
+              _scrubTemplateExpressions2(tmpl.content);
+            }
+          });
         }
       };
       /**
        * _isClobbered
        *
+       * Detect DOM-clobbering on HTMLFormElement nodes. Form is the only HTML
+       * interface with [LegacyOverrideBuiltIns]; a descendant element with a
+       * `name` attribute matching a prototype property shadows that property
+       * on direct reads. We use this check at the IN_PLACE entry-point and
+       * during attribute sanitization to refuse clobbered forms.
+       *
        * @param element element to check for clobbering attacks
        * @return true if clobbered, false if safe
        */
       const _isClobbered = function _isClobbered(element) {
-        return element instanceof HTMLFormElement && (typeof element.nodeName !== 'string' || typeof element.textContent !== 'string' || typeof element.removeChild !== 'function' || !(element.attributes instanceof NamedNodeMap) || typeof element.removeAttribute !== 'function' || typeof element.setAttribute !== 'function' || typeof element.namespaceURI !== 'string' || typeof element.insertBefore !== 'function' || typeof element.hasChildNodes !== 'function');
+        // Realm-independent tag-name probe. If we can't determine the tag
+        // name at all, we can't reason about clobbering — return false
+        // (the caller's other defences still apply).
+        const realTagName = getNodeName ? getNodeName(element) : null;
+        if (typeof realTagName !== 'string') {
+          return false;
+        }
+        if (transformCaseFunc(realTagName) !== 'form') {
+          return false;
+        }
+        return typeof element.nodeName !== 'string' || typeof element.textContent !== 'string' || typeof element.removeChild !== 'function' ||
+        // Realm-safe NamedNodeMap detection: equality against the cached
+        // prototype getter. Clobbered .attributes (e.g. <input name="attributes">)
+        // makes the direct read diverge from the cached read; a clean form
+        // (same-realm OR foreign-realm) has both reads pointing at the same
+        // canonical NamedNodeMap.
+        element.attributes !== getAttributes(element) || typeof element.removeAttribute !== 'function' || typeof element.setAttribute !== 'function' || typeof element.namespaceURI !== 'string' || typeof element.insertBefore !== 'function' || typeof element.hasChildNodes !== 'function' ||
+        // NodeType clobbering probe. Cached Node.prototype.nodeType getter
+        // returns the integer 1 for any Element regardless of realm; direct
+        // read on a clobbered form (e.g. <input name="nodeType">) returns
+        // the named child element. Cheap addition — nodeType is read from
+        // an internal slot, no serialization cost — and removes a residual
+        // clobbering surface used by several mXSS / PI / comment branches
+        // in _sanitizeElements that compare currentNode.nodeType directly.
+        element.nodeType !== getNodeType(element) ||
+        // HTMLFormElement has [LegacyOverrideBuiltIns]: a descendant named
+        // "childNodes" shadows the prototype getter. Direct reads of
+        // form.childNodes from a clobbered form return the named child
+        // instead of the real NodeList, so any walk that reads it directly
+        // skips the form's real children. Compare the direct read to the
+        // cached Node.prototype getter — when the form's named-property
+        // getter intercepts the read, the two values differ and we flag
+        // the form. This catches every clobbering child type (input,
+        // select, etc.) regardless of whether the named child happens to
+        // carry a numeric .length, which a typeof-based probe would miss
+        // (e.g. HTMLSelectElement.length is a defined unsigned-long).
+        element.childNodes !== getChildNodes(element);
+      };
+      /**
+       * Checks whether the given value is a DocumentFragment from any realm.
+       *
+       * The realm-independent replacement reads `nodeType` through the cached
+       * Node.prototype getter and compares to the DOCUMENT_FRAGMENT_NODE
+       * constant (11). nodeType is a numeric value resolved from the node's
+       * internal slot, identical across realms for the same kind of node.
+       *
+       * @param value object to check
+       * @return true if value is a DocumentFragment-shaped node from any realm
+       */
+      const _isDocumentFragment = function _isDocumentFragment(value) {
+        if (!getNodeType || typeof value !== 'object' || value === null) {
+          return false;
+        }
+        try {
+          return getNodeType(value) === NODE_TYPE.documentFragment;
+        } catch (_) {
+          return false;
+        }
       };
       /**
        * Checks whether the given object is a DOM node, including nodes that
@@ -17209,12 +17611,6 @@
        * realm-bound: nodes from a different window failed it, causing
        * sanitize() to silently stringify them and reset IN_PLACE to false,
        * returning the original node unsanitized. See GHSA-4w3q-35jp-p934.
-       *
-       * Implementation: call the cached `nodeType` getter from Node.prototype
-       * directly on the value. This bypasses any clobbered instance property
-       * (e.g. a child element named "nodeType") and works across realms
-       * because the WebIDL `nodeType` getter reads an internal slot that
-       * every real Node has, regardless of which window minted it.
        *
        * @param value object to check whether it's a DOM node
        * @return true if value is a DOM node from any realm
@@ -17230,10 +17626,104 @@
         }
       };
       function _executeHooks(hooks, currentNode, data) {
+        if (hooks.length === 0) {
+          return;
+        }
         arrayForEach(hooks, hook => {
           hook.call(DOMPurify, currentNode, data, CONFIG);
         });
       }
+      /**
+       * Structural-threat checks that condemn a node regardless of the
+       * allowlists: mXSS via namespace confusion, risky CSS construction,
+       * processing instructions, markup-bearing comments. Pure predicate;
+       * the caller removes. Check order is load-bearing.
+       *
+       * @param currentNode the node to inspect
+       * @param tagName the node's transformCaseFunc'd tag name
+       * @return true if the node must be removed
+       */
+      const _isUnsafeNode = function _isUnsafeNode(currentNode, tagName) {
+        /* Detect mXSS attempts abusing namespace confusion */
+        if (SAFE_FOR_XML && currentNode.hasChildNodes() && !_isNode(currentNode.firstElementChild) && regExpTest(ELEMENT_MARKUP_PROBE, currentNode.textContent) && regExpTest(ELEMENT_MARKUP_PROBE, currentNode.innerHTML)) {
+          return true;
+        }
+        /* Remove risky CSS construction leading to mXSS */
+        if (SAFE_FOR_XML && currentNode.namespaceURI === HTML_NAMESPACE && tagName === 'style' && _isNode(currentNode.firstElementChild)) {
+          return true;
+        }
+        /* Remove any occurrence of processing instructions */
+        if (currentNode.nodeType === NODE_TYPE.processingInstruction) {
+          return true;
+        }
+        /* Remove any kind of possibly harmful comments */
+        if (SAFE_FOR_XML && currentNode.nodeType === NODE_TYPE.comment && regExpTest(COMMENT_MARKUP_PROBE, currentNode.data)) {
+          return true;
+        }
+        return false;
+      };
+      /**
+       * Handle a node whose tag is forbidden or not allowlisted: keep
+       * allowed custom elements (false return exits _sanitizeElements
+       * early - namespace/fallback checks and the afterSanitizeElements
+       * hook are intentionally skipped for kept custom elements), else
+       * hoist content per KEEP_CONTENT and remove.
+       *
+       * @param currentNode the disallowed node
+       * @param tagName the node's transformCaseFunc'd tag name
+       * @return true if the node was removed, false if kept
+       */
+      const _sanitizeDisallowedNode = function _sanitizeDisallowedNode(currentNode, tagName) {
+        /* Check if we have a custom element to handle */
+        if (!FORBID_TAGS[tagName] && _isBasicCustomElement(tagName)) {
+          if (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, tagName)) {
+            return false;
+          }
+          if (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(tagName)) {
+            return false;
+          }
+        }
+        /* Keep content except for bad-listed elements.
+             Use the cached prototype getters exclusively — the previous code
+             had `|| currentNode.parentNode` / `|| currentNode.childNodes`
+             fallbacks, but the cached getters always return the canonical
+             value (or null for a real parent-less node), so the fallback
+             path was dead in safe cases and a clobbering surface in unsafe
+             ones. Falsy cached results stay falsy; the `if (childNodes &&
+             parentNode)` check already gates correctly. */
+        if (KEEP_CONTENT && !FORBID_CONTENTS[tagName]) {
+          const parentNode = getParentNode(currentNode);
+          const childNodes = getChildNodes(currentNode);
+          if (childNodes && parentNode) {
+            const childCount = childNodes.length;
+            /* In-place: hoist the *original* children so the iterator visits
+                 and sanitises them through the same allowlist pass as every other
+                 node. The caller built the tree in the live document, so the
+                 originals carry already-queued resource events (`<img onerror>`,
+                 `<video>`/`<audio>` error, lazy/`onload`, …); cloning would leave
+                 those originals detached but still armed, firing in page scope
+                 while the returned tree looked clean. Moving is safe in-place: the
+                 root is pre-validated as an allowed tag and so is never the node
+                 being removed, which keeps `parentNode` inside the iterator root
+                 and the relocated child inside the serialised tree.
+                          Otherwise (string / DOM-copy paths): clone. The iterator is rooted
+                 at — and the result serialised from — `body`, so a restrictive
+                 ALLOWED_TAGS that removes `body` itself must leave its content in
+                 place, which only cloning does; and those paths parse into an
+                 inert document, so their discarded originals never had a queued
+                 event to neutralise.
+                          `childNodes` is live; a tail-to-head walk keeps `childNodes[i]`
+                 valid whether we move (drops the trailing entry) or clone (leaves
+                 the list intact). */
+            for (let i = childCount - 1; i >= 0; --i) {
+              const hoisted = IN_PLACE ? childNodes[i] : cloneNode(childNodes[i], true);
+              parentNode.insertBefore(hoisted, getNextSibling(currentNode));
+            }
+          }
+        }
+        _forceRemove(currentNode);
+        return true;
+      };
       /**
        * _sanitizeElements
        *
@@ -17244,7 +17734,6 @@
        * @return true if node was killed, false if left alive
        */
       const _sanitizeElements = function _sanitizeElements(currentNode) {
-        let content = null;
         /* Execute a hook if present */
         _executeHooks(hooks.beforeSanitizeElements, currentNode, null);
         /* Check if element is clobbered or can clobber */
@@ -17253,75 +17742,41 @@
           return true;
         }
         /* Now let's check the element's type and name */
-        const tagName = transformCaseFunc(currentNode.nodeName);
+        const tagName = transformCaseFunc(getNodeName ? getNodeName(currentNode) : currentNode.nodeName);
         /* Execute a hook if present */
         _executeHooks(hooks.uponSanitizeElement, currentNode, {
           tagName,
           allowedTags: ALLOWED_TAGS
         });
-        /* Detect mXSS attempts abusing namespace confusion */
-        if (SAFE_FOR_XML && currentNode.hasChildNodes() && !_isNode(currentNode.firstElementChild) && regExpTest(/<[/\w!]/g, currentNode.innerHTML) && regExpTest(/<[/\w!]/g, currentNode.textContent)) {
-          _forceRemove(currentNode);
-          return true;
-        }
-        /* Remove risky CSS construction leading to mXSS */
-        if (SAFE_FOR_XML && currentNode.namespaceURI === HTML_NAMESPACE && tagName === 'style' && _isNode(currentNode.firstElementChild)) {
-          _forceRemove(currentNode);
-          return true;
-        }
-        /* Remove any occurrence of processing instructions */
-        if (currentNode.nodeType === NODE_TYPE.progressingInstruction) {
-          _forceRemove(currentNode);
-          return true;
-        }
-        /* Remove any kind of possibly harmful comments */
-        if (SAFE_FOR_XML && currentNode.nodeType === NODE_TYPE.comment && regExpTest(/<[/\w]/g, currentNode.data)) {
+        /* Remove mXSS vectors, processing instructions and risky comments */
+        if (_isUnsafeNode(currentNode, tagName)) {
           _forceRemove(currentNode);
           return true;
         }
         /* Remove element if anything forbids its presence */
         if (FORBID_TAGS[tagName] || !(EXTRA_ELEMENT_HANDLING.tagCheck instanceof Function && EXTRA_ELEMENT_HANDLING.tagCheck(tagName)) && !ALLOWED_TAGS[tagName]) {
-          /* Check if we have a custom element to handle */
-          if (!FORBID_TAGS[tagName] && _isBasicCustomElement(tagName)) {
-            if (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, tagName)) {
-              return false;
-            }
-            if (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(tagName)) {
-              return false;
-            }
-          }
-          /* Keep content except for bad-listed elements */
-          if (KEEP_CONTENT && !FORBID_CONTENTS[tagName]) {
-            const parentNode = getParentNode(currentNode) || currentNode.parentNode;
-            const childNodes = getChildNodes(currentNode) || currentNode.childNodes;
-            if (childNodes && parentNode) {
-              const childCount = childNodes.length;
-              for (let i = childCount - 1; i >= 0; --i) {
-                const childClone = cloneNode(childNodes[i], true);
-                parentNode.insertBefore(childClone, getNextSibling(currentNode));
-              }
-            }
-          }
-          _forceRemove(currentNode);
-          return true;
+          return _sanitizeDisallowedNode(currentNode, tagName);
         }
-        /* Check whether element has a valid namespace */
-        if (currentNode instanceof Element && !_checkValidNamespace(currentNode)) {
+        /* Check whether element has a valid namespace.
+           Realm-safe check (GHSA-hpcv-96wg-7vj8): use the cached Node.prototype
+           nodeType getter rather than `instanceof Element`, which is realm-
+           bound and short-circuits to false for any node minted in a different
+           realm — letting a foreign-realm element with a forbidden namespace
+           slip past the namespace check entirely. */
+        const nt = getNodeType ? getNodeType(currentNode) : currentNode.nodeType;
+        if (nt === NODE_TYPE.element && !_checkValidNamespace(currentNode)) {
           _forceRemove(currentNode);
           return true;
         }
         /* Make sure that older browsers don't get fallback-tag mXSS */
-        if ((tagName === 'noscript' || tagName === 'noembed' || tagName === 'noframes') && regExpTest(/<\/no(script|embed|frames)/i, currentNode.innerHTML)) {
+        if ((tagName === 'noscript' || tagName === 'noembed' || tagName === 'noframes') && regExpTest(FALLBACK_TAG_CLOSE, currentNode.innerHTML)) {
           _forceRemove(currentNode);
           return true;
         }
         /* Sanitize element content to be template-safe */
         if (SAFE_FOR_TEMPLATES && currentNode.nodeType === NODE_TYPE.text) {
           /* Get the element's text content */
-          content = currentNode.textContent;
-          arrayForEach([MUSTACHE_EXPR$1, ERB_EXPR$1, TMPLIT_EXPR$1], expr => {
-            content = stringReplace(content, expr, ' ');
-          });
+          const content = _stripTemplateExpressions(currentNode.textContent);
           if (currentNode.textContent !== content) {
             arrayPush(DOMPurify.removed, {
               element: currentNode.cloneNode()
@@ -17356,7 +17811,7 @@
             (https://html.spec.whatwg.org/multipage/dom.html#embedding-custom-non-visible-data-with-the-data-*-attributes)
             XML-compatible (https://html.spec.whatwg.org/multipage/infrastructure.html#xml-compatible and http://www.w3.org/TR/xml/#d0e804)
             We don't need to check the value; it's always URI safe. */
-        if (ALLOW_DATA_ATTR && !FORBID_ATTR[lcName] && regExpTest(DATA_ATTR$1, lcName)) ; else if (ALLOW_ARIA_ATTR && regExpTest(ARIA_ATTR$1, lcName)) ; else if (!nameIsPermitted || FORBID_ATTR[lcName]) {
+        if (ALLOW_DATA_ATTR && regExpTest(DATA_ATTR$1, lcName)) ; else if (ALLOW_ARIA_ATTR && regExpTest(ARIA_ATTR$1, lcName)) ; else if (!nameIsPermitted) {
           if (
           // First condition does a very basic check if a) it's basically a valid custom element tagname AND
           // b) if the tagName passes whatever the user has configured for CUSTOM_ELEMENT_HANDLING.tagNameCheck
@@ -17389,6 +17844,63 @@
         return !RESERVED_CUSTOM_ELEMENT_NAMES[stringToLowerCase(tagName)] && regExpTest(CUSTOM_ELEMENT$1, tagName);
       };
       /**
+       * Wrap an attribute value in the matching Trusted Types object when
+       * the active policy requires it. Namespaced attributes pass through
+       * unchanged (no TT support yet, see
+       * https://bugs.chromium.org/p/chromium/issues/detail?id=1305293).
+       *
+       * @param lcTag lowercase tag name of the containing element
+       * @param lcName lowercase attribute name
+       * @param namespaceURI the attribute's namespace, if any
+       * @param value the attribute value to wrap
+       * @return the value, wrapped when Trusted Types demand it
+       */
+      const _applyTrustedTypesToAttribute = function _applyTrustedTypesToAttribute(lcTag, lcName, namespaceURI, value) {
+        if (trustedTypesPolicy && typeof trustedTypes === 'object' && typeof trustedTypes.getAttributeType === 'function' && !namespaceURI) {
+          switch (trustedTypes.getAttributeType(lcTag, lcName)) {
+            case 'TrustedHTML':
+              {
+                return _createTrustedHTML(value);
+              }
+            case 'TrustedScriptURL':
+              {
+                return _createTrustedScriptURL(value);
+              }
+          }
+        }
+        return value;
+      };
+      /**
+       * Write a modified attribute value back onto the element. On
+       * success, re-probe for clobbering introduced by the new value and
+       * remove the element when found; otherwise pop the removal entry
+       * recorded by the earlier _removeAttribute (long-standing pairing
+       * with the SANITIZE_NAMED_PROPS path - do not "fix" casually). On
+       * failure, remove the attribute instead.
+       *
+       * @param currentNode the element carrying the attribute
+       * @param name the attribute name as present on the element
+       * @param namespaceURI the attribute's namespace, if any
+       * @param value the new attribute value
+       */
+      const _setAttributeValue = function _setAttributeValue(currentNode, name, namespaceURI, value) {
+        try {
+          if (namespaceURI) {
+            currentNode.setAttributeNS(namespaceURI, name, value);
+          } else {
+            /* Fallback to setAttribute() for browser-unrecognized namespaces e.g. "x-schema". */
+            currentNode.setAttribute(name, value);
+          }
+          if (_isClobbered(currentNode)) {
+            _forceRemove(currentNode);
+          } else {
+            arrayPop(DOMPurify.removed);
+          }
+        } catch (_) {
+          _removeAttribute(name, currentNode);
+        }
+      };
+      /**
        * _sanitizeAttributes
        *
        * @protect attributes
@@ -17414,6 +17926,7 @@
           forceKeepAttr: undefined
         };
         let l = attributes.length;
+        const lcTag = transformCaseFunc(currentNode.nodeName);
         /* Go backwards over all attributes; safely remove bad ones */
         while (l--) {
           const attr = attributes[l];
@@ -17451,7 +17964,7 @@
             _removeAttribute(name, currentNode);
             continue;
           }
-          /* Did the hooks approve of the attribute? */
+          /* Did the hooks force-keep the attribute? */
           if (hookEvent.forceKeepAttr) {
             continue;
           }
@@ -17461,56 +17974,24 @@
             continue;
           }
           /* Work around a security issue in jQuery 3.0 */
-          if (!ALLOW_SELF_CLOSE_IN_ATTR && regExpTest(/\/>/i, value)) {
+          if (!ALLOW_SELF_CLOSE_IN_ATTR && regExpTest(SELF_CLOSING_TAG, value)) {
             _removeAttribute(name, currentNode);
             continue;
           }
           /* Sanitize attribute content to be template-safe */
           if (SAFE_FOR_TEMPLATES) {
-            arrayForEach([MUSTACHE_EXPR$1, ERB_EXPR$1, TMPLIT_EXPR$1], expr => {
-              value = stringReplace(value, expr, ' ');
-            });
+            value = _stripTemplateExpressions(value);
           }
           /* Is `value` valid for this attribute? */
-          const lcTag = transformCaseFunc(currentNode.nodeName);
           if (!_isValidAttribute(lcTag, lcName, value)) {
             _removeAttribute(name, currentNode);
             continue;
           }
           /* Handle attributes that require Trusted Types */
-          if (trustedTypesPolicy && typeof trustedTypes === 'object' && typeof trustedTypes.getAttributeType === 'function') {
-            if (namespaceURI) ; else {
-              switch (trustedTypes.getAttributeType(lcTag, lcName)) {
-                case 'TrustedHTML':
-                  {
-                    value = trustedTypesPolicy.createHTML(value);
-                    break;
-                  }
-                case 'TrustedScriptURL':
-                  {
-                    value = trustedTypesPolicy.createScriptURL(value);
-                    break;
-                  }
-              }
-            }
-          }
+          value = _applyTrustedTypesToAttribute(lcTag, lcName, namespaceURI, value);
           /* Handle invalid data-* attribute set by try-catching it */
           if (value !== initValue) {
-            try {
-              if (namespaceURI) {
-                currentNode.setAttributeNS(namespaceURI, name, value);
-              } else {
-                /* Fallback to setAttribute() for browser-unrecognized namespaces e.g. "x-schema". */
-                currentNode.setAttribute(name, value);
-              }
-              if (_isClobbered(currentNode)) {
-                _forceRemove(currentNode);
-              } else {
-                arrayPop(DOMPurify.removed);
-              }
-            } catch (_) {
-              _removeAttribute(name, currentNode);
-            }
+            _setAttributeValue(currentNode, name, namespaceURI, value);
           }
         }
         /* Execute a hook if present */
@@ -17533,9 +18014,30 @@
           _sanitizeElements(shadowNode);
           /* Check attributes next */
           _sanitizeAttributes(shadowNode);
-          /* Deep shadow DOM detected */
-          if (shadowNode.content instanceof DocumentFragment) {
+          /* Deep shadow DOM detected.
+             Realm-safe check (GHSA-hpcv-96wg-7vj8): use nodeType against the
+             DOCUMENT_FRAGMENT_NODE constant rather than instanceof, so we
+             recurse into <template>.content from foreign realms too. */
+          if (_isDocumentFragment(shadowNode.content)) {
             _sanitizeShadowDOM2(shadowNode.content);
+          }
+          /* An element iterated here may itself host an attached
+             shadow root. The default NodeIterator does not enter shadow
+             trees, so a shadow root nested inside template.content was
+             previously reached by no walk at all (the pre-pass at
+             _sanitizeAttachedShadowRoots descends via childNodes, which
+             doesn't enter template.content; the template-content recursion
+             above iterates the content but never inspected shadowRoot).
+             Walk it explicitly. The nodeType guard avoids reading
+             shadowRoot off text / comment / CDATA / PI nodes that the
+             iterator also surfaces. */
+          const shadowNodeType = getNodeType ? getNodeType(shadowNode) : shadowNode.nodeType;
+          if (shadowNodeType === NODE_TYPE.element) {
+            const innerSr = getShadowRoot(shadowNode);
+            if (_isDocumentFragment(innerSr)) {
+              _sanitizeAttachedShadowRoots(innerSr);
+              _sanitizeShadowDOM2(innerSr);
+            }
           }
         }
         /* Execute a hook if present */
@@ -17560,28 +18062,83 @@
        *
        * @param root the subtree root to walk for attached shadow roots
        */
-      const _sanitizeAttachedShadowRoots2 = function _sanitizeAttachedShadowRoots(root) {
-        if (root.nodeType === NODE_TYPE.element && root.shadowRoot instanceof DocumentFragment) {
-          const sr = root.shadowRoot;
-          // Recurse first so that nested shadow roots are reached even if
-          // _sanitizeShadowDOM removes hosts at this level.
-          _sanitizeAttachedShadowRoots2(sr);
-          _sanitizeShadowDOM2(sr);
-        }
-        // Snapshot children before recursing. Sanitization of one subtree
-        // (e.g. via an uponSanitizeShadowNode hook) may detach siblings,
-        // and naive nextSibling traversal would silently skip the rest of
-        // the list once a node is detached.
-        const childNodes = root.childNodes;
-        if (!childNodes) {
-          return;
-        }
-        const snapshot = [];
-        arrayForEach(childNodes, child => {
-          arrayPush(snapshot, child);
-        });
-        for (const child of snapshot) {
-          _sanitizeAttachedShadowRoots2(child);
+      const _sanitizeAttachedShadowRoots = function _sanitizeAttachedShadowRoots(root) {
+        /* Iterative (explicit stack) rather than per-child recursion. DOM APIs
+           impose no depth cap, so an attacker-shaped tree (JSON/CRDT/editor data
+           built straight into the DOM — the IN_PLACE surface) deeper than the JS
+           call-stack budget would otherwise overflow native recursion here and
+           throw at the IN_PLACE entry pre-pass, before a single node is
+           sanitized, leaving the caller's live tree untouched (fail-open). See
+           campaign-3 F4. A heap stack keeps depth off the call stack.
+                Each work item is either a node to descend into, or a deferred
+           `_sanitizeShadowDOM` for an already-walked shadow root. The deferred
+           form preserves the original post-order discipline: a shadow root's
+           nested shadow roots are discovered before the outer shadow is
+           sanitized (which may remove hosts). Pushes are in reverse of the
+           desired processing order (LIFO): template content, then children, then
+           the shadow-sanitize, then the shadow walk — so the order matches the
+           previous recursion exactly. */
+        const stack = [{
+          node: root,
+          shadow: null
+        }];
+        while (stack.length > 0) {
+          const item = stack.pop();
+          /* Deferred shadow-DOM sanitisation: runs after its subtree was walked. */
+          if (item.shadow) {
+            _sanitizeShadowDOM2(item.shadow);
+            continue;
+          }
+          const node = item.node;
+          const nodeType = getNodeType ? getNodeType(node) : node.nodeType;
+          const isElement = nodeType === NODE_TYPE.element;
+          /* (pushed last → processed first) Children, snapshotted in reverse so
+             the first child is processed first. Snapshotting matters because a
+             hook may detach siblings mid-walk. */
+          const childNodes = getChildNodes(node);
+          if (childNodes) {
+            for (let i = childNodes.length - 1; i >= 0; --i) {
+              stack.push({
+                node: childNodes[i],
+                shadow: null
+              });
+            }
+          }
+          /* (pushed before children → processed after them, matching the old
+             "template content last" order) When the node is a <template>,
+             descend into its content. */
+          if (isElement) {
+            const rootName = getNodeName ? getNodeName(node) : null;
+            if (typeof rootName === 'string' && transformCaseFunc(rootName) === 'template') {
+              const content = node.content;
+              if (_isDocumentFragment(content)) {
+                stack.push({
+                  node: content,
+                  shadow: null
+                });
+              }
+            }
+          }
+          /* Shadow root (processed first): walk its subtree, then sanitise it.
+             Realm-safe check (GHSA-hpcv-96wg-7vj8): nodeType-based detection
+             rather than `instanceof DocumentFragment`, which is realm-bound and
+             silently skipped foreign-realm shadow roots (e.g.
+             iframe.contentDocument attachShadow). */
+          if (isElement) {
+            const sr = getShadowRoot(node);
+            if (_isDocumentFragment(sr)) {
+              /* Push the deferred sanitise first so it pops after the shadow
+                 walk we push next, i.e. nested shadow roots are discovered
+                 before this one is sanitised. */
+              stack.push({
+                node: null,
+                shadow: sr
+              }, {
+                node: sr,
+                shadow: null
+              });
+            }
+          }
         }
       };
       // eslint-disable-next-line complexity
@@ -17610,27 +18167,77 @@
           return dirty;
         }
         /* Assign config vars */
-        if (!SET_CONFIG) {
+        if (SET_CONFIG) {
+          /* Persistent setConfig() path: _parseConfig is skipped, so the sets are
+           * not re-derived per call. Restore them from the pristine bindings
+           * captured at setConfig() time so a previous call's hook clone (mutated
+           * below) does not carry over. */
+          ALLOWED_TAGS = SET_CONFIG_ALLOWED_TAGS;
+          ALLOWED_ATTR = SET_CONFIG_ALLOWED_ATTR;
+        } else {
           _parseConfig(cfg);
+        }
+        /* Clone the hook-mutable allowlists before the walk whenever an
+         * uponSanitize* hook is registered. The hook event exposes ALLOWED_TAGS
+         * and ALLOWED_ATTR by reference (as allowedTags / allowedAttributes), so
+         * a hook that widens them would otherwise mutate the shared set
+         * permanently: across later calls and across every element. Cloning per
+         * walk keeps documented in-call widening working while scoping it to the
+         * call. A single guard for both config paths - the per-call path rebinds
+         * the sets in _parseConfig each call, the persistent path restores them
+         * from the captured bindings just above - so the two cannot diverge. */
+        if (hooks.uponSanitizeElement.length > 0 || hooks.uponSanitizeAttribute.length > 0) {
+          ALLOWED_TAGS = clone(ALLOWED_TAGS);
+        }
+        if (hooks.uponSanitizeAttribute.length > 0) {
+          ALLOWED_ATTR = clone(ALLOWED_ATTR);
         }
         /* Clean up removed elements */
         DOMPurify.removed = [];
-        /* Check if dirty is correctly typed for IN_PLACE */
-        if (typeof dirty === 'string') {
-          IN_PLACE = false;
-        }
-        if (IN_PLACE) {
-          /* Do some early pre-sanitization to avoid unsafe root nodes */
-          const nn = dirty.nodeName;
+        /* Resolve IN_PLACE for this call without mutating persistent config.
+           Writing the IN_PLACE closure variable here leaks under setConfig(),
+           where _parseConfig is skipped on later calls: a single string call would
+           disable in-place mode for every subsequent node call, returning a
+           sanitized copy while leaving the caller's node — which in-place callers
+           keep using and whose return value they ignore — unsanitized. REPORT-2. */
+        const inPlace = IN_PLACE && typeof dirty !== 'string' && _isNode(dirty);
+        if (inPlace) {
+          /* Do some early pre-sanitization to avoid unsafe root nodes.
+             Read nodeName through the cached prototype getter — a clobbering
+             child named "nodeName" on the form root would otherwise shadow
+             the property and let this check skip the root-allowlist
+             validation entirely. */
+          const nn = getNodeName ? getNodeName(dirty) : dirty.nodeName;
           if (typeof nn === 'string') {
             const tagName = transformCaseFunc(nn);
             if (!ALLOWED_TAGS[tagName] || FORBID_TAGS[tagName]) {
               throw typeErrorCreate('root node is forbidden and cannot be sanitized in-place');
             }
           }
+          /* Pre-flight the root through _isClobbered. The iterator-driven
+             removal path can not detach a parent-less root: _forceRemove
+             falls through to Element.prototype.remove(), which per spec
+             is a no-op on a node with no parent. A clobbered root would
+             then survive the main loop with its attributes uninspected,
+             because _sanitizeAttributes early-returns on _isClobbered. The
+             result would be an attacker-controlled form, complete with any
+             event-handler attributes the caller passed in, handed back to
+             the application unsanitized. Refuse to sanitize such a root
+             the same way we refuse a forbidden tag. GHSA-r47g-fvhr-h676. */
+          if (_isClobbered(dirty)) {
+            throw typeErrorCreate('root node is clobbered and cannot be sanitized in-place');
+          }
           /* Sanitize attached shadow roots before the main iterator runs.
-             The iterator does not descend into shadow trees. */
-          _sanitizeAttachedShadowRoots2(dirty);
+             The iterator does not descend into shadow trees. Same fail-closed
+             barrier as the main walk (campaign-3 F2): a custom-element reaction
+             inside a shadow root could abort this pre-pass before the walk runs,
+             which would otherwise leave the entire live tree unsanitized. */
+          try {
+            _sanitizeAttachedShadowRoots(dirty);
+          } catch (error) {
+            _neutralizeRoot(dirty);
+            throw error;
+          }
         } else if (_isNode(dirty)) {
           /* If dirty is a DOM element, append to an empty document to avoid
              elements being stripped by the parser */
@@ -17647,14 +18254,16 @@
           }
           /* Clonable shadow roots are deep-cloned by importNode(); sanitize
              them before the main iterator runs, since the iterator does not
-             descend into shadow trees. */
-          _sanitizeAttachedShadowRoots2(importedNode);
+             descend into shadow trees. The walk routes every read through a
+             cached prototype getter so clobbering descendants on a form root
+             cannot hide a shadow host from this pass. */
+          _sanitizeAttachedShadowRoots(importedNode);
         } else {
           /* Exit directly if we have nothing to do */
           if (!RETURN_DOM && !SAFE_FOR_TEMPLATES && !WHOLE_DOCUMENT &&
           // eslint-disable-next-line unicorn/prefer-includes
           dirty.indexOf('<') === -1) {
-            return trustedTypesPolicy && RETURN_TRUSTED_TYPE ? trustedTypesPolicy.createHTML(dirty) : dirty;
+            return trustedTypesPolicy && RETURN_TRUSTED_TYPE ? _createTrustedHTML(dirty) : dirty;
           }
           /* Initialize the document to work on */
           body = _initDocument(dirty);
@@ -17668,29 +18277,59 @@
           _forceRemove(body.firstChild);
         }
         /* Get node iterator */
-        const nodeIterator = _createNodeIterator(IN_PLACE ? dirty : body);
-        /* Now start iterating over the created document */
-        while (currentNode = nodeIterator.nextNode()) {
-          /* Sanitize tags and elements */
-          _sanitizeElements(currentNode);
-          /* Check attributes next */
-          _sanitizeAttributes(currentNode);
-          /* Shadow DOM detected, sanitize it */
-          if (currentNode.content instanceof DocumentFragment) {
-            _sanitizeShadowDOM2(currentNode.content);
+        const nodeIterator = _createNodeIterator(inPlace ? dirty : body);
+        /* Now start iterating over the created document.
+           The walk runs inside an exception barrier (campaign-3 F2): a re-entrant
+           engine/custom-element mutation can detach a node mid-walk so
+           `_forceRemove`'s parentless guard throws, aborting the loop. Without the
+           barrier the caller's in-place tree would be left half-sanitized with the
+           unvisited tail still armed. On any throw we fail closed — strip the
+           in-place root bare — then rethrow so the existing throw contract is
+           preserved. (String/DOM-copy paths never return the partial body, so the
+           propagating throw is already fail-closed there.) */
+        try {
+          while (currentNode = nodeIterator.nextNode()) {
+            /* Sanitize tags and elements */
+            _sanitizeElements(currentNode);
+            /* Check attributes next */
+            _sanitizeAttributes(currentNode);
+            /* Shadow DOM detected, sanitize it.
+               Realm-safe check (GHSA-hpcv-96wg-7vj8): nodeType-based detection
+               instead of instanceof, so foreign-realm <template>.content is
+               walked correctly. */
+            if (_isDocumentFragment(currentNode.content)) {
+              _sanitizeShadowDOM2(currentNode.content);
+            }
           }
+        } catch (error) {
+          if (inPlace) {
+            _neutralizeRoot(dirty);
+          }
+          throw error;
         }
         /* If we sanitized `dirty` in-place, return it. */
-        if (IN_PLACE) {
+        if (inPlace) {
+          /* Fail-closed completion of the audit-5 F1 fix: every node removed from
+             the caller's live tree is detached but may still hold a queued
+             resource-event handler that fires in page scope after we return. The
+             move-hoist covers only disallowed-tag KEEP_CONTENT removals; strip the
+             non-allow-listed attributes off every other removed subtree (clobber,
+             mXSS, namespace, comments, KEEP_CONTENT:false, …) so those handlers are
+             cancelled before any event can fire. Runs synchronously, pre-return. */
+          arrayForEach(DOMPurify.removed, entry => {
+            if (entry.element) {
+              _neutralizeSubtree(entry.element);
+            }
+          });
           if (SAFE_FOR_TEMPLATES) {
-            _scrubTemplateExpressions(dirty);
+            _scrubTemplateExpressions2(dirty);
           }
           return dirty;
         }
         /* Return sanitized string or DOM */
         if (RETURN_DOM) {
           if (SAFE_FOR_TEMPLATES) {
-            _scrubTemplateExpressions(body);
+            _scrubTemplateExpressions2(body);
           }
           if (RETURN_DOM_FRAGMENT) {
             returnNode = createDocumentFragment.call(body.ownerDocument);
@@ -17720,20 +18359,28 @@
         }
         /* Sanitize final string template-safe */
         if (SAFE_FOR_TEMPLATES) {
-          arrayForEach([MUSTACHE_EXPR$1, ERB_EXPR$1, TMPLIT_EXPR$1], expr => {
-            serializedHTML = stringReplace(serializedHTML, expr, ' ');
-          });
+          serializedHTML = _stripTemplateExpressions(serializedHTML);
         }
-        return trustedTypesPolicy && RETURN_TRUSTED_TYPE ? trustedTypesPolicy.createHTML(serializedHTML) : serializedHTML;
+        return trustedTypesPolicy && RETURN_TRUSTED_TYPE ? _createTrustedHTML(serializedHTML) : serializedHTML;
       };
       DOMPurify.setConfig = function () {
         let cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
         _parseConfig(cfg);
         SET_CONFIG = true;
+        SET_CONFIG_ALLOWED_TAGS = ALLOWED_TAGS;
+        SET_CONFIG_ALLOWED_ATTR = ALLOWED_ATTR;
       };
       DOMPurify.clearConfig = function () {
         CONFIG = null;
         SET_CONFIG = false;
+        SET_CONFIG_ALLOWED_TAGS = null;
+        SET_CONFIG_ALLOWED_ATTR = null;
+        // Drop any caller-supplied Trusted Types policy so it cannot poison later
+        // `RETURN_TRUSTED_TYPE` output. The internal default policy (cached, and
+        // never recreated — Trusted Types throws on duplicate names) is restored by
+        // the next `_parseConfig`. See GHSA-vxr8-fq34-vvx9.
+        trustedTypesPolicy = defaultTrustedTypesPolicy;
+        emptyHTML = '';
       };
       DOMPurify.isValidAttribute = function (tag, attr, value) {
         /* Initialize shared config vars if necessary. */
@@ -17748,9 +18395,19 @@
         if (typeof hookFunction !== 'function') {
           return;
         }
+        /* Reject unknown entry points. Without this, a non-hook key (e.g.
+         * '__proto__') indexes off the prototype chain rather than a real
+         * hook array, and arrayPush then writes to Object.prototype. Guard
+         * with an own-property check against the known hook names. */
+        if (!objectHasOwnProperty(hooks, entryPoint)) {
+          return;
+        }
         arrayPush(hooks[entryPoint], hookFunction);
       };
       DOMPurify.removeHook = function (entryPoint, hookFunction) {
+        if (!objectHasOwnProperty(hooks, entryPoint)) {
+          return undefined;
+        }
         if (hookFunction !== undefined) {
           const index = arrayLastIndexOf(hooks[entryPoint], hookFunction);
           return index === -1 ? undefined : arraySplice(hooks[entryPoint], index, 1)[0];
@@ -17758,6 +18415,9 @@
         return arrayPop(hooks[entryPoint]);
       };
       DOMPurify.removeHooks = function (entryPoint) {
+        if (!objectHasOwnProperty(hooks, entryPoint)) {
+          return;
+        }
         hooks[entryPoint] = [];
       };
       DOMPurify.removeAllHooks = function () {
@@ -20246,58 +20906,6 @@
         }, structure, itemResponse, sharedBackstage.providers);
     };
 
-    const render$2 = (items, extras) => map$2(items, (item) => {
-        switch (item.type) {
-            case 'cardcontainer':
-                return renderContainer(item, render$2(item.items, extras));
-            case 'cardimage':
-                return renderImage(item.src, item.classes, item.alt);
-            case 'cardtext':
-                // Only highlight targeted text components
-                const shouldHighlight = item.name.exists((name) => contains$2(extras.cardText.highlightOn, name));
-                const matchText = shouldHighlight ? Optional.from(extras.cardText.matchText).getOr('') : '';
-                return renderHtml(replaceText(item.text, matchText), item.classes);
-        }
-    });
-    const renderCardMenuItem = (spec, itemResponse, sharedBackstage, extras) => {
-        const getApi = (component) => ({
-            isEnabled: () => !Disabling.isDisabled(component),
-            setEnabled: (state) => {
-                Disabling.set(component, !state);
-                // Disable sub components
-                each$1(descendants(component.element, '*'), (elm) => {
-                    component.getSystem().getByDom(elm).each((comp) => {
-                        if (comp.hasConfigured(Disabling)) {
-                            Disabling.set(comp, !state);
-                        }
-                    });
-                });
-            }
-        });
-        const structure = {
-            dom: renderItemDomStructure(spec.label, []),
-            optComponents: [
-                Optional.some({
-                    dom: {
-                        tag: 'div',
-                        classes: [containerClass, containerRowClass]
-                    },
-                    components: render$2(spec.items, extras)
-                })
-            ]
-        };
-        return renderCommonItem({
-            context: 'mode:design',
-            data: buildData({ text: Optional.none(), ...spec }),
-            enabled: spec.enabled,
-            getApi,
-            onAction: spec.onAction,
-            onSetup: spec.onSetup,
-            triggersSubmenu: false,
-            itemBehaviours: Optional.from(extras.itemBehaviours).getOr([])
-        }, structure, itemResponse, sharedBackstage.providers);
-    };
-
     const renderChoiceItem = (spec, useText, presets, onItemValueHandler, isSelected, itemResponse, providersBackstage, renderIcons = true) => {
         const getApi = (component) => ({
             setActive: (state) => {
@@ -20348,6 +20956,125 @@
                 selected: spec.active,
                 exclusive: true
             }
+        });
+    };
+
+    const renderSeparatorItem = (spec) => ({
+        type: 'separator',
+        dom: {
+            tag: 'div',
+            classes: [selectableClass, groupHeadingClass]
+        },
+        components: spec.text.map(text$2).toArray()
+    });
+
+    // Note, this does not create a valid SketchSpec.
+    const renderNormalItem = (spec, itemResponse, providersBackstage, renderIcons = true) => {
+        const getApi = (component) => ({
+            isEnabled: () => !Disabling.isDisabled(component),
+            setEnabled: (state) => Disabling.set(component, !state)
+        });
+        const structure = renderItemStructure({
+            presets: 'normal',
+            iconContent: spec.icon,
+            textContent: spec.text,
+            htmlContent: Optional.none(),
+            labelContent: Optional.none(),
+            ariaLabel: spec.text,
+            caret: Optional.none(),
+            checkMark: Optional.none(),
+            shortcutContent: spec.shortcut
+        }, providersBackstage, renderIcons);
+        return renderCommonItem({
+            context: spec.context,
+            data: buildData(spec),
+            getApi,
+            enabled: spec.enabled,
+            onAction: spec.onAction,
+            onSetup: spec.onSetup,
+            triggersSubmenu: false,
+            itemBehaviours: []
+        }, structure, itemResponse, providersBackstage);
+    };
+
+    // Note, this does not create a valid SketchSpec.
+    const renderNestedItem = (spec, itemResponse, providersBackstage, renderIcons = true, downwardsCaret = false) => {
+        const caret = downwardsCaret ? renderDownwardsCaret(providersBackstage.icons) : renderSubmenuCaret(providersBackstage.icons);
+        const getApi = (component) => ({
+            isEnabled: () => !Disabling.isDisabled(component),
+            setEnabled: (state) => Disabling.set(component, !state),
+            setIconFill: (id, value) => {
+                descendant(component.element, `svg path[class="${id}"], rect[class="${id}"]`).each((underlinePath) => {
+                    set$9(underlinePath, 'fill', value);
+                });
+            },
+            setTooltip: (tooltip) => {
+                const translatedTooltip = providersBackstage.translate(tooltip);
+                set$9(component.element, 'aria-label', translatedTooltip);
+            }
+        });
+        const structure = renderItemStructure({
+            presets: 'normal',
+            iconContent: spec.icon,
+            textContent: spec.text,
+            htmlContent: Optional.none(),
+            ariaLabel: spec.text,
+            labelContent: Optional.none(),
+            caret: Optional.some(caret),
+            checkMark: Optional.none(),
+            shortcutContent: spec.shortcut
+        }, providersBackstage, renderIcons);
+        return renderCommonItem({
+            context: spec.context,
+            data: buildData(spec),
+            getApi,
+            enabled: spec.enabled,
+            onAction: noop,
+            onSetup: spec.onSetup,
+            triggersSubmenu: true,
+            itemBehaviours: []
+        }, structure, itemResponse, providersBackstage);
+    };
+
+    const renderToggleMenuItem = (spec, itemResponse, providersBackstage, renderIcons = true) => {
+        const getApi = (component) => ({
+            setActive: (state) => {
+                Toggling.set(component, state);
+            },
+            isActive: () => Toggling.isOn(component),
+            isEnabled: () => !Disabling.isDisabled(component),
+            setEnabled: (state) => Disabling.set(component, !state)
+        });
+        // BespokeSelects use meta to pass through styling information. Bespokes should only
+        // be togglemenuitems hence meta is only passed through in this MenuItem.
+        const structure = renderItemStructure({
+            iconContent: spec.icon,
+            textContent: spec.text,
+            htmlContent: Optional.none(),
+            labelContent: Optional.none(),
+            ariaLabel: spec.text,
+            checkMark: Optional.some(renderCheckmark(providersBackstage.icons)),
+            caret: Optional.none(),
+            shortcutContent: spec.shortcut,
+            presets: 'normal',
+            meta: spec.meta
+        }, providersBackstage, renderIcons);
+        return deepMerge(renderCommonItem({
+            context: spec.context,
+            data: buildData(spec),
+            enabled: spec.enabled,
+            getApi,
+            onAction: spec.onAction,
+            onSetup: spec.onSetup,
+            triggersSubmenu: false,
+            itemBehaviours: []
+        }, structure, itemResponse, providersBackstage), {
+            toggling: {
+                toggleClass: tickedClass,
+                toggleOnExecute: false,
+                selected: spec.active
+            },
+            role: spec.role.getOrUndefined()
         });
     };
 
@@ -21411,132 +22138,57 @@
     };
     const renderFancyMenuItem = (spec, backstage) => get$h(fancyMenuItems, spec.fancytype).map((render) => render(spec, backstage));
 
-    // Note, this does not create a valid SketchSpec.
-    const renderNestedItem = (spec, itemResponse, providersBackstage, renderIcons = true, downwardsCaret = false) => {
-        const caret = downwardsCaret ? renderDownwardsCaret(providersBackstage.icons) : renderSubmenuCaret(providersBackstage.icons);
+    const render$2 = (items, extras) => map$2(items, (item) => {
+        switch (item.type) {
+            case 'cardcontainer':
+                return renderContainer(item, render$2(item.items, extras));
+            case 'cardimage':
+                return renderImage(item.src, item.classes, item.alt);
+            case 'cardtext':
+                // Only highlight targeted text components
+                const shouldHighlight = item.name.exists((name) => contains$2(extras.cardText.highlightOn, name));
+                const matchText = shouldHighlight ? Optional.from(extras.cardText.matchText).getOr('') : '';
+                return renderHtml(replaceText(item.text, matchText), item.classes);
+        }
+    });
+    const renderCardMenuItem = (spec, itemResponse, sharedBackstage, extras) => {
         const getApi = (component) => ({
             isEnabled: () => !Disabling.isDisabled(component),
-            setEnabled: (state) => Disabling.set(component, !state),
-            setIconFill: (id, value) => {
-                descendant(component.element, `svg path[class="${id}"], rect[class="${id}"]`).each((underlinePath) => {
-                    set$9(underlinePath, 'fill', value);
+            setEnabled: (state) => {
+                Disabling.set(component, !state);
+                // Disable sub components
+                each$1(descendants(component.element, '*'), (elm) => {
+                    component.getSystem().getByDom(elm).each((comp) => {
+                        if (comp.hasConfigured(Disabling)) {
+                            Disabling.set(comp, !state);
+                        }
+                    });
                 });
-            },
-            setTooltip: (tooltip) => {
-                const translatedTooltip = providersBackstage.translate(tooltip);
-                set$9(component.element, 'aria-label', translatedTooltip);
             }
         });
-        const structure = renderItemStructure({
-            presets: 'normal',
-            iconContent: spec.icon,
-            textContent: spec.text,
-            htmlContent: Optional.none(),
-            ariaLabel: spec.text,
-            labelContent: Optional.none(),
-            caret: Optional.some(caret),
-            checkMark: Optional.none(),
-            shortcutContent: spec.shortcut
-        }, providersBackstage, renderIcons);
+        const structure = {
+            dom: renderItemDomStructure(spec.label, []),
+            optComponents: [
+                Optional.some({
+                    dom: {
+                        tag: 'div',
+                        classes: [containerClass, containerRowClass]
+                    },
+                    components: render$2(spec.items, extras)
+                })
+            ]
+        };
         return renderCommonItem({
-            context: spec.context,
-            data: buildData(spec),
-            getApi,
-            enabled: spec.enabled,
-            onAction: noop,
-            onSetup: spec.onSetup,
-            triggersSubmenu: true,
-            itemBehaviours: []
-        }, structure, itemResponse, providersBackstage);
-    };
-
-    // Note, this does not create a valid SketchSpec.
-    const renderNormalItem = (spec, itemResponse, providersBackstage, renderIcons = true) => {
-        const getApi = (component) => ({
-            isEnabled: () => !Disabling.isDisabled(component),
-            setEnabled: (state) => Disabling.set(component, !state)
-        });
-        const structure = renderItemStructure({
-            presets: 'normal',
-            iconContent: spec.icon,
-            textContent: spec.text,
-            htmlContent: Optional.none(),
-            labelContent: Optional.none(),
-            ariaLabel: spec.text,
-            caret: Optional.none(),
-            checkMark: Optional.none(),
-            shortcutContent: spec.shortcut
-        }, providersBackstage, renderIcons);
-        return renderCommonItem({
-            context: spec.context,
-            data: buildData(spec),
-            getApi,
-            enabled: spec.enabled,
-            onAction: spec.onAction,
-            onSetup: spec.onSetup,
-            triggersSubmenu: false,
-            itemBehaviours: []
-        }, structure, itemResponse, providersBackstage);
-    };
-
-    const renderSeparatorItem = (spec) => ({
-        type: 'separator',
-        dom: {
-            tag: 'div',
-            classes: [selectableClass, groupHeadingClass]
-        },
-        components: spec.text.map(text$2).toArray()
-    });
-
-    const renderToggleMenuItem = (spec, itemResponse, providersBackstage, renderIcons = true) => {
-        const getApi = (component) => ({
-            setActive: (state) => {
-                Toggling.set(component, state);
-            },
-            isActive: () => Toggling.isOn(component),
-            isEnabled: () => !Disabling.isDisabled(component),
-            setEnabled: (state) => Disabling.set(component, !state)
-        });
-        // BespokeSelects use meta to pass through styling information. Bespokes should only
-        // be togglemenuitems hence meta is only passed through in this MenuItem.
-        const structure = renderItemStructure({
-            iconContent: spec.icon,
-            textContent: spec.text,
-            htmlContent: Optional.none(),
-            labelContent: Optional.none(),
-            ariaLabel: spec.text,
-            checkMark: Optional.some(renderCheckmark(providersBackstage.icons)),
-            caret: Optional.none(),
-            shortcutContent: spec.shortcut,
-            presets: 'normal',
-            meta: spec.meta
-        }, providersBackstage, renderIcons);
-        return deepMerge(renderCommonItem({
-            context: spec.context,
-            data: buildData(spec),
+            context: 'mode:design',
+            data: buildData({ text: Optional.none(), ...spec }),
             enabled: spec.enabled,
             getApi,
             onAction: spec.onAction,
             onSetup: spec.onSetup,
             triggersSubmenu: false,
-            itemBehaviours: []
-        }, structure, itemResponse, providersBackstage), {
-            toggling: {
-                toggleClass: tickedClass,
-                toggleOnExecute: false,
-                selected: spec.active
-            },
-            role: spec.role.getOrUndefined()
-        });
+            itemBehaviours: Optional.from(extras.itemBehaviours).getOr([])
+        }, structure, itemResponse, sharedBackstage.providers);
     };
-
-    const autocomplete = renderAutocompleteItem;
-    const separator$3 = renderSeparatorItem;
-    const normal = renderNormalItem;
-    const nested = renderNestedItem;
-    const toggle = renderToggleMenuItem;
-    const fancy = renderFancyMenuItem;
-    const card = renderCardMenuItem;
 
     const identifyMenuLayout = (searchMode) => {
         switch (searchMode.searchMode) {
@@ -21654,17 +22306,17 @@
         });
         switch (item.type) {
             case 'menuitem':
-                return createMenuItem(item).fold(handleError, (d) => Optional.some(normal(parseForHorizontalMenu(d), itemResponse, providersBackstage, menuHasIcons)));
+                return createMenuItem(item).fold(handleError, (d) => Optional.some(renderNormalItem(parseForHorizontalMenu(d), itemResponse, providersBackstage, menuHasIcons)));
             case 'nestedmenuitem':
-                return createNestedMenuItem(item).fold(handleError, (d) => Optional.some(nested(parseForHorizontalMenu(d), itemResponse, providersBackstage, menuHasIcons, isHorizontalMenu)));
+                return createNestedMenuItem(item).fold(handleError, (d) => Optional.some(renderNestedItem(parseForHorizontalMenu(d), itemResponse, providersBackstage, menuHasIcons, isHorizontalMenu)));
             case 'togglemenuitem':
-                return createToggleMenuItem(item).fold(handleError, (d) => Optional.some(toggle(parseForHorizontalMenu(d), itemResponse, providersBackstage, menuHasIcons)));
+                return createToggleMenuItem(item).fold(handleError, (d) => Optional.some(renderToggleMenuItem(parseForHorizontalMenu(d), itemResponse, providersBackstage, menuHasIcons)));
             case 'separator':
-                return createSeparatorMenuItem(item).fold(handleError, (d) => Optional.some(separator$3(d)));
+                return createSeparatorMenuItem(item).fold(handleError, (d) => Optional.some(renderSeparatorItem(d)));
             case 'fancymenuitem':
                 return createFancyMenuItem(item).fold(handleError, 
                 // Fancy menu items don't have shortcuts or icons
-                (d) => fancy(d, backstage));
+                (d) => renderFancyMenuItem(d, backstage));
             default: {
                 // eslint-disable-next-line no-console
                 console.error('Unknown item in general menu', item);
@@ -21679,9 +22331,9 @@
         return cat(map$2(items, (item) => {
             switch (item.type) {
                 case 'separator':
-                    return createSeparatorItem(item).fold(handleError, (d) => Optional.some(separator$3(d)));
+                    return createSeparatorItem(item).fold(handleError, (d) => Optional.some(renderSeparatorItem(d)));
                 case 'cardmenuitem':
-                    return createCardMenuItem(item).fold(handleError, (d) => Optional.some(card({
+                    return createCardMenuItem(item).fold(handleError, (d) => Optional.some(renderCardMenuItem({
                         ...d,
                         // Intercept action
                         onAction: (api) => {
@@ -21697,7 +22349,7 @@
                     })));
                 case 'autocompleteitem':
                 default:
-                    return createAutocompleterItem(item).fold(handleError, (d) => Optional.some(autocomplete(d, matchText, renderText, 'normal', onItemValueHandler, itemResponse, sharedBackstage, renderIcons)));
+                    return createAutocompleterItem(item).fold(handleError, (d) => Optional.some(renderAutocompleteItem(d, matchText, renderText, 'normal', onItemValueHandler, itemResponse, sharedBackstage, renderIcons)));
             }
         }));
     };
@@ -32622,6 +33274,7 @@
         return dimensions;
     };
 
+    const keyboardResizeStepInPx = 20;
     const getResizeType = (editor) => {
         const resize = getResize(editor);
         if (resize === false) {
@@ -32639,14 +33292,22 @@
             ? global$6.translate([`Editor's height: {0} pixels, Editor's width: {1} pixels`, dimensions.height, dimensions.width])
             : global$6.translate([`Editor's height: {0} pixels`, dimensions.height]);
     };
-    const setAriaValuetext = (comp, dimensions, resizeType) => {
+    const setAriaDimensions = (comp, dimensions, resizeType, minHeight, maxHeight) => {
         set$9(comp.element, 'aria-valuetext', getAriaValuetext(dimensions, resizeType));
+        // aria-valuenow/valuemin/valuemax are single numeric values, so they can only
+        // meaningfully represent one dimension. In 'both' mode the handle resizes both
+        // width and height, which has no sensible single-value representation, so we only
+        // set these attributes for vertical resizing and rely on aria-valuetext otherwise.
+        if (resizeType === ResizeTypes.Vertical) {
+            set$9(comp.element, 'aria-valuenow', dimensions.height);
+            set$9(comp.element, 'aria-valuemin', minHeight.getOr(0));
+            set$9(comp.element, 'aria-valuemax', maxHeight.getOr(dimensions.height + keyboardResizeStepInPx));
+        }
     };
-    const keyboardHandler = (editor, comp, resizeType, x, y) => {
-        const scale = 20;
-        const delta = SugarPosition(x * scale, y * scale);
+    const keyboardHandler = (editor, comp, resizeType, x, y, minHeight, maxHeight) => {
+        const delta = SugarPosition(x * keyboardResizeStepInPx, y * keyboardResizeStepInPx);
         const newDimentions = resize(editor, delta, resizeType);
-        setAriaValuetext(comp, newDimentions, resizeType);
+        setAriaDimensions(comp, newDimentions, resizeType, minHeight, maxHeight);
         return Optional.some(true);
     };
     const renderResizeHandler = (editor, providersBackstage) => {
@@ -32654,6 +33315,8 @@
         if (resizeType === ResizeTypes.None) {
             return Optional.none();
         }
+        const minHeight = getMinHeightOption(editor);
+        const maxHeight = getMaxHeightOption(editor);
         const resizeLabel = resizeType === ResizeTypes.Both
             ? global$6.translate('Press the arrow keys to resize the editor.')
             : global$6.translate('Press the Up and Down arrow keys to resize the editor.');
@@ -32678,7 +33341,7 @@
                     },
                     onDrag: (comp, _target, delta) => {
                         const newDimentions = resize(editor, delta, resizeType);
-                        setAriaValuetext(comp, newDimentions, resizeType);
+                        setAriaDimensions(comp, newDimentions, resizeType, minHeight, maxHeight);
                     },
                     onDrop: (comp) => {
                         Tooltipping.setEnabled(comp, true);
@@ -32686,10 +33349,10 @@
                 }),
                 Keying.config({
                     mode: 'special',
-                    onLeft: (comp) => keyboardHandler(editor, comp, resizeType, -1, 0),
-                    onRight: (comp) => keyboardHandler(editor, comp, resizeType, 1, 0),
-                    onUp: (comp) => keyboardHandler(editor, comp, resizeType, 0, -1),
-                    onDown: (comp) => keyboardHandler(editor, comp, resizeType, 0, 1),
+                    onLeft: (comp) => keyboardHandler(editor, comp, resizeType, -1, 0, minHeight, maxHeight),
+                    onRight: (comp) => keyboardHandler(editor, comp, resizeType, 1, 0, minHeight, maxHeight),
+                    onUp: (comp) => keyboardHandler(editor, comp, resizeType, 0, -1, minHeight, maxHeight),
+                    onDown: (comp) => keyboardHandler(editor, comp, resizeType, 0, 1, minHeight, maxHeight),
                 }),
                 Tabstopping.config({}),
                 Focusing.config({}),
@@ -32699,7 +33362,7 @@
                 config('set-aria-valuetext', [
                     runOnAttached((comp) => {
                         const setInitialValuetext = () => {
-                            setAriaValuetext(comp, getOriginalDimensions(editor), resizeType);
+                            setAriaDimensions(comp, getOriginalDimensions(editor), resizeType, minHeight, maxHeight);
                         };
                         if (editor._skinLoaded) {
                             setInitialValuetext();
@@ -34008,7 +34671,7 @@
         const dialogBody = SugarElement.fromDom(comp.element.dom);
         const classes = get$7(dialogBody);
         const currentSizeClass = find$5(classes, (c) => c === largeDialogClass || c === mediumDialogClass).or(getDialogSizeClass(currentSize));
-        toggle$3(dialogBody, [fullscreenClass, ...currentSizeClass.toArray()]);
+        toggle$2(dialogBody, [fullscreenClass, ...currentSizeClass.toArray()]);
     };
     const renderModalDialog = (spec, dialogEvents, backstage) => build$1(renderDialog$1({
         ...spec,

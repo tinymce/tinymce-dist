@@ -403,6 +403,7 @@ export interface Classes {
   "tox-ai-chat-history-list__item-content-date": string;
   "tox-sidebar-content__message": string;
   "tox-sidebar-content__message-action": string;
+  "tox-ai-chat-action-button": string;
   "tox-ai-removed-content": string;
   "tox-ai-html-content": string;
   "tox-ai__preview-host": string;
