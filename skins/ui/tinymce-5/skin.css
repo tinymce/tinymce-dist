@@ -3271,6 +3271,15 @@ body.tox-dialog__disable-scroll {
 .tox .tox-promotion + .tox-menubar {
   grid-column: 1;
 }
+@media (max-width: 480px) {
+  .tox:not(.tox-tinymce-inline) .tox-menubar {
+    flex-wrap: nowrap;
+    min-width: 0;
+    min-height: 39px;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+}
 .tox .tox-promotion {
   background: url("data:image/svg+xml;charset=utf8,%3Csvg height='39px' viewBox='0 0 40 39px' width='40' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='0' y='38px' width='100' height='1' fill='%23cccccc'/%3E%3C/svg%3E") left 0 top 0 #fff;
   background-color: #fff;
@@ -7126,7 +7135,7 @@ body.tox-dialog__disable-scroll {
 .tox .tox-suggestededits__container .tox-suggestededits .tox-suggestededits__sidebar-content .tox-suggestededits__card .tox-suggestededits__card--buttons.tox-suggestededits__card--feedback-buttons {
   justify-content: flex-end;
 }
-.tox .tox-suggestededits__container .tox-suggestededits .tox-suggestededits__sidebar-content .tox-suggestededits__card.tox-suggestededits__card--hidden {
+.tox .tox-suggestededits__container .tox-suggestededits .tox-suggestededits__sidebar-content .tox-suggestededits__card.tox-suggestededits__card--hidden:not(.tox-suggestededits__card--active) {
   opacity: 0.5;
 }
 .tox .tox-suggestededits__container .tox-suggestededits .tox-suggestededits__sidebar-content .tox-suggestededits__card.tox-suggestededits__card--resolved {

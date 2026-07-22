@@ -634,8 +634,8 @@ export interface Classes {
   "tox-suggestededits__card--review-buttons": string;
   "tox-suggestededits__card--feedback-buttons": string;
   "tox-suggestededits__card--hidden": string;
-  "tox-suggestededits__card--resolved": string;
   "tox-suggestededits__card--active": string;
+  "tox-suggestededits__card--resolved": string;
   "tox-dialog-loading": string;
   "tox-tab": string;
   "tox-dialog__content-js": string;

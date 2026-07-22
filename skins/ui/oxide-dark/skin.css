@@ -3271,6 +3271,15 @@ body.tox-dialog__disable-scroll {
 .tox .tox-promotion + .tox-menubar {
   grid-column: 1;
 }
+@media (max-width: 480px) {
+  .tox:not(.tox-tinymce-inline) .tox-menubar {
+    flex-wrap: nowrap;
+    min-width: 0;
+    min-height: 39px;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+}
 .tox .tox-promotion {
   background: repeating-linear-gradient(transparent 0 1px, transparent 1px 39px) center top 39px / 100% calc(100% - 39px) no-repeat;
   background-color: #222F3E;
@@ -7127,7 +7136,7 @@ body.tox-dialog__disable-scroll {
 .tox .tox-suggestededits__container .tox-suggestededits .tox-suggestededits__sidebar-content .tox-suggestededits__card .tox-suggestededits__card--buttons.tox-suggestededits__card--feedback-buttons {
   justify-content: flex-end;
 }
-.tox .tox-suggestededits__container .tox-suggestededits .tox-suggestededits__sidebar-content .tox-suggestededits__card.tox-suggestededits__card--hidden {
+.tox .tox-suggestededits__container .tox-suggestededits .tox-suggestededits__sidebar-content .tox-suggestededits__card.tox-suggestededits__card--hidden:not(.tox-suggestededits__card--active) {
   opacity: 0.5;
 }
 .tox .tox-suggestededits__container .tox-suggestededits .tox-suggestededits__sidebar-content .tox-suggestededits__card.tox-suggestededits__card--resolved {
