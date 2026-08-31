@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.8.2 (2026-07-27)
+ * TinyMCE version 8.9.0 (2026-08-27)
  */
 
 (function () {
@@ -566,13 +566,17 @@
         });
     };
 
+    const PLUGIN_CODE = 'wordcount';
     var Plugin = (delay = 300) => {
-        global$2.add('wordcount', (editor) => {
+        global$2.add(PLUGIN_CODE, (editor) => {
             const api = get(editor);
             register$1(editor, api);
             register(editor);
             setup(editor, api, delay);
-            return api;
+            return {
+                ...api,
+                getMetadata: () => ({ name: 'Word Count', type: 'opensource', slug: PLUGIN_CODE })
+            };
         });
     };
 

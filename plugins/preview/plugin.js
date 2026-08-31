@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.8.2 (2026-07-27)
+ * TinyMCE version 8.9.0 (2026-08-27)
  */
 
 (function () {
@@ -867,14 +867,18 @@
         });
     };
 
+    const PLUGIN_CODE = 'preview';
     var Plugin = () => {
-        global$2.add('preview', (editor) => {
+        global$2.add(PLUGIN_CODE, (editor) => {
             const getContentCssResources = () => map(editor.contentCSS, (key) => Optional.from(tinymce.Resource.get(key))
                 .filter(isString)
                 .map((content) => ({ type: 'bundled', content }))
                 .getOr({ type: 'link', url: editor.documentBaseURI.toAbsolute(key) }));
             register$1(editor, getContentCssResources);
             register(editor);
+            return {
+                getMetadata: () => ({ name: 'Preview', type: 'opensource', slug: PLUGIN_CODE })
+            };
         });
     };
 

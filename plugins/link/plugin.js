@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.8.2 (2026-07-27)
+ * TinyMCE version 8.9.0 (2026-08-27)
  */
 
 (function () {
@@ -1693,12 +1693,16 @@
         setupContextToolbars(editor, openLink);
     };
 
+    const PLUGIN_CODE = 'link';
     var Plugin = () => {
-        global$5.add('link', (editor) => {
+        global$5.add(PLUGIN_CODE, (editor) => {
             register$1(editor);
             register(editor);
             setup(editor);
             setup$2(editor);
+            return {
+                getMetadata: () => ({ name: 'Link', type: 'opensource', slug: PLUGIN_CODE })
+            };
         });
     };
 

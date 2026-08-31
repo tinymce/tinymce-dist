@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.8.2 (2026-07-27)
+ * TinyMCE version 8.9.0 (2026-08-27)
  */
 
 (function () {
@@ -3991,19 +3991,22 @@
         });
     };
 
-    const Plugin = (editor) => {
-        const selectionTargets = getSelectionTargets(editor);
-        register(editor);
-        registerCommands(editor);
-        addMenuItems(editor, selectionTargets);
-        addButtons(editor, selectionTargets);
-        addToolbars(editor);
-    };
-    var Plugin$1 = () => {
-        global$3.add('table', Plugin);
+    const PLUGIN_CODE = 'table';
+    var Plugin = () => {
+        global$3.add(PLUGIN_CODE, (editor) => {
+            const selectionTargets = getSelectionTargets(editor);
+            register(editor);
+            registerCommands(editor);
+            addMenuItems(editor, selectionTargets);
+            addButtons(editor, selectionTargets);
+            addToolbars(editor);
+            return {
+                getMetadata: () => ({ name: 'Table', type: 'opensource', slug: PLUGIN_CODE })
+            };
+        });
     };
 
-    Plugin$1();
+    Plugin();
     /** *****
      * DO NOT EXPORT ANYTHING
      *

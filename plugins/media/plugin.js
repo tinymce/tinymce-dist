@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.8.2 (2026-07-27)
+ * TinyMCE version 8.9.0 (2026-08-27)
  */
 
 (function () {
@@ -1445,15 +1445,19 @@
         });
     };
 
+    const PLUGIN_CODE = 'media';
     var Plugin = () => {
-        global$6.add('media', (editor) => {
+        global$6.add(PLUGIN_CODE, (editor) => {
             register$2(editor);
             register$1(editor);
             register(editor);
             setup(editor);
             setup$1(editor);
             setup$2(editor);
-            return get(editor);
+            return {
+                ...get(editor),
+                getMetadata: () => ({ name: 'Media', type: 'opensource', slug: PLUGIN_CODE })
+            };
         });
     };
 

@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.8.2 (2026-07-27)
+ * TinyMCE version 8.9.0 (2026-08-27)
  */
 
 (function () {
@@ -5392,12 +5392,12 @@
             getNumColumns
         });
     };
-    const init$g = (spec) => spec.state(spec);
+    const init$h = (spec) => spec.state(spec);
 
     var KeyingState = /*#__PURE__*/Object.freeze({
         __proto__: null,
         flatgrid: flatgrid$1,
-        init: init$g
+        init: init$h
     });
 
     // Looks up direction (considering LTR and RTL), finds the focused element,
@@ -6719,7 +6719,7 @@
         onHandler('onUnblock')
     ];
 
-    const init$f = () => {
+    const init$g = () => {
         const blocker = destroyable();
         const blockWith = (destroy) => {
             blocker.set({ destroy });
@@ -6734,7 +6734,7 @@
 
     var BlockingState = /*#__PURE__*/Object.freeze({
         __proto__: null,
-        init: init$f
+        init: init$g
     });
 
     // Mark a component as able to be "Blocked" or able to enter a busy state. See
@@ -6780,7 +6780,7 @@
     // is not recognised. This is because if the wrong name is used, it is a
     // non-recoverable error, and the developer should be notified. However, there are
     // better ways to do this: (removing this API and only returning Optionals/Results)
-    const init$e = () => {
+    const init$f = () => {
         const coupled = {};
         const lookupCoupled = (coupleConfig, coupledName) => {
             const available = keys(coupleConfig.others);
@@ -6821,7 +6821,7 @@
 
     var CouplingState = /*#__PURE__*/Object.freeze({
         __proto__: null,
-        init: init$e
+        init: init$f
     });
 
     const Coupling = create$3({
@@ -7339,7 +7339,7 @@
         onHandler('onUndocked')
     ];
 
-    const init$d = (spec) => {
+    const init$e = (spec) => {
         const docked = Cell(false);
         const visible = Cell(true);
         const initialBounds = value$2();
@@ -7361,7 +7361,7 @@
 
     var DockingState = /*#__PURE__*/Object.freeze({
         __proto__: null,
-        init: init$d
+        init: init$e
     });
 
     const Docking = create$3({
@@ -7871,7 +7871,7 @@
             dragBy(component, dragConfig, dragStartData, dlt);
         });
     };
-    const stop = (component, blocker, dragConfig, dragState) => {
+    const stop$1 = (component, blocker, dragConfig, dragState) => {
         blocker.each(discard);
         dragConfig.snaps.each((snapInfo) => {
             stopDrag(component, snapInfo);
@@ -7898,7 +7898,7 @@
         ]);
     };
 
-    const init$c = (dragApi) => derive$2([
+    const init$d = (dragApi) => derive$2([
         // When the user clicks on the blocker, something has probably gone slightly
         // wrong, so we'll just drop for safety. The blocker should really only
         // be there when the mouse is already down and not released, so a 'click'
@@ -7933,21 +7933,21 @@
                 return;
             }
             simulatedEvent.stop();
-            const stop$1 = () => stop(component, Optional.some(blocker), dragConfig, dragState);
+            const stop = () => stop$1(component, Optional.some(blocker), dragConfig, dragState);
             // If the user has moved something outside the area, and has not come back within
             // 200 ms, then drop
-            const delayDrop = DelayedFunction(stop$1, 200);
+            const delayDrop = DelayedFunction(stop, 200);
             const dragApi = {
-                drop: stop$1,
+                drop: stop,
                 delayDrop: delayDrop.schedule,
-                forceDrop: stop$1,
+                forceDrop: stop,
                 move: (event) => {
                     // Stop any pending drops caused by mouseout
                     delayDrop.cancel();
                     move(component, dragConfig, dragState, MouseData, event);
                 }
             };
-            const blocker = createComponent(component, dragConfig.blockerClass, init$c(dragApi));
+            const blocker = createComponent(component, dragConfig.blockerClass, init$d(dragApi));
             const start = () => {
                 updateStartState(component);
                 instigate(component, blocker);
@@ -7963,7 +7963,7 @@
         })
     ];
 
-    const init$b = (dragApi) => derive$2([
+    const init$c = (dragApi) => derive$2([
         // When the user taps on the blocker, something has probably gone slightly
         // wrong, so we'll just drop for safety. The blocker should really only
         // be there when their finger is already down and not released, so a 'tap'
@@ -8000,7 +8000,7 @@
     const events$d = (dragConfig, dragState, updateStartState) => {
         const blockerSingleton = value$2();
         const stopBlocking = (component) => {
-            stop(component, blockerSingleton.get(), dragConfig, dragState);
+            stop$1(component, blockerSingleton.get(), dragConfig, dragState);
             blockerSingleton.clear();
         };
         // Android fires events on the component at all times, while iOS initially fires on the component
@@ -8019,7 +8019,7 @@
                         move(component, dragConfig, dragState, TouchData, event);
                     }
                 };
-                const blocker = createComponent(component, dragConfig.blockerClass, init$b(dragApi));
+                const blocker = createComponent(component, dragConfig.blockerClass, init$c(dragApi));
                 blockerSingleton.set(blocker);
                 const start = () => {
                     updateStartState(component);
@@ -8095,7 +8095,7 @@
                 lift2(dragState.getStartData(), dragState.getActivePointerId(), (_startData, activePointerId) => {
                     if (pointerId === activePointerId) {
                         component.element.dom.releasePointerCapture(pointerId);
-                        stop(component, Optional.none(), dragConfig, dragState);
+                        stop$1(component, Optional.none(), dragConfig, dragState);
                     }
                 });
             }),
@@ -8104,7 +8104,7 @@
             // I could observe that using touchpad in chrome
             run$1(lostpointercapture(), (component) => {
                 dragState.getStartData().each(() => {
-                    stop(component, Optional.none(), dragConfig, dragState);
+                    stop$1(component, Optional.none(), dragConfig, dragState);
                 });
             })
         ];
@@ -8131,7 +8131,7 @@
 
     // NOTE: mode refers to the way that information is retrieved from
     // the user interaction. It can be things like MouseData, TouchData etc.
-    const init$a = () => {
+    const init$b = () => {
         // Dragging operates on the difference between the previous user
         // interaction and the next user interaction. Therefore, we store
         // the previous interaction so that we can compare it.
@@ -8179,7 +8179,7 @@
 
     var DragState = /*#__PURE__*/Object.freeze({
         __proto__: null,
-        init: init$a
+        init: init$b
     });
 
     const Dragging = createModes({
@@ -8417,14 +8417,14 @@
             clear
         });
     };
-    const init$9 = (spec) => spec.store.manager.state(spec);
+    const init$a = (spec) => spec.store.manager.state(spec);
 
     var RepresentState = /*#__PURE__*/Object.freeze({
         __proto__: null,
         memory: memory$1,
         dataset: dataset,
         manual: manual,
-        init: init$9
+        init: init$a
     });
 
     const setValue$2 = (component, repConfig, repState, data) => {
@@ -9387,7 +9387,7 @@
         reset: reset
     });
 
-    const init$8 = () => {
+    const init$9 = () => {
         let state = {};
         const set = (id, data) => {
             state[id] = data;
@@ -9411,7 +9411,7 @@
 
     var PositioningState = /*#__PURE__*/Object.freeze({
         __proto__: null,
-        init: init$8
+        init: init$9
     });
 
     const Positioning = create$3({
@@ -9513,7 +9513,7 @@
         defaultedBoolean('reuseDom', true)
     ];
 
-    const init$7 = () => {
+    const init$8 = () => {
         const cell = Cell(Optional.none());
         const clear = () => cell.set(Optional.none());
         const readState = () => cell.get().getOr('none');
@@ -9527,7 +9527,7 @@
 
     var ReflectingState = /*#__PURE__*/Object.freeze({
         __proto__: null,
-        init: init$7
+        init: init$8
     });
 
     const Reflecting = create$3({
@@ -9536,6 +9536,108 @@
         active: ActiveReflecting,
         apis: ReflectingApis,
         state: ReflectingState
+    });
+
+    const computeSize = (state) => {
+        const accumulatedDelta = state.getAccumulatedDelta();
+        const bounds = state.getBounds();
+        const width = clamp(Math.round(state.getOriginalWidth() + accumulatedDelta.left), bounds.minWidth.getOr(0), bounds.maxWidth.getOr(Number.MAX_VALUE));
+        const height = clamp(Math.round(state.getOriginalHeight() + accumulatedDelta.top), bounds.minHeight.getOr(0), bounds.maxHeight.getOr(Number.MAX_VALUE));
+        return { width, height };
+    };
+    const start = (_component, _config, state, width, height, bounds) => {
+        state.start(width, height, bounds);
+    };
+    const moveBy$3 = (_component, _config, state, delta) => {
+        if (!state.isActive()) {
+            return Optional.none();
+        }
+        state.drag(delta);
+        return Optional.some(computeSize(state));
+    };
+    const stop = (_component, _config, state) => {
+        if (!state.isActive()) {
+            return Optional.none();
+        }
+        state.stop();
+        return Optional.some(computeSize(state));
+    };
+
+    var ResizingApis = /*#__PURE__*/Object.freeze({
+        __proto__: null,
+        start: start,
+        moveBy: moveBy$3,
+        stop: stop
+    });
+
+    var ResizingSchema = [];
+
+    const init$7 = () => {
+        const originalWidth = Cell(0);
+        const originalHeight = Cell(0);
+        const accumulatedDelta = Cell(SugarPosition(0, 0));
+        const active = Cell(false);
+        const bounds = Cell({
+            minWidth: Optional.none(),
+            maxWidth: Optional.none(),
+            minHeight: Optional.none(),
+            maxHeight: Optional.none()
+        });
+        const start = (width, height, newBounds = {}) => {
+            originalWidth.set(width);
+            originalHeight.set(height);
+            accumulatedDelta.set(SugarPosition(0, 0));
+            bounds.set({
+                minWidth: Optional.from(newBounds.minWidth),
+                maxWidth: Optional.from(newBounds.maxWidth),
+                minHeight: Optional.from(newBounds.minHeight),
+                maxHeight: Optional.from(newBounds.maxHeight)
+            });
+            active.set(true);
+        };
+        const stop = () => {
+            active.set(false);
+        };
+        const isActive = () => active.get();
+        const drag = (delta) => {
+            const acc = accumulatedDelta.get().translate(delta.left, delta.top);
+            accumulatedDelta.set(acc);
+            return acc;
+        };
+        const getAccumulatedDelta = () => accumulatedDelta.get();
+        const getOriginalWidth = () => originalWidth.get();
+        const getOriginalHeight = () => originalHeight.get();
+        const getBounds = () => bounds.get();
+        const readState = () => ({
+            originalWidth: originalWidth.get(),
+            originalHeight: originalHeight.get(),
+            accumulatedDelta: accumulatedDelta.get(),
+            active: active.get(),
+            bounds: bounds.get()
+        });
+        return nu$4({
+            start,
+            stop,
+            isActive,
+            drag,
+            getAccumulatedDelta,
+            getOriginalWidth,
+            getOriginalHeight,
+            getBounds,
+            readState
+        });
+    };
+
+    var ResizingState = /*#__PURE__*/Object.freeze({
+        __proto__: null,
+        init: init$7
+    });
+
+    const Resizing = create$3({
+        fields: ResizingSchema,
+        name: 'resizing',
+        apis: ResizingApis,
+        state: ResizingState
     });
 
     // NOTE: A sandbox should not start as part of the world. It is expected to be
@@ -16015,6 +16117,18 @@
         registerOption('sidebar_show', {
             processor: 'string'
         });
+        registerOption('sidebar_width', {
+            processor: 'number',
+            default: 440
+        });
+        registerOption('sidebar_min_width', {
+            processor: 'number',
+            default: 300
+        });
+        registerOption('sidebar_max_width', {
+            processor: 'number',
+            default: 800
+        });
         registerOption('view_show', {
             processor: 'string'
         });
@@ -16064,6 +16178,9 @@
     const getResize = option$2('resize');
     const getPasteAsText = option$2('paste_as_text');
     const getSidebarShow = option$2('sidebar_show');
+    const getSidebarWidth = option$2('sidebar_width');
+    const getSidebarMinWidth = option$2('sidebar_min_width');
+    const getSidebarMaxWidth = option$2('sidebar_max_width');
     const getViewShow = option$2('view_show');
     const promotionEnabled = option$2('promotion');
     const useHelpAccessibility = option$2('help_accessibility');
@@ -16166,6 +16283,9 @@
         getRemovedMenuItems: getRemovedMenuItems,
         getResize: getResize,
         getSidebarShow: getSidebarShow,
+        getSidebarWidth: getSidebarWidth,
+        getSidebarMinWidth: getSidebarMinWidth,
+        getSidebarMaxWidth: getSidebarMaxWidth,
         getSkin: getSkin,
         getSkinUrl: getSkinUrl,
         getSkinUrlOption: getSkinUrlOption,
@@ -20524,6 +20644,7 @@
     const sidebarSchema = objOf([
         optionalIcon,
         optionalTooltip,
+        defaultedBoolean('resizable', false),
         defaultedFunction('onShow', noop),
         defaultedFunction('onHide', noop),
         onSetup
@@ -21549,6 +21670,12 @@
     };
     const fireToggleSidebar = (editor) => {
         editor.dispatch('ToggleSidebar');
+    };
+    const fireSidebarResizeStart = (dispatcher) => {
+        dispatcher.dispatch('SidebarResizeStart');
+    };
+    const fireSidebarResized = (dispatcher, width) => {
+        dispatcher.dispatch('SidebarResized', { width });
     };
     const fireToggleView = (editor) => {
         editor.dispatch('ToggleView');
@@ -27789,6 +27916,97 @@
         };
     };
 
+    const parseToInt = (val) => {
+        // if size is a number or '_px', will return the number
+        const re = /^[0-9\.]+(|px)$/i;
+        if (re.test('' + val)) {
+            return Optional.some(parseInt('' + val, 10));
+        }
+        return Optional.none();
+    };
+    const numToPx = (val) => isNumber(val) ? val + 'px' : val;
+    const calcCappedSize = (size, minSize, maxSize) => {
+        const minOverride = minSize.filter((min) => size < min);
+        const maxOverride = maxSize.filter((max) => size > max);
+        return minOverride.or(maxOverride).getOr(size);
+    };
+    const convertValueToPx = (element, value) => {
+        if (typeof value === 'number') {
+            return Optional.from(value);
+        }
+        const splitValue = /^([0-9.]+)(pt|em|px)$/.exec(value.trim());
+        if (splitValue) {
+            const type = splitValue[2];
+            const parsed = Number.parseFloat(splitValue[1]);
+            if (Number.isNaN(parsed) || parsed < 0) {
+                return Optional.none();
+            }
+            else if (type === 'em') {
+                return Optional.from(parsed * Number.parseFloat(window.getComputedStyle(element.dom).fontSize));
+            }
+            else if (type === 'pt') {
+                return Optional.from(parsed * (72 / 96));
+            }
+            else if (type === 'px') {
+                return Optional.from(parsed);
+            }
+        }
+        return Optional.none();
+    };
+
+    const requestedWidthProperty = '--tox-private-requested-sidebar-width';
+    const resolvedWidthProperty = '--tox-private-resolved-sidebar-width';
+    const minEditingAreaWidthProperty = '--tox-private-min-editing-area-width';
+    const resizableClass = 'tox-sidebar-wrap--resizable';
+    const applyWidth = (sidebar, width) => {
+        set$7(sidebar, requestedWidthProperty, numToPx(width));
+    };
+    const getMinEditingAreaWidth = (sidebar) => parseToInt(get$e(sidebar, minEditingAreaWidthProperty));
+
+    const findSidebar = (handle) => ancestor$1(handle.element, '.tox-sidebar');
+    const findSidebarWrap = (handle) => ancestor$1(handle.element, '.tox-sidebar-wrap');
+    const makeSidebarResizeHandle = (sizeConstraints, eventDispatcher) => {
+        const { minWidth, maxWidth } = sizeConstraints;
+        return {
+            dom: {
+                tag: 'div',
+                classes: ['tox-sidebar__resize-handle']
+            },
+            behaviours: derive$1([
+                Dragging.config({
+                    mode: 'pointer',
+                    repositionTarget: false,
+                    onDragStart: (handle) => {
+                        findSidebar(handle).each((sidebar) => {
+                            const sidebarWidth = get$c(sidebar);
+                            const availableMax = lift2(findSidebarWrap(handle), getMinEditingAreaWidth(sidebar), (wrap, minEditingAreaWidth) => Math.floor(get$c(wrap)) - minEditingAreaWidth).getOr(maxWidth);
+                            const effectiveMax = Math.min(maxWidth, availableMax);
+                            // When the editor is too narrow to honour both the sidebar's configured minimum
+                            // and the editing area's minimum, the range is unsatisfiable. Skip the resize so a
+                            // drag can't clobber the preserved requested width with the clamped value.
+                            if (effectiveMax >= minWidth) {
+                                Resizing.start(handle, sidebarWidth, get$d(sidebar), { minWidth, maxWidth: effectiveMax });
+                                fireSidebarResizeStart(eventDispatcher);
+                            }
+                        });
+                    },
+                    onDrag: (handle, _target, delta) => {
+                        // The handle sits on the sidebar's left edge, so dragging left should grow it: invert the horizontal delta.
+                        Resizing.moveBy(handle, SugarPosition(delta.left * -1, 0)).each(({ width }) => {
+                            findSidebar(handle).each((sidebar) => applyWidth(sidebar, width));
+                        });
+                    },
+                    onDrop: (handle) => {
+                        Resizing.stop(handle).each(({ width }) => {
+                            fireSidebarResized(eventDispatcher, width);
+                        });
+                    }
+                }),
+                Resizing.config({})
+            ])
+        };
+    };
+
     const setup$8 = (editor) => {
         const { sidebars } = editor.ui.registry.getAll();
         // Setup each registered sidebar
@@ -27799,7 +28017,7 @@
                 icon: spec.icon,
                 tooltip: spec.tooltip,
                 onAction: (buttonApi) => {
-                    editor.execCommand('ToggleSidebar', false, name);
+                    editor.execCommand('ToggleSidebar', false, name, { skip_focus: true });
                     buttonApi.setActive(isActive());
                 },
                 onSetup: (buttonApi) => {
@@ -27826,7 +28044,8 @@
                 getApi,
                 onSetup: bridged.onSetup,
                 onShow: bridged.onShow,
-                onHide: bridged.onHide
+                onHide: bridged.onHide,
+                resizable: bridged.resizable
             };
         });
         return map$2(specs, (spec) => {
@@ -27843,6 +28062,7 @@
                         const data = se.event;
                         const optSidePanelSpec = find$5(specs, (config) => config.name === data.name);
                         optSidePanelSpec.each((sidePanelSpec) => {
+                            emitWith(sidepanel, sidebarContentChanged, data.visible ? { visible: true, resizable: sidePanelSpec.resizable } : { visible: false });
                             const handler = data.visible ? sidePanelSpec.onShow : sidePanelSpec.onHide;
                             handler(sidePanelSpec.getApi(sidepanel));
                         });
@@ -27851,20 +28071,23 @@
             });
         });
     };
-    const makeSidebar = (panelConfigs) => SlotContainer.sketch((parts) => ({
+    const makeSidebar = (panelConfigs, sizeConstraints, eventDispatcher) => SlotContainer.sketch((parts) => ({
         dom: {
             tag: 'div',
             classes: ['tox-sidebar__pane-container']
         },
-        components: makePanels(parts, panelConfigs),
+        components: [
+            makeSidebarResizeHandle(sizeConstraints, eventDispatcher),
+            ...makePanels(parts, panelConfigs)
+        ],
         slotBehaviours: SimpleBehaviours.unnamedEvents([
             runOnAttached((slotContainer) => SlotContainer.hideAllSlots(slotContainer))
         ])
     }));
-    const setSidebar = (sidebar, panelConfigs, showSidebar) => {
+    const setSidebar = (sidebar, panelConfigs, showSidebar, sizeConstraints, eventDispatcher) => {
         const optSlider = Composing.getCurrent(sidebar);
         optSlider.each((slider) => {
-            Replacing.set(slider, [makeSidebar(panelConfigs)]);
+            Replacing.set(slider, [makeSidebar(panelConfigs, sizeConstraints, eventDispatcher)]);
             // Show the default sidebar
             const configKey = showSidebar?.toLowerCase();
             if (isString(configKey) && has$2(panelConfigs, configKey)) {
@@ -27923,11 +28146,15 @@
     };
     const fixSize = generate$6('FixSizeEvent');
     const autoSize = generate$6('AutoSizeEvent');
+    const sidebarContentChanged = generate$6('SidebarContentChanged');
     const renderSidebar = (spec) => ({
         uid: spec.uid,
         dom: {
             tag: 'div',
             classes: ['tox-sidebar'],
+            styles: {
+                [requestedWidthProperty]: numToPx(spec.configuredSidebarWidth)
+            },
             attributes: {
                 role: "presentation" /* SidebarStateRoleAttr.Shrunk */
             }
@@ -27982,9 +28209,11 @@
             config('sidebar-sliding-events', [
                 run$1(fixSize, (comp, se) => {
                     set$7(comp.element, 'width', se.event.width);
+                    set$7(comp.element, resolvedWidthProperty, se.event.width);
                 }),
                 run$1(autoSize, (comp, _se) => {
                     remove$6(comp.element, 'width');
+                    remove$6(comp.element, resolvedWidthProperty);
                 })
             ])
         ])
@@ -28645,8 +28874,8 @@
             getSocket: (comp) => {
                 return parts$g.getPart(comp, detail, 'socket');
             },
-            setSidebar: (comp, panelConfigs, showSidebar) => {
-                parts$g.getPart(comp, detail, 'sidebar').each((sidebar) => setSidebar(sidebar, panelConfigs, showSidebar));
+            setSidebar: (comp, panelConfigs, showSidebar, sizeConstraints, eventDispatcher) => {
+                parts$g.getPart(comp, detail, 'sidebar').each((sidebar) => setSidebar(sidebar, panelConfigs, showSidebar, sizeConstraints, eventDispatcher));
             },
             toggleSidebar: (comp, name) => {
                 parts$g.getPart(comp, detail, 'sidebar').each((sidebar) => toggleSidebar(sidebar, name));
@@ -28875,7 +29104,8 @@
         },
         name: 'sidebar',
         schema: [
-            required$1('dom')
+            required$1('dom'),
+            required$1('configuredSidebarWidth')
         ]
     });
     const partThrobber = partType$1.optional({
@@ -28932,8 +29162,8 @@
             getSocket: (apis, comp) => {
                 return apis.getSocket(comp);
             },
-            setSidebar: (apis, comp, panelConfigs, showSidebar) => {
-                apis.setSidebar(comp, panelConfigs, showSidebar);
+            setSidebar: (apis, comp, panelConfigs, showSidebar, sizeConstraints, eventDispatcher) => {
+                apis.setSidebar(comp, panelConfigs, showSidebar, sizeConstraints, eventDispatcher);
             },
             toggleSidebar: (apis, comp, name) => {
                 apis.toggleSidebar(comp, name);
@@ -30689,7 +30919,10 @@
         attachSystemAfter(eTargetNode, mainUi.mothership);
         attachUiMotherships(editor, uiRoot, uiRefs);
         editor.on('PostRender', () => {
-            OuterContainer.setSidebar(outerContainer, rawUiConfig.sidebar, getSidebarShow(editor));
+            OuterContainer.setSidebar(outerContainer, rawUiConfig.sidebar, getSidebarShow(editor), {
+                minWidth: getSidebarMinWidth(editor),
+                maxWidth: getSidebarMaxWidth(editor)
+            }, editor);
             OuterContainer.setViews(outerContainer, rawUiConfig.views, getViewShow(editor));
         }, true);
         // TINY-10343: Using `SkinLoaded` instead of `PostRender` because if the skin loading takes too long you run in to rendering problems since things are measured before the CSS is being applied
@@ -30769,44 +31002,6 @@
         __proto__: null,
         render: render$1
     });
-
-    const parseToInt = (val) => {
-        // if size is a number or '_px', will return the number
-        const re = /^[0-9\.]+(|px)$/i;
-        if (re.test('' + val)) {
-            return Optional.some(parseInt('' + val, 10));
-        }
-        return Optional.none();
-    };
-    const numToPx = (val) => isNumber(val) ? val + 'px' : val;
-    const calcCappedSize = (size, minSize, maxSize) => {
-        const minOverride = minSize.filter((min) => size < min);
-        const maxOverride = maxSize.filter((max) => size > max);
-        return minOverride.or(maxOverride).getOr(size);
-    };
-    const convertValueToPx = (element, value) => {
-        if (typeof value === 'number') {
-            return Optional.from(value);
-        }
-        const splitValue = /^([0-9.]+)(pt|em|px)$/.exec(value.trim());
-        if (splitValue) {
-            const type = splitValue[2];
-            const parsed = Number.parseFloat(splitValue[1]);
-            if (Number.isNaN(parsed) || parsed < 0) {
-                return Optional.none();
-            }
-            else if (type === 'em') {
-                return Optional.from(parsed * Number.parseFloat(window.getComputedStyle(element.dom).fontSize));
-            }
-            else if (type === 'pt') {
-                return Optional.from(parsed * (72 / 96));
-            }
-            else if (type === 'px') {
-                return Optional.from(parsed);
-            }
-        }
-        return Optional.none();
-    };
 
     const getHeight = (editor) => {
         const baseHeight = convertValueToPx(SugarElement.fromDom(editor.targetElm), getHeightOption(editor));
@@ -33931,7 +34126,8 @@
                 dom: {
                     tag: 'div',
                     classes: ['tox-sidebar']
-                }
+                },
+                configuredSidebarWidth: getSidebarWidth(editor)
             });
             return {
                 dom: {
@@ -33941,7 +34137,14 @@
                 components: [
                     partSocket,
                     partSidebar
-                ]
+                ],
+                behaviours: SimpleBehaviours.unnamedEvents([
+                    run$1(sidebarContentChanged, (comp, se) => {
+                        const shouldBeResizable = se.event.visible && se.event.resizable;
+                        const toggle = shouldBeResizable ? add$2 : remove$3;
+                        toggle(comp.element, resizableClass);
+                    })
+                ])
             };
         };
         // TINY-14384: we want to restrict the bounds to the host element, rather than the entire window when the sink is attached in a ShadowDOM (ie: webcomponent)

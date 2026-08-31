@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.8.2 (2026-07-27)
+ * TinyMCE version 8.9.0 (2026-08-27)
  */
 
 (function () {
@@ -777,8 +777,9 @@
      * @class tinymce.emoticons.Plugin
      * @private
      */
+    const PLUGIN_CODE = 'emoticons';
     var Plugin = () => {
-        global$1.add('emoticons', (editor, pluginUrl) => {
+        global$1.add(PLUGIN_CODE, (editor, pluginUrl) => {
             register$2(editor, pluginUrl);
             const databaseUrl = getEmojiDatabaseUrl(editor);
             const databaseId = getEmojiDatabaseId(editor);
@@ -788,7 +789,8 @@
             init(editor, database);
             setup(editor);
             return {
-                getAllEmojis: () => database.waitForLoad().then(() => database.listAll())
+                getAllEmojis: () => database.waitForLoad().then(() => database.listAll()),
+                getMetadata: () => ({ name: 'Emoticons', type: 'opensource', slug: PLUGIN_CODE })
             };
         });
     };
