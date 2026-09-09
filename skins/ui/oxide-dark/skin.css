@@ -4107,6 +4107,12 @@ body.tox-dialog__disable-scroll {
   padding-left: var(--tox-private-pad-md, 16px);
   padding-right: var(--tox-private-pad-md, 16px);
 }
+.tox .tox-ai .tox-menu {
+  width: -webkit-fill-available;
+  width: -moz-available;
+  width: stretch;
+  overflow: visible;
+}
 .tox .tox-ai .tox-ai__user-prompt {
   display: flex;
   flex-direction: column;
@@ -4351,7 +4357,6 @@ body.tox-dialog__disable-scroll {
 }
 .tox .tox-ai .tox-ai__models-menu .tox-menu {
   max-height: inherit;
-  overflow: auto;
   padding: var(--tox-private-pad-xs, 4px);
 }
 .tox .tox-ai .tox-ai__models-menu__item__description {
