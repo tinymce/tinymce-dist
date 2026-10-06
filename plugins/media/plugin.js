@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.9.2 (2026-09-23)
+ * TinyMCE version 8.9.3 (2026-10-06)
  */
 
 (function () {
@@ -1294,9 +1294,18 @@
         return Parser(editor.schema, { sanitize, validate }).parse(html);
     };
 
+    let nonNonScriptingDocument;
+    const createNonScriptingDocument = () => {
+        if (isNonNullable(nonNonScriptingDocument)) {
+            return nonNonScriptingDocument;
+        }
+        nonNonScriptingDocument = new DOMParser().parseFromString('', 'text/html');
+        return nonNonScriptingDocument;
+    };
     const buildMediaElement = (editor, node) => {
+        const doc = createNonScriptingDocument();
         const realElmName = node.attr('data-mce-object');
-        const element = document.createElement(realElmName);
+        const element = doc.createElement(realElmName);
         // Add width/height to everything but audio
         if (realElmName !== 'audio') {
             const className = node.attr('class');
