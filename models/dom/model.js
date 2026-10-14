@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.9.3 (2026-10-06)
+ * TinyMCE version 8.10.0 (2026-10-14)
  */
 
 (function () {
@@ -6707,9 +6707,13 @@
         /* mousedown on resize bar: start dragging when the bar is clicked, storing the initial position. */
         const mousedown = bind(wire.parent(), 'mousedown', (event) => {
             if (isRowBar(event.target)) {
+                event.prevent();
+                event.stop();
                 handler(event.target, 'top');
             }
             if (isColBar(event.target)) {
+                event.prevent();
+                event.stop();
                 handler(event.target, 'left');
             }
         });
@@ -8789,7 +8793,6 @@
     const isCornerResize = (origin) => startsWith(origin, 'corner-');
     const getCornerLocation = (origin) => removeLeading(origin, 'corner-');
     const TableResizeHandler = (editor) => {
-        const selectionRng = value();
         const tableResize = value();
         const resizeWire = value();
         let startW;
@@ -8859,9 +8862,6 @@
                 if (!editor.mode.isReadOnly()) {
                     sz.on();
                 }
-                sz.events.startDrag.bind((_event) => {
-                    selectionRng.set(editor.selection.getRng());
-                });
                 sz.events.beforeResize.bind((event) => {
                     const rawTable = event.table.dom;
                     fireObjectResizeStart(editor, rawTable, getPixelWidth(rawTable), getPixelHeight(rawTable), barResizerPrefix + event.type);
@@ -8870,10 +8870,6 @@
                     const table = event.table;
                     const rawTable = table.dom;
                     removeDataStyle(table);
-                    selectionRng.on((rng) => {
-                        editor.selection.setRng(rng);
-                        editor.focus();
-                    });
                     fireObjectResized(editor, rawTable, getPixelWidth(rawTable), getPixelHeight(rawTable), barResizerPrefix + event.type);
                     editor.undoManager.add();
                 });
