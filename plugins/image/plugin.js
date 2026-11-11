@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.10.1 (2026-10-28)
+ * TinyMCE version 8.10.2 (2026-11-11)
  */
 
 (function () {
@@ -1434,26 +1434,28 @@
                 changeSrc(helpers, info, state, api);
                 api.focus('src');
             };
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            blobToDataUri(file).then((dataUrl) => {
-                const blobInfo = helpers.createBlobCache(file, blobUri, dataUrl);
+            const handleError = (err) => {
+                finalize();
+                info.alertErr(err, () => {
+                    api.focus('fileinput');
+                });
+            };
+            blobToDataUri(file)
+                .then((dataUrl) => helpers.createBlobCache(file, blobUri, dataUrl))
+                .then((blobInfo) => {
                 if (info.automaticUploads) {
                     helpers.uploadImage(blobInfo).then((result) => {
                         updateSrcAndSwitchTab(result.url);
                         finalize();
-                    }).catch((err) => {
-                        finalize();
-                        info.alertErr(err, () => {
-                            api.focus('fileinput');
-                        });
-                    });
+                    }).catch(handleError);
                 }
                 else {
                     helpers.addToBlobCache(blobInfo);
                     updateSrcAndSwitchTab(blobInfo.blobUri());
                     api.unblock();
                 }
-            });
+            })
+                .catch(() => handleError('Failed to upload image'));
         });
     };
     const changeHandler = (helpers, info, state) => (api, evt) => {

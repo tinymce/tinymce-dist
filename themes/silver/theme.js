@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.10.1 (2026-10-28)
+ * TinyMCE version 8.10.2 (2026-11-11)
  */
 
 (function () {
@@ -24707,7 +24707,8 @@
                 Optional.some(iconSpec)
             ]),
             matchWidth: true,
-            useMinWidth: true,
+            useMinWidth: spec.useMinWidth ?? true,
+            sandboxClasses: spec.sandboxClasses ?? [],
             // When the dropdown opens, if we are in search mode, then we want to
             // focus our searcher.
             onOpen: (anchor, dropdownComp, tmenuComp) => {
@@ -25029,6 +25030,8 @@
                     columns: 1,
                     presets: 'normal',
                     classes: [],
+                    useMinWidth: false,
+                    sandboxClasses: ['tox-listbox__menu'],
                     dropdownBehaviours: [
                         Tabstopping.config({}),
                         withComp(initialItem.map((item) => item.value), (comp) => get$g(comp.element, dataAttribute), (comp, data) => {
@@ -32030,9 +32033,9 @@
         .filter((elem) => inBody(elem) && isHTMLElement(elem))
         .map(absolute$2)
         .getOrThunk(() => getSelectionBounds(editor));
-    const getHorizontalBounds = (contentAreaBox, viewportBounds, margin) => {
-        const x = Math.max(contentAreaBox.x + margin, viewportBounds.x);
-        const right = Math.min(contentAreaBox.right - margin, viewportBounds.right);
+    const getHorizontalBounds = (contentAreaBox, viewportBounds) => {
+        const x = Math.max(contentAreaBox.x, viewportBounds.x);
+        const right = Math.min(contentAreaBox.right, viewportBounds.right);
         return { x, width: right - x };
     };
     const getVerticalBounds = (editor, contentAreaBox, viewportBounds, isToolbarLocationTop, toolbarType, margin) => {
@@ -32074,7 +32077,7 @@
         const viewportBounds = getBounds$1(window);
         const contentAreaBox = box$1(SugarElement.fromDom(editor.getContentAreaContainer()));
         const toolbarOrMenubarEnabled = isMenubarEnabled(editor) || isToolbarEnabled(editor) || isMultipleToolbars(editor);
-        const { x, width } = getHorizontalBounds(contentAreaBox, viewportBounds, margin);
+        const { x, width } = getHorizontalBounds(contentAreaBox, viewportBounds);
         // Create bounds that lets the context toolbar overflow outside the content area, but remains in the viewport
         if (editor.inline && !toolbarOrMenubarEnabled) {
             return bounds(x, viewportBounds.y, width, viewportBounds.height);
@@ -32569,7 +32572,8 @@
         }, 17); // 17ms is used as that's about 1 frame at 60fps
         editor.on('init', () => {
             editor.on('remove', close);
-            editor.on('ScrollContent ScrollWindow ObjectResized ResizeEditor longpress', hideOrRepositionIfNecessary);
+            editor.on('ScrollContent ScrollWindow longpress', hideOrRepositionIfNecessary);
+            editor.on('ObjectResized ResizeEditor', instantReposition);
             // FIX: Make it go away when the action makes it go away. E.g. deleting a column deletes the table.
             editor.on('click focus SetContent', launchContextToolbar.throttle);
             editor.on('keyup', (e) => {

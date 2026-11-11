@@ -2622,6 +2622,7 @@ interface EditorSelection {
     getStart: (real?: boolean) => Element;
     getEnd: (real?: boolean) => Element;
     getSelectedBlocks: (startElm?: Element, endElm?: Element) => Element[];
+    getFullySelectedBlocks: () => Element[];
     normalize: () => Range;
     selectorChanged: (selector: string, callback: (active: boolean, args: {
         node: Node;

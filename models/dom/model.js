@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.10.1 (2026-10-28)
+ * TinyMCE version 8.10.2 (2026-11-11)
  */
 
 (function () {
@@ -6547,7 +6547,7 @@
             height: h + 'px',
             width: w + 'px'
         });
-        setAll$1(bar, { 'data-mce-bogus': 'all', 'data-column': column, 'role': 'presentation' });
+        setAll$1(bar, { 'data-mce-bogus': 'all', 'data-column': column, 'aria-hidden': 'true' });
         return bar;
     };
     const row = (r, x, y, w, h) => {
@@ -6559,7 +6559,7 @@
             height: h + 'px',
             width: w + 'px'
         });
-        setAll$1(bar, { 'data-mce-bogus': 'all', 'data-row': r, 'role': 'presentation' });
+        setAll$1(bar, { 'data-mce-bogus': 'all', 'data-row': r, 'aria-hidden': 'true' });
         return bar;
     };
 

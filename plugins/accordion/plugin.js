@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.10.1 (2026-10-28)
+ * TinyMCE version 8.10.2 (2026-11-11)
  */
 
 (function () {
@@ -1206,7 +1206,7 @@
         node.empty();
         node.append(br);
     };
-    const setup$2 = (editor) => {
+    const setup$3 = (editor) => {
         editor.on('PreInit', () => {
             const { serializer, parser } = editor;
             // Purpose:
@@ -1297,13 +1297,32 @@
             }
         });
     };
-    const setup$1 = (editor) => {
+    const setup$2 = (editor) => {
         setupEnterKeyInSummary(editor);
         editor.on('ExecCommand', (e) => {
             const cmd = e.command.toLowerCase();
             if ((cmd === 'delete' || cmd === 'forwarddelete') && isDetailsSelected(editor)) {
                 normalizeDetails(editor);
             }
+        });
+    };
+
+    const isAccordion = (target) => {
+        const node = target;
+        return isDetails(node) && node.classList.contains(accordionDetailsClass);
+    };
+    const setup$1 = (editor) => {
+        const onToggle = (e) => {
+            const details = e.target;
+            if (isAccordion(details) && !editor.readonly && !isDisabled(editor)) {
+                details.setAttribute(accordionReadonlyCompensationAttribute, isOpen(details) ? 'open' : 'closed');
+            }
+        };
+        editor.on('init', () => {
+            const body = editor.getBody();
+            // toggle does not bubble, so it is caught in the capture phase
+            body.addEventListener('toggle', onToggle, true);
+            editor.on('remove', () => body.removeEventListener('toggle', onToggle, true));
         });
     };
 
@@ -1358,9 +1377,10 @@
         global$4.add(PLUGIN_CODE, (editor) => {
             register(editor);
             register$1(editor);
-            setup$1(editor);
             setup$2(editor);
+            setup$3(editor);
             setup(editor);
+            setup$1(editor);
             return {
                 getMetadata: () => ({ name: 'Accordion', type: 'opensource', slug: PLUGIN_CODE })
             };

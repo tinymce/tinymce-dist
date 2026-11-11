@@ -2839,6 +2839,13 @@ body.tox-dialog__disable-scroll {
   cursor: default;
   flex: 1;
   margin: 0 4px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tox .tox-listbox__menu .tox-menu {
+  box-sizing: border-box;
 }
 .tox .tox-listbox__select-chevron {
   align-items: center;

@@ -247,6 +247,7 @@ export interface Classes {
   "tox-naked-btn": string;
   "tox-textfield-size": string;
   "tox-listbox__select-label": string;
+  "tox-listbox__menu": string;
   "tox-listbox__select-chevron": string;
   "tox-fullscreen": string;
   "tox-statusbar__resize-handle": string;

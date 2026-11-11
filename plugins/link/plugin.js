@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.10.1 (2026-10-28)
+ * TinyMCE version 8.10.2 (2026-11-11)
  */
 
 (function () {
@@ -1442,6 +1442,13 @@
     const hasOnlyAltModifier = (e) => {
         return e.altKey === true && e.shiftKey === false && e.ctrlKey === false && e.metaKey === false;
     };
+    const openEnclosingDetails = (editor, target) => {
+        each$1(editor.dom.getParents(target.parentNode, 'details', editor.getBody()), (details) => {
+            if (!details.querySelector(':scope > summary')?.contains(target)) {
+                details.setAttribute('open', 'open');
+            }
+        });
+    };
     const gotoLink = (editor, a) => {
         if (a) {
             const href = getHref(a);
@@ -1449,6 +1456,7 @@
                 const id = removeLeading(href, '#');
                 const targetEl = editor.dom.select(`[id="${id}"],[name="${id}"]`);
                 if (targetEl.length) {
+                    openEnclosingDetails(editor, targetEl[0]);
                     editor.selection.scrollIntoView(targetEl[0], true);
                 }
             }
