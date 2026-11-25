@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.10.2 (2026-11-11)
+ * TinyMCE version 8.11.0 (2026-11-25)
  */
 
 (function () {
@@ -302,7 +302,6 @@
         }
     }
 
-    const nativeSlice = Array.prototype.slice;
     const nativeIndexOf = Array.prototype.indexOf;
     const rawIndexOf = (ts, t) => nativeIndexOf.call(ts, t);
     const contains$1 = (xs, x) => rawIndexOf(xs, x) > -1;
@@ -341,7 +340,6 @@
     const find$1 = (xs, pred) => {
         return findUntil(xs, pred, never);
     };
-    isFunction(Array.from) ? Array.from : (x) => nativeSlice.call(x);
     const findMap = (arr, f) => {
         for (let i = 0; i < arr.length; i++) {
             const r = f(arr[i], i);
@@ -417,7 +415,7 @@
         const isiPad = os.isiOS() && /ipad/i.test(userAgent) === true;
         const isiPhone = os.isiOS() && !isiPad;
         const isMobile = os.isiOS() || os.isAndroid();
-        const isTouch = isMobile || mediaMatch('(pointer:coarse)');
+        const isTouch = isMobile || !mediaMatch('(any-pointer:fine)');
         const isTablet = isiPad || !isiPhone && isMobile && mediaMatch('(min-device-width:768px)');
         const isPhone = isiPhone || isMobile && !isTablet;
         const iOSwebview = browser.isSafari() && os.isiOS() && /safari/i.test(userAgent) === false;
@@ -639,14 +637,7 @@
     };
     const Browser = {
         unknown: unknown$1,
-        nu: nu$1,
-        edge: constant(edge),
-        chromium: constant(chromium),
-        ie: constant(ie),
-        opera: constant(opera),
-        firefox: constant(firefox),
-        safari: constant(safari)
-    };
+        nu: nu$1};
 
     const windows = 'Windows';
     const ios = 'iOS';
@@ -684,16 +675,7 @@
     };
     const OperatingSystem = {
         unknown,
-        nu,
-        windows: constant(windows),
-        ios: constant(ios),
-        android: constant(android),
-        linux: constant(linux),
-        macos: constant(macos),
-        solaris: constant(solaris),
-        freebsd: constant(freebsd),
-        chromeos: constant(chromeos)
-    };
+        nu};
 
     const detect$1 = (userAgent, userAgentDataOpt, mediaMatch) => {
         const browsers = PlatformInfo.browsers();

@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.10.2 (2026-11-11)
+ * TinyMCE version 8.11.0 (2026-11-25)
  */
 
 (function () {
@@ -8,6 +8,7 @@
     var global$3 = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
     /* eslint-disable @typescript-eslint/no-wrapper-object-types */
+    const getPrototypeOf = Object.getPrototypeOf;
     const hasProto = (v, constructor, predicate) => {
         if (predicate(v, constructor.prototype)) {
             return true;
@@ -35,7 +36,10 @@
     const isType$1 = (type) => (value) => typeOf(value) === type;
     const isSimpleType = (type) => (value) => typeof value === type;
     const eq$1 = (t) => (a) => t === a;
+    const is$3 = (value, constructor) => isObject(value) && hasProto(value, constructor, (o, proto) => getPrototypeOf(o) === proto);
     const isString = isType$1('string');
+    const isObject = isType$1('object');
+    const isPlainObject = (value) => is$3(value, Object);
     const isArray = isType$1('array');
     const isBoolean = isSimpleType('boolean');
     const isUndefined = eq$1(undefined);
@@ -64,6 +68,7 @@
             return fn.apply(null, all);
         };
     }
+    const not = (f) => (t) => !f(t);
     const call = (f) => {
         f();
     };
@@ -327,7 +332,7 @@
     const nativeIndexOf = Array.prototype.indexOf;
     const nativePush = Array.prototype.push;
     const rawIndexOf = (ts, t) => nativeIndexOf.call(ts, t);
-    const contains = (xs, x) => rawIndexOf(xs, x) > -1;
+    const contains$1 = (xs, x) => rawIndexOf(xs, x) > -1;
     const exists = (xs, pred) => {
         for (let i = 0, len = xs.length; i < len; i++) {
             const x = xs[i];
@@ -414,17 +419,8 @@
         }
         return Optional.none();
     };
-    const find = (xs, pred) => {
+    const find$1 = (xs, pred) => {
         return findUntil(xs, pred, never);
-    };
-    const findIndex = (xs, pred) => {
-        for (let i = 0, len = xs.length; i < len; i++) {
-            const x = xs[i];
-            if (pred(x, i)) {
-                return Optional.some(i);
-            }
-        }
-        return Optional.none();
     };
     const flatten$1 = (xs) => {
         // Note, this is possible because push supports multiple arguments:
@@ -451,6 +447,11 @@
         }
         return true;
     };
+    const reverse = (xs) => {
+        const r = nativeSlice.call(xs, 0);
+        r.reverse();
+        return r;
+    };
     const mapToObject = (xs, f) => {
         const r = {};
         for (let i = 0, len = xs.length; i < len; i++) {
@@ -459,10 +460,9 @@
         }
         return r;
     };
-    const get$4 = (xs, i) => i >= 0 && i < xs.length ? Optional.some(xs[i]) : Optional.none();
-    const head = (xs) => get$4(xs, 0);
-    const last = (xs) => get$4(xs, xs.length - 1);
-    isFunction(Array.from) ? Array.from : (x) => nativeSlice.call(x);
+    const get$5 = (xs, i) => i >= 0 && i < xs.length ? Optional.some(xs[i]) : Optional.none();
+    const head = (xs) => get$5(xs, 0);
+    const last = (xs) => get$5(xs, xs.length - 1);
     const findMap = (arr, f) => {
         for (let i = 0; i < arr.length; i++) {
             const r = f(arr[i], i);
@@ -471,6 +471,19 @@
             }
         }
         return Optional.none();
+    };
+    const unique = (xs, comparator) => {
+        const r = [];
+        const isDuplicated = isFunction(comparator) ?
+            (x) => exists(r, (i) => comparator(i, x)) :
+            (x) => contains$1(r, x);
+        for (let i = 0, len = xs.length; i < len; i++) {
+            const x = xs[i];
+            if (!isDuplicated(x)) {
+                r.push(x);
+            }
+        }
+        return r;
     };
 
     // There are many variations of Object iteration that are faster than the 'for-in' style:
@@ -513,7 +526,7 @@
     const size = (obj) => {
         return keys(obj).length;
     };
-    const get$3 = (obj, key) => {
+    const get$4 = (obj, key) => {
         return has(obj, key) ? Optional.from(obj[key]) : Optional.none();
     };
     const has = (obj, key) => hasOwnProperty.call(obj, key);
@@ -525,6 +538,94 @@
             }
         }
         return true;
+    };
+
+    /*
+     * Generates a church encoded ADT (https://en.wikipedia.org/wiki/Church_encoding)
+     * For syntax and use, look at the test code.
+     */
+    const generate$1 = (cases) => {
+        // validation
+        if (!isArray(cases)) {
+            throw new Error('cases must be an array');
+        }
+        if (cases.length === 0) {
+            throw new Error('there must be at least one case');
+        }
+        const constructors = [];
+        // adt is mutated to add the individual cases
+        const adt = {};
+        each$1(cases, (acase, count) => {
+            const keys$1 = keys(acase);
+            // validation
+            if (keys$1.length !== 1) {
+                throw new Error('one and only one name per case');
+            }
+            const key = keys$1[0];
+            const value = acase[key];
+            // validation
+            if (adt[key] !== undefined) {
+                throw new Error('duplicate key detected:' + key);
+            }
+            else if (key === 'cata') {
+                throw new Error('cannot have a case named cata (sorry)');
+            }
+            else if (!isArray(value)) {
+                // this implicitly checks if acase is an object
+                throw new Error('case arguments must be an array');
+            }
+            constructors.push(key);
+            //
+            // constructor for key
+            //
+            adt[key] = (...args) => {
+                const argLength = args.length;
+                // validation
+                if (argLength !== value.length) {
+                    throw new Error('Wrong number of arguments to case ' + key + '. Expected ' + value.length + ' (' + value + '), got ' + argLength);
+                }
+                const match = (branches) => {
+                    const branchKeys = keys(branches);
+                    if (constructors.length !== branchKeys.length) {
+                        throw new Error('Wrong number of arguments to match. Expected: ' + constructors.join(',') + '\nActual: ' + branchKeys.join(','));
+                    }
+                    const allReqd = forall(constructors, (reqKey) => {
+                        return contains$1(branchKeys, reqKey);
+                    });
+                    if (!allReqd) {
+                        throw new Error('Not all branches were specified when using match. Specified: ' + branchKeys.join(', ') + '\nRequired: ' + constructors.join(', '));
+                    }
+                    return branches[key].apply(null, args);
+                };
+                //
+                // the fold function for key
+                //
+                return {
+                    fold: (...foldArgs) => {
+                        // runtime validation
+                        if (foldArgs.length !== cases.length) {
+                            throw new Error('Wrong number of arguments to fold. Expected ' + cases.length + ', got ' + foldArgs.length);
+                        }
+                        const target = foldArgs[count];
+                        return target.apply(null, args);
+                    },
+                    match,
+                    // NOTE: Only for debugging.
+                    log: (label) => {
+                        // eslint-disable-next-line no-console
+                        console.log(label, {
+                            constructors,
+                            constructor: key,
+                            params: args
+                        });
+                    }
+                };
+            };
+        });
+        return adt;
+    };
+    const Adt = {
+        generate: generate$1
     };
 
     const Cell = (initial) => {
@@ -562,6 +663,7 @@
     - && is used instead of a loop for simplicity and performance.
     */
     const lift2 = (oa, ob, f) => oa.isSome() && ob.isSome() ? Optional.some(f(oa.getOrDie(), ob.getOrDie())) : Optional.none();
+    const bindFrom = (a, f) => (a !== undefined && a !== null) ? f(a) : Optional.none();
     const flatten = (oot) => oot.bind(identity);
     // This can help with type inference, by specifying the type param on the none case, so the caller doesn't have to.
     const someIf = (b, a) => b ? Optional.some(a) : Optional.none();
@@ -596,6 +698,15 @@
     const removeLeading = (str, prefix) => {
         return startsWith(str, prefix) ? removeFromStart(str, prefix.length) : str;
     };
+    const contains = (str, substr, start = 0, end) => {
+        const idx = str.indexOf(substr, start);
+        if (idx !== -1) {
+            return isUndefined(end) ? true : idx + substr.length <= end;
+        }
+        else {
+            return false;
+        }
+    };
     /** Does 'str' start with 'prefix'?
      *  Note: all strings start with the empty string.
      *        More formally, for all strings x, startsWith(x, "").
@@ -629,6 +740,46 @@
             return r;
         };
     };
+
+    const validSectionList = ['tfoot', 'thead', 'tbody', 'colgroup'];
+    const isValidSection = (parentName) => contains$1(validSectionList, parentName);
+    const grid = (rows, columns) => ({
+        rows,
+        columns
+    });
+    const detail = (element, rowspan, colspan) => ({
+        element,
+        rowspan,
+        colspan
+    });
+    const extended = (element, rowspan, colspan, row, column, isLocked) => ({
+        element,
+        rowspan,
+        colspan,
+        row,
+        column,
+        isLocked
+    });
+    const rowdetail = (element, cells, section) => ({
+        element,
+        cells,
+        section
+    });
+    const bounds = (startRow, startCol, finishRow, finishCol) => ({
+        startRow,
+        startCol,
+        finishRow,
+        finishCol
+    });
+    const columnext = (element, colspan, column) => ({
+        element,
+        colspan,
+        column
+    });
+    const colgroup = (element, columns) => ({
+        element,
+        columns
+    });
 
     const fromHtml = (html, scope) => {
         const doc = scope || document;
@@ -720,6 +871,297 @@
     const eq = (e1, e2) => e1.dom === e2.dom;
     const is = is$1;
 
+    const DeviceType = (os, browser, userAgent, mediaMatch) => {
+        const isiPad = os.isiOS() && /ipad/i.test(userAgent) === true;
+        const isiPhone = os.isiOS() && !isiPad;
+        const isMobile = os.isiOS() || os.isAndroid();
+        const isTouch = isMobile || !mediaMatch('(any-pointer:fine)');
+        const isTablet = isiPad || !isiPhone && isMobile && mediaMatch('(min-device-width:768px)');
+        const isPhone = isiPhone || isMobile && !isTablet;
+        const iOSwebview = browser.isSafari() && os.isiOS() && /safari/i.test(userAgent) === false;
+        const isDesktop = !isPhone && !isTablet && !iOSwebview;
+        return {
+            isiPad: constant(isiPad),
+            isiPhone: constant(isiPhone),
+            isTablet: constant(isTablet),
+            isPhone: constant(isPhone),
+            isTouch: constant(isTouch),
+            isAndroid: os.isAndroid,
+            isiOS: os.isiOS,
+            isWebView: constant(iOSwebview),
+            isDesktop: constant(isDesktop)
+        };
+    };
+
+    const firstMatch = (regexes, s) => {
+        for (let i = 0; i < regexes.length; i++) {
+            const x = regexes[i];
+            if (x.test(s)) {
+                return x;
+            }
+        }
+        return undefined;
+    };
+    const find = (regexes, agent) => {
+        const r = firstMatch(regexes, agent);
+        if (!r) {
+            return { major: 0, minor: 0 };
+        }
+        const group = (i) => {
+            return Number(agent.replace(r, '$' + i));
+        };
+        return nu$2(group(1), group(2));
+    };
+    const detect$4 = (versionRegexes, agent) => {
+        const cleanedAgent = String(agent).toLowerCase();
+        if (versionRegexes.length === 0) {
+            return unknown$2();
+        }
+        return find(versionRegexes, cleanedAgent);
+    };
+    const unknown$2 = () => {
+        return nu$2(0, 0);
+    };
+    const nu$2 = (major, minor) => {
+        return { major, minor };
+    };
+    const Version = {
+        nu: nu$2,
+        detect: detect$4,
+        unknown: unknown$2
+    };
+
+    const detectBrowser$1 = (browsers, userAgentData) => {
+        return findMap(userAgentData.brands, (uaBrand) => {
+            const lcBrand = uaBrand.brand.toLowerCase();
+            return find$1(browsers, (browser) => lcBrand === browser.brand?.toLowerCase())
+                .map((info) => ({
+                current: info.name,
+                version: Version.nu(parseInt(uaBrand.version, 10), 0)
+            }));
+        });
+    };
+
+    const detect$3 = (candidates, userAgent) => {
+        const agent = String(userAgent).toLowerCase();
+        return find$1(candidates, (candidate) => {
+            return candidate.search(agent);
+        });
+    };
+    // They (browser and os) are the same at the moment, but they might
+    // not stay that way.
+    const detectBrowser = (browsers, userAgent) => {
+        return detect$3(browsers, userAgent).map((browser) => {
+            const version = Version.detect(browser.versionRegexes, userAgent);
+            return {
+                current: browser.name,
+                version
+            };
+        });
+    };
+    const detectOs = (oses, userAgent) => {
+        return detect$3(oses, userAgent).map((os) => {
+            const version = Version.detect(os.versionRegexes, userAgent);
+            return {
+                current: os.name,
+                version
+            };
+        });
+    };
+
+    const normalVersionRegex = /.*?version\/\ ?([0-9]+)\.([0-9]+).*/;
+    const checkContains = (target) => {
+        return (uastring) => {
+            return contains(uastring, target);
+        };
+    };
+    const browsers = [
+        // This is legacy Edge
+        {
+            name: 'Edge',
+            versionRegexes: [/.*?edge\/ ?([0-9]+)\.([0-9]+)$/],
+            search: (uastring) => {
+                return contains(uastring, 'edge/') && contains(uastring, 'chrome') && contains(uastring, 'safari') && contains(uastring, 'applewebkit');
+            }
+        },
+        // This is Google Chrome and Chromium Edge
+        {
+            name: 'Chromium',
+            brand: 'Chromium',
+            versionRegexes: [/.*?chrome\/([0-9]+)\.([0-9]+).*/, normalVersionRegex],
+            search: (uastring) => {
+                return contains(uastring, 'chrome') && !contains(uastring, 'chromeframe');
+            }
+        },
+        {
+            name: 'IE',
+            versionRegexes: [/.*?msie\ ?([0-9]+)\.([0-9]+).*/, /.*?rv:([0-9]+)\.([0-9]+).*/],
+            search: (uastring) => {
+                return contains(uastring, 'msie') || contains(uastring, 'trident');
+            }
+        },
+        // INVESTIGATE: Is this still the Opera user agent?
+        {
+            name: 'Opera',
+            versionRegexes: [normalVersionRegex, /.*?opera\/([0-9]+)\.([0-9]+).*/],
+            search: checkContains('opera')
+        },
+        {
+            name: 'Firefox',
+            versionRegexes: [/.*?firefox\/\ ?([0-9]+)\.([0-9]+).*/],
+            search: checkContains('firefox')
+        },
+        {
+            name: 'Safari',
+            versionRegexes: [normalVersionRegex, /.*?cpu os ([0-9]+)_([0-9]+).*/],
+            search: (uastring) => {
+                return (contains(uastring, 'safari') || contains(uastring, 'mobile/')) && contains(uastring, 'applewebkit');
+            }
+        }
+    ];
+    const oses = [
+        {
+            name: 'Windows',
+            search: checkContains('win'),
+            versionRegexes: [/.*?windows\ nt\ ?([0-9]+)\.([0-9]+).*/]
+        },
+        {
+            name: 'iOS',
+            search: (uastring) => {
+                return contains(uastring, 'iphone') || contains(uastring, 'ipad');
+            },
+            versionRegexes: [/.*?version\/\ ?([0-9]+)\.([0-9]+).*/, /.*cpu os ([0-9]+)_([0-9]+).*/, /.*cpu iphone os ([0-9]+)_([0-9]+).*/]
+        },
+        {
+            name: 'Android',
+            search: checkContains('android'),
+            versionRegexes: [/.*?android\ ?([0-9]+)\.([0-9]+).*/]
+        },
+        {
+            name: 'macOS',
+            search: checkContains('mac os x'),
+            versionRegexes: [/.*?mac\ os\ x\ ?([0-9]+)_([0-9]+).*/]
+        },
+        {
+            name: 'Linux',
+            search: checkContains('linux'),
+            versionRegexes: []
+        },
+        { name: 'Solaris',
+            search: checkContains('sunos'),
+            versionRegexes: []
+        },
+        {
+            name: 'FreeBSD',
+            search: checkContains('freebsd'),
+            versionRegexes: []
+        },
+        {
+            name: 'ChromeOS',
+            search: checkContains('cros'),
+            versionRegexes: [/.*?chrome\/([0-9]+)\.([0-9]+).*/]
+        }
+    ];
+    const PlatformInfo = {
+        browsers: constant(browsers),
+        oses: constant(oses)
+    };
+
+    const edge = 'Edge';
+    const chromium = 'Chromium';
+    const ie = 'IE';
+    const opera = 'Opera';
+    const firefox = 'Firefox';
+    const safari = 'Safari';
+    const unknown$1 = () => {
+        return nu$1({
+            current: undefined,
+            version: Version.unknown()
+        });
+    };
+    const nu$1 = (info) => {
+        const current = info.current;
+        const version = info.version;
+        const isBrowser = (name) => () => current === name;
+        return {
+            current,
+            version,
+            isEdge: isBrowser(edge),
+            isChromium: isBrowser(chromium),
+            // NOTE: isIe just looks too weird
+            isIE: isBrowser(ie),
+            isOpera: isBrowser(opera),
+            isFirefox: isBrowser(firefox),
+            isSafari: isBrowser(safari)
+        };
+    };
+    const Browser = {
+        unknown: unknown$1,
+        nu: nu$1};
+
+    const windows = 'Windows';
+    const ios = 'iOS';
+    const android = 'Android';
+    const linux = 'Linux';
+    const macos = 'macOS';
+    const solaris = 'Solaris';
+    const freebsd = 'FreeBSD';
+    const chromeos = 'ChromeOS';
+    // Though there is a bit of dupe with this and Browser, trying to
+    // reuse code makes it much harder to follow and change.
+    const unknown = () => {
+        return nu({
+            current: undefined,
+            version: Version.unknown()
+        });
+    };
+    const nu = (info) => {
+        const current = info.current;
+        const version = info.version;
+        const isOS = (name) => () => current === name;
+        return {
+            current,
+            version,
+            isWindows: isOS(windows),
+            // TODO: Fix capitalisation
+            isiOS: isOS(ios),
+            isAndroid: isOS(android),
+            isMacOS: isOS(macos),
+            isLinux: isOS(linux),
+            isSolaris: isOS(solaris),
+            isFreeBSD: isOS(freebsd),
+            isChromeOS: isOS(chromeos)
+        };
+    };
+    const OperatingSystem = {
+        unknown,
+        nu};
+
+    const detect$2 = (userAgent, userAgentDataOpt, mediaMatch) => {
+        const browsers = PlatformInfo.browsers();
+        const oses = PlatformInfo.oses();
+        const browser = userAgentDataOpt.bind((userAgentData) => detectBrowser$1(browsers, userAgentData))
+            .orThunk(() => detectBrowser(browsers, userAgent))
+            .fold(Browser.unknown, Browser.nu);
+        const os = detectOs(oses, userAgent).fold(OperatingSystem.unknown, OperatingSystem.nu);
+        const deviceType = DeviceType(os, browser, userAgent, mediaMatch);
+        return {
+            browser,
+            os,
+            deviceType
+        };
+    };
+    const PlatformDetection = {
+        detect: detect$2
+    };
+
+    const mediaMatch = (query) => window.matchMedia(query).matches;
+    // IMPORTANT: Must be in a thunk, otherwise rollup thinks calling this immediately
+    // causes side effects and won't tree shake this away
+    // Note: navigator.userAgentData is not part of the native typescript types yet
+    let platform = cached(() => PlatformDetection.detect(window.navigator.userAgent, Optional.from((window.navigator.userAgentData)), mediaMatch));
+    const detect$1 = () => platform();
+
     const name = (element) => {
         const r = element.dom.nodeName;
         return r.toLowerCase();
@@ -744,6 +1186,7 @@
      */
     const documentOrOwner = (dos) => isDocument(dos) ? dos : owner(dos);
     const parent = (element) => Optional.from(element.dom.parentNode).map(SugarElement.fromDom);
+    const parentElement = (element) => Optional.from(element.dom.parentElement).map(SugarElement.fromDom);
     const parents = (element, isRoot) => {
         const stop = isFunction(isRoot) ? isRoot : never;
         // This is used a *lot* so it needs to be performant, not recursive
@@ -860,12 +1303,12 @@
             rawSet(dom, k, v);
         });
     };
-    const get$2 = (element, key) => {
+    const get$3 = (element, key) => {
         const v = element.dom.getAttribute(key);
         // undefined is the more appropriate value for JS, and this matches JQuery
         return v === null ? undefined : v;
     };
-    const getOpt = (element, key) => Optional.from(get$2(element, key));
+    const getOpt = (element, key) => Optional.from(get$3(element, key));
     const remove$2 = (element, key) => {
         element.dom.removeAttribute(key);
     };
@@ -908,6 +1351,13 @@
         const doc = dom.ownerDocument;
         return getShadowRoot(SugarElement.fromDom(dom)).fold(() => doc.body.contains(dom), compose1(inBody, getShadowHost));
     };
+    const getBody$1 = (doc) => {
+        const b = doc.dom.body;
+        if (b === null || b === undefined) {
+            throw new Error('Body is not available yet');
+        }
+        return SugarElement.fromDom(b);
+    };
 
     const internalSet = (dom, property, value) => {
         // This is going to hurt. Apologies.
@@ -944,7 +1394,7 @@
      *
      * https://developer.mozilla.org/en-US/docs/Web/CSS/used_value
      */
-    const get$1 = (element, property) => {
+    const get$2 = (element, property) => {
         const dom = element.dom;
         /*
          * IE9 and above per
@@ -970,7 +1420,7 @@
      *
      * Returns NONE if the property isn't set, or the value is an empty string.
      */
-    const getRaw$1 = (element, property) => {
+    const getRaw$2 = (element, property) => {
         const dom = element.dom;
         const raw = getUnsafeProperty(dom, property);
         return Optional.from(raw).filter((r) => r.length > 0);
@@ -1027,7 +1477,7 @@
             const r = getOffset(element);
             // zero or null means non-standard or disconnected, fall back to CSS
             if (r <= 0 || r === null) {
-                const css = get$1(element, name);
+                const css = get$2(element, name);
                 // ugh this feels dirty, but it saves cycles
                 return parseFloat(css) || 0;
             }
@@ -1037,7 +1487,7 @@
         // although these calculations only seem relevant for quirks mode, and edge cases TBIO doesn't rely on
         const getOuter = get;
         const aggregate = (element, properties) => foldl(properties, (acc, property) => {
-            const val = get$1(element, property);
+            const val = get$2(element, property);
             const value = val === undefined ? 0 : parseInt(val, 10);
             return isNaN(value) ? acc : acc + value;
         }, 0);
@@ -1057,7 +1507,7 @@
     };
 
     const toNumber = (px, fallback) => toFloat(px).getOr(fallback);
-    const getProp = (element, name, fallback) => toNumber(get$1(element, name), fallback);
+    const getProp = (element, name, fallback) => toNumber(get$2(element, name), fallback);
     const calcContentBoxSize = (element, size, upper, lower) => {
         const paddingUpper = getProp(element, `padding-${upper}`, 0);
         const paddingLower = getProp(element, `padding-${lower}`, 0);
@@ -1068,15 +1518,70 @@
     const getCalculatedWidth = (element, boxSizing) => {
         const dom = element.dom;
         const width = dom.getBoundingClientRect().width || dom.offsetWidth;
-        return boxSizing === 'border-box' ? width : calcContentBoxSize(element, width, 'left', 'right');
+        return calcContentBoxSize(element, width, 'left', 'right');
     };
-    const getInnerWidth = (element) => getCalculatedWidth(element, 'content-box');
+    const getWidth = (element) => getProp(element, 'width', element.dom.offsetWidth);
+    const getInnerWidth = (element) => getCalculatedWidth(element);
 
-    Dimension('width', (element) => {
+    const api$1 = Dimension('width', (element) => {
         const dom = element.dom;
         return inBody(element) ? dom.getBoundingClientRect().width : dom.offsetWidth;
     });
+    const get$1 = (element) => api$1.get(element);
+    const getOuter = (element) => api$1.getOuter(element);
     const getInner = getInnerWidth;
+    const getRuntime = getWidth;
+
+    const r = (left, top) => {
+        const translate = (x, y) => r(left + x, top + y);
+        return {
+            left,
+            top,
+            translate
+        };
+    };
+    // tslint:disable-next-line:variable-name
+    const SugarPosition = r;
+
+    const boxPosition = (dom) => {
+        const box = dom.getBoundingClientRect();
+        return SugarPosition(box.left, box.top);
+    };
+    // Avoids falsy false fallthrough
+    const firstDefinedOrZero = (a, b) => {
+        if (a !== undefined) {
+            return a;
+        }
+        else {
+            return b !== undefined ? b : 0;
+        }
+    };
+    const absolute = (element) => {
+        const doc = element.dom.ownerDocument;
+        const body = doc.body;
+        const win = doc.defaultView;
+        const html = doc.documentElement;
+        if (body === element.dom) {
+            return SugarPosition(body.offsetLeft, body.offsetTop);
+        }
+        const scrollTop = firstDefinedOrZero(win?.pageYOffset, html.scrollTop);
+        const scrollLeft = firstDefinedOrZero(win?.pageXOffset, html.scrollLeft);
+        const clientTop = firstDefinedOrZero(html.clientTop, body.clientTop);
+        const clientLeft = firstDefinedOrZero(html.clientLeft, body.clientLeft);
+        return viewport(element).translate(scrollLeft - clientLeft, scrollTop - clientTop);
+    };
+    const viewport = (element) => {
+        const dom = element.dom;
+        const doc = dom.ownerDocument;
+        const body = doc.body;
+        if (body === dom) {
+            return SugarPosition(body.offsetLeft, body.offsetTop);
+        }
+        if (!inBody(element)) {
+            return SugarPosition(0, 0);
+        }
+        return boxPosition(dom);
+    };
 
     const NodeValue = (is, name) => {
         const get = (element) => {
@@ -1102,6 +1607,9 @@
     const api = NodeValue(isText, 'text');
     const get = (element) => api.get(element);
     const set = (element, value) => api.set(element, value);
+
+    const onDirection = (isLtr, isRtl) => (element) => getDirection(element) === 'rtl' ? isRtl : isLtr;
+    const getDirection = (element) => get$2(element, 'direction') === 'rtl' ? 'rtl' : 'ltr';
 
     var ClosestOrAncestor = (is, ancestor, scope, a, isRoot) => {
         if (is(scope, a)) {
@@ -1137,7 +1645,7 @@
     };
     const child$2 = (scope, predicate) => {
         const pred = (node) => predicate(SugarElement.fromDom(node));
-        const result = find(scope.dom.childNodes, pred);
+        const result = find$1(scope.dom.childNodes, pred);
         return result.map(SugarElement.fromDom);
     };
 
@@ -1157,10 +1665,10 @@
         }
         else {
             // Find the closest contenteditable element and check if it's editable
-            return closest(element).fold(constant(assumeEditable), (editable) => getRaw(editable) === 'true');
+            return closest(element).fold(constant(assumeEditable), (editable) => getRaw$1(editable) === 'true');
         }
     };
-    const getRaw = (element) => element.dom.contentEditable;
+    const getRaw$1 = (element) => element.dom.contentEditable;
 
     const children$2 = (scope, predicate) => filter$1(children$3(scope), predicate);
     const descendants$1 = (scope, predicate) => {
@@ -1183,62 +1691,154 @@
 
     const child = (scope, selector) => child$1(scope, selector).isSome();
 
-    /*
-     NOTE: This file is partially duplicated in the following locations:
-      - models/dom/table/core/TableUtils.ts
-      - advtable
-     Make sure that if making changes to this file, the other files are updated as well
-     */
-    const getNodeName = (elm) => elm.nodeName.toLowerCase();
-    const getBody = (editor) => SugarElement.fromDom(editor.getBody());
-    const getIsRoot = (editor) => (element) => eq(element, getBody(editor));
-    const removePxSuffix = (size) => size ? size.replace(/px$/, '') : '';
-    const addPxSuffix = (size) => /^\d+(\.\d+)?$/.test(size) ? size + 'px' : size;
-    const getSelectionStart = (editor) => SugarElement.fromDom(editor.selection.getStart());
-    const getSelectionEnd = (editor) => SugarElement.fromDom(editor.selection.getEnd());
-    const isInEditableContext = (cell) => closest$2(cell, isTag('table')).forall(isEditable);
+    const units = {
+        // we don't really support all of these different ways to express a length
+        unsupportedLength: [
+            'em',
+            'ex',
+            'cap',
+            'ch',
+            'ic',
+            'rem',
+            'lh',
+            'rlh',
+            'vw',
+            'vh',
+            'vi',
+            'vb',
+            'vmin',
+            'vmax',
+            'cm',
+            'mm',
+            'Q',
+            'in',
+            'pc',
+            'pt',
+            'px'
+        ],
+        // these are the length values we do support
+        fixed: ['px', 'pt'],
+        relative: ['%'],
+        empty: ['']
+    };
+    // Built from https://tc39.es/ecma262/#prod-StrDecimalLiteral
+    // Matches a float followed by a trailing set of characters
+    const pattern = (() => {
+        const decimalDigits = '[0-9]+';
+        const signedInteger = '[+-]?' + decimalDigits;
+        const exponentPart = '[eE]' + signedInteger;
+        const dot = '\\.';
+        const opt = (input) => `(?:${input})?`;
+        const unsignedDecimalLiteral = [
+            'Infinity',
+            decimalDigits + dot + opt(decimalDigits) + opt(exponentPart),
+            dot + decimalDigits + opt(exponentPart),
+            decimalDigits + opt(exponentPart)
+        ].join('|');
+        const float = `[+-]?(?:${unsignedDecimalLiteral})`;
+        return new RegExp(`^(${float})(.*)$`);
+    })();
+    const isUnit = (unit, accepted) => exists(accepted, (acc) => exists(units[acc], (check) => unit === check));
+    const parse = (input, accepted) => {
+        const match = Optional.from(pattern.exec(input));
+        return match.bind((array) => {
+            const value = Number(array[1]);
+            const unitRaw = array[2];
+            if (isUnit(unitRaw, accepted)) {
+                return Optional.some({
+                    value,
+                    unit: unitRaw
+                });
+            }
+            else {
+                return Optional.none();
+            }
+        });
+    };
 
-    const validSectionList = ['tfoot', 'thead', 'tbody', 'colgroup'];
-    const isValidSection = (parentName) => contains(validSectionList, parentName);
-    const grid = (rows, columns) => ({
-        rows,
-        columns
-    });
-    const detail = (element, rowspan, colspan) => ({
-        element,
-        rowspan,
-        colspan
-    });
-    const extended = (element, rowspan, colspan, row, column, isLocked) => ({
-        element,
-        rowspan,
-        colspan,
-        row,
-        column,
-        isLocked
-    });
-    const rowdetail = (element, cells, section) => ({
-        element,
-        cells,
-        section
-    });
-    const bounds = (startRow, startCol, finishRow, finishCol) => ({
-        startRow,
-        startCol,
-        finishRow,
-        finishCol
-    });
-    const columnext = (element, colspan, column) => ({
-        element,
-        colspan,
-        column
-    });
-    const colgroup = (element, columns) => ({
-        element,
-        columns
-    });
+    const zero = (array) => map(array, constant(0));
+    const surround = (sizes, startIndex, endIndex, results, f) => f(sizes.slice(0, startIndex)).concat(results).concat(f(sizes.slice(endIndex)));
+    // Clamp positive or negative delta so that a column/row cannot be reduced past its min size
+    const clampDeltaHelper = (predicate) => (sizes, index, delta, minCellSize) => {
+        if (!predicate(delta)) {
+            return delta;
+        }
+        else {
+            const newSize = Math.max(minCellSize, sizes[index] - Math.abs(delta));
+            const diff = Math.abs(newSize - sizes[index]);
+            return delta >= 0 ? diff : -diff;
+        }
+    };
+    const clampNegativeDelta = clampDeltaHelper((delta) => delta < 0);
+    const clampDelta = clampDeltaHelper(always);
+    // Distribute the column/rows and try to preserve the table size
+    const preserveTable = () => {
+        // Calculations for the inner columns/rows
+        const calcLeftEdgeDeltas = (sizes, index, next, delta, minCellSize) => {
+            const idx = delta >= 0 ? next : index;
+            const clampedDelta = clampDelta(sizes, idx, delta, minCellSize);
+            // negative delta -> deltas becomes [ neg, pos ], positive delta -> deltas becomes [ pos, neg ]
+            return surround(sizes, index, next + 1, [clampedDelta, -clampedDelta], zero);
+        };
+        const calcMiddleDeltas = (sizes, _prev, index, next, delta, minCellSize) => calcLeftEdgeDeltas(sizes, index, next, delta, minCellSize);
+        const resizeTable = (resizer, delta, isLastColumn) => {
+            if (isLastColumn) {
+                resizer(delta);
+            }
+        };
+        // Calculations for the last column/row resizer
+        const calcRightEdgeDeltas = (sizes, _prev, _index, delta, _minCellSize, isRelative) => {
+            if (isRelative) {
+                return zero(sizes);
+            }
+            else {
+                // Distribute the delta amongst all of the columns/rows
+                const diff = delta / sizes.length;
+                return map(sizes, constant(diff));
+            }
+        };
+        const clampTableDelta = (sizes, index, delta, minCellSize, isLastColumn) => {
+            // Don't clamp the last resizer using normal methods
+            // Need to allow table width to be reduced past the last column position to allow for distributive resizing
+            if (isLastColumn) {
+                if (delta >= 0) {
+                    return delta;
+                }
+                else {
+                    // Clamp delta so that none of the columns/rows can reduce below their min size
+                    const maxDelta = foldl(sizes, (a, b) => a + b - minCellSize, 0);
+                    return Math.max(-maxDelta, delta);
+                }
+            }
+            else {
+                return clampNegativeDelta(sizes, index, delta, minCellSize);
+            }
+        };
+        const calcRedestributedWidths = (sizes, _totalWidth, _pixelDelta, _isRelative) => ({
+            delta: 0,
+            newSizes: sizes,
+        });
+        return {
+            resizeTable,
+            clampTableDelta,
+            calcLeftEdgeDeltas,
+            calcMiddleDeltas,
+            calcRightEdgeDeltas,
+            calcRedestributedWidths
+        };
+    };
 
     const getAttrValue = (cell, name, fallback = 0) => getOpt(cell, name).map((value) => parseInt(value, 10)).getOr(fallback);
+    const getSpan = (cell, type) => getAttrValue(cell, type, 1);
+    const hasColspan = (cellOrCol) => {
+        if (isTag('col')(cellOrCol)) {
+            return getAttrValue(cellOrCol, 'span', 1) > 1;
+        }
+        else {
+            return getSpan(cellOrCol, 'colspan') > 1;
+        }
+    };
+    const minWidth = constant(10);
 
     const firstLayer = (scope, selector) => {
         return filterFirstLayer(scope, selector, always);
@@ -1262,7 +1862,7 @@
         }
         // This looks a lot like SelectorFind.closest, with one big exception - the isRoot check.
         // The code here will look for parents if passed a table, SelectorFind.closest with that specific isRoot check won't.
-        if (contains(tags, name(element))) {
+        if (contains$1(tags, name(element))) {
             return Optional.some(element);
         }
         const isRootOrUpperTable = (elm) => is$1(elm, 'table') || isRoot(elm);
@@ -1273,7 +1873,7 @@
      */
     const cell = (element, isRoot) => lookup(['td', 'th'], element, isRoot);
     const cells = (ancestor) => firstLayer(ancestor, 'th,td');
-    const columns = (ancestor) => {
+    const columns$1 = (ancestor) => {
         if (is$1(ancestor, 'colgroup')) {
             return children$1(ancestor, 'col');
         }
@@ -1325,13 +1925,13 @@
     };
     const findCommonRowType = (rows) => {
         const rowTypes = map(rows, (row) => getRowType$1(row).type);
-        const hasHeader = contains(rowTypes, 'header');
-        const hasFooter = contains(rowTypes, 'footer');
+        const hasHeader = contains$1(rowTypes, 'header');
+        const hasFooter = contains$1(rowTypes, 'footer');
         if (!hasHeader && !hasFooter) {
             return Optional.some('body');
         }
         else {
-            const hasBody = contains(rowTypes, 'body');
+            const hasBody = contains$1(rowTypes, 'body');
             if (hasHeader && !hasBody && !hasFooter) {
                 return Optional.some('header');
             }
@@ -1346,7 +1946,7 @@
 
     const fromRowsOrColGroups = (elems, getSection) => map(elems, (row) => {
         if (name(row) === 'colgroup') {
-            const cells = map(columns(row), (column) => {
+            const cells = map(columns$1(row), (column) => {
                 const colspan = getAttrValue(column, 'span', 1);
                 return detail(column, 1, colspan);
             });
@@ -1502,7 +2102,278 @@
         getColumnAt
     };
 
-    const findInWarehouse = (warehouse, element) => findMap(warehouse.all, (r) => find(r.cells, (e) => eq(element, e.element)));
+    /*
+     * Identify for each column, a cell that has colspan 1. Note, this
+     * may actually fail, and future work will be to calculate column
+     * sizes that are only available through the difference of two
+     * spanning columns.
+     */
+    const columns = (warehouse, isValidCell = always) => {
+        const grid = warehouse.grid;
+        const cols = range(grid.columns, identity);
+        const rowsArr = range(grid.rows, identity);
+        return map(cols, (col) => {
+            const getBlock = () => bind(rowsArr, (r) => Warehouse.getAt(warehouse, r, col)
+                .filter((detail) => detail.column === col)
+                .toArray());
+            const isValid = (detail) => detail.colspan === 1 && isValidCell(detail.element);
+            const getFallback = () => Warehouse.getAt(warehouse, 0, col);
+            return decide(getBlock, isValid, getFallback);
+        });
+    };
+    const decide = (getBlock, isValid, getFallback) => {
+        const inBlock = getBlock();
+        const validInBlock = find$1(inBlock, isValid);
+        const detailOption = validInBlock.orThunk(() => Optional.from(inBlock[0]).orThunk(getFallback));
+        return detailOption.map((detail) => detail.element);
+    };
+
+    const deduce = (xs, index) => {
+        if (index < 0 || index >= xs.length - 1) {
+            return Optional.none();
+        }
+        const current = xs[index].fold(() => {
+            const rest = reverse(xs.slice(0, index));
+            return findMap(rest, (a, i) => a.map((aa) => ({ value: aa, delta: i + 1 })));
+        }, (c) => Optional.some({ value: c, delta: 0 }));
+        const next = xs[index + 1].fold(() => {
+            const rest = xs.slice(index + 1);
+            return findMap(rest, (a, i) => a.map((aa) => ({ value: aa, delta: i + 1 })));
+        }, (n) => Optional.some({ value: n, delta: 1 }));
+        return current.bind((c) => next.map((n) => {
+            const extras = n.delta + c.delta;
+            return Math.abs(n.value - c.value) / extras;
+        }));
+    };
+
+    const colInfo = (col, x) => ({
+        col,
+        x
+    });
+    const rtlEdge = (cell) => {
+        const pos = absolute(cell);
+        return pos.left + getOuter(cell);
+    };
+    const ltrEdge = (cell) => {
+        return absolute(cell).left;
+    };
+    const getLeftEdge = (index, cell) => {
+        return colInfo(index, ltrEdge(cell));
+    };
+    const getRightEdge = (index, cell) => {
+        return colInfo(index, rtlEdge(cell));
+    };
+    const findPositions = (getInnerEdge, getOuterEdge, array) => {
+        if (array.length === 0) {
+            return [];
+        }
+        const lines = map(array.slice(1), (cellOption, index) => {
+            return cellOption.map((cell) => {
+                return getInnerEdge(index, cell);
+            });
+        });
+        const lastLine = array[array.length - 1].map((cell) => {
+            return getOuterEdge(array.length - 1, cell);
+        });
+        return lines.concat([lastLine]);
+    };
+    const negate = (step) => {
+        return -step;
+    };
+    const ltr = {
+        delta: identity,
+        edge: ltrEdge,
+        positions: (optElements) => findPositions(getLeftEdge, getRightEdge, optElements)
+    };
+    const rtl = {
+        delta: negate,
+        edge: rtlEdge,
+        positions: (optElements) => findPositions(getRightEdge, getLeftEdge, optElements)
+    };
+    const detect = onDirection(ltr, rtl);
+    const width = {
+        delta: (amount, table) => detect(table).delta(amount, table),
+        positions: (cols, table) => detect(table).positions(cols, table),
+        edge: (cell) => detect(cell).edge(cell)
+    };
+
+    const rPercentageBasedSizeRegex = /(\d+(\.\d+)?)%/;
+    const isCol$1 = isTag('col');
+    const getPercentSize = (elm, outerGetter, innerGetter) => {
+        const relativeParent = parentElement(elm).getOrThunk(() => getBody$1(owner(elm)));
+        return outerGetter(elm) / innerGetter(relativeParent) * 100;
+    };
+    const setPixelWidth = (cell, amount) => {
+        set$1(cell, 'width', amount + 'px');
+    };
+    const setPercentageWidth = (cell, amount) => {
+        set$1(cell, 'width', amount + '%');
+    };
+    const getRaw = (element, prop) => {
+        // Try to use the style first, otherwise attempt to get the value from an attribute
+        return getRaw$2(element, prop).orThunk(() => {
+            return getOpt(element, prop).map((val) => val + 'px');
+        });
+    };
+    const getRawWidth = (element) => getRaw(element, 'width');
+    // Get a percentage size for a percentage parent table
+    const getPercentageWidth = (cell) => getPercentSize(cell, get$1, getInner);
+    const getPixelWidth = (cell) => 
+    // For col elements use the computed width as col elements aren't affected by borders, padding, etc...
+    isCol$1(cell) ? Math.round(get$1(cell)) : getRuntime(cell);
+    const getPercentTableWidth = (table) => getPercentSize(table, get$1, getInner) + '%';
+    const percentageBasedSizeRegex = constant(rPercentageBasedSizeRegex);
+
+    const isCol = isTag('col');
+    const justCols = (warehouse) => map(Warehouse.justColumns(warehouse), (column) => Optional.from(column.element));
+    // Col elements don't have valid computed widths/positions in all browsers, so treat them as invalid in that case
+    const isValidColumn = (cell) => {
+        const browser = detect$1().browser;
+        const supportsColWidths = browser.isChromium() || browser.isFirefox();
+        return isCol(cell) ? supportsColWidths : true;
+    };
+    const getDimension = (cellOpt, index, backups, filter, getter, fallback) => cellOpt.filter(filter).fold(
+    // Can't just read the width of a cell, so calculate.
+    () => fallback(deduce(backups, index)), (cell) => getter(cell));
+    const getWidthFrom = (warehouse, table, getWidth, fallback) => {
+        // Only treat a cell as being valid for a column representation if it has a raw width, otherwise we won't be able to calculate the expected width.
+        // This is needed as one cell may have a width but others may not, so we need to try and use one with a specified width first.
+        const columnCells = columns(warehouse);
+        const columns$1 = Warehouse.hasColumns(warehouse) ? justCols(warehouse) : columnCells;
+        const backups = [Optional.some(width.edge(table))].concat(map(width.positions(columnCells, table), (pos) => pos.map((p) => p.x)));
+        // Only use the width of cells that have no column span (or colspan 1)
+        const colFilter = not(hasColspan);
+        return map(columns$1, (cellOption, c) => {
+            return getDimension(cellOption, c, backups, colFilter, (column) => {
+                if (isValidColumn(column)) {
+                    return getWidth(column);
+                }
+                else {
+                    // Invalid column so fallback to trying to get the computed width from the cell
+                    const cell = bindFrom(columnCells[c], identity);
+                    return getDimension(cell, c, backups, colFilter, (cell) => fallback(Optional.some(Math.round(get$1(cell)))), fallback);
+                }
+            }, fallback);
+        });
+    };
+    const getPercentageWidths = (warehouse, table, tableSize) => {
+        return getWidthFrom(warehouse, table, getPercentageWidth, (deduced) => {
+            return deduced.fold(() => {
+                return tableSize.minCellWidth();
+            }, (cellWidth) => {
+                return cellWidth / tableSize.pixelWidth() * 100;
+            });
+        });
+    };
+    const getPixelWidths = (warehouse, table, tableSize) => {
+        return getWidthFrom(warehouse, table, getPixelWidth, (deduced) => {
+            // Minimum cell width when all else fails.
+            return deduced.getOrThunk(tableSize.minCellWidth);
+        });
+    };
+
+    const widthLookup = (table, getter) => () => {
+        // Use the actual width if attached, otherwise fallback to the raw width
+        if (inBody(table)) {
+            return getter(table);
+        }
+        else {
+            return parseFloat(getRaw$2(table, 'width').getOr('0'));
+        }
+    };
+    const noneSize = (table) => {
+        const getWidth = widthLookup(table, get$1);
+        const zero = constant(0);
+        const getWidths = (warehouse, tableSize) => getPixelWidths(warehouse, table, tableSize);
+        // Note: The 3 delta functions below return 0 to signify a change shouldn't be made
+        // however this is currently not used, so may need changing if ever used
+        return {
+            width: getWidth,
+            pixelWidth: getWidth,
+            getWidths,
+            getCellDelta: zero,
+            singleColumnWidth: constant([0]),
+            minCellWidth: zero,
+            setElementWidth: noop,
+            adjustTableWidth: noop,
+            isRelative: true,
+            label: 'none'
+        };
+    };
+    const percentageSize = (table) => {
+        const getFloatWidth = widthLookup(table, (elem) => parseFloat(getPercentTableWidth(elem)));
+        const getWidth = widthLookup(table, get$1);
+        const getCellDelta = (delta) => delta / getWidth() * 100;
+        // If we have one column in a percent based table, that column should be 100% of the width of the table.
+        const singleColumnWidth = (w, _delta) => [100 - w];
+        // Get the width of a 10 pixel wide cell over the width of the table as a percentage
+        const minCellWidth = () => minWidth() / getWidth() * 100;
+        const adjustTableWidth = (delta) => {
+            const currentWidth = getFloatWidth();
+            const change = delta / 100 * currentWidth;
+            const newWidth = currentWidth + change;
+            setPercentageWidth(table, newWidth);
+        };
+        const getWidths = (warehouse, tableSize) => getPercentageWidths(warehouse, table, tableSize);
+        return {
+            width: getFloatWidth,
+            pixelWidth: getWidth,
+            getWidths,
+            getCellDelta,
+            singleColumnWidth,
+            minCellWidth,
+            setElementWidth: setPercentageWidth,
+            adjustTableWidth,
+            isRelative: true,
+            label: 'percent'
+        };
+    };
+    const pixelSize = (table) => {
+        const getWidth = widthLookup(table, get$1);
+        const getCellDelta = identity;
+        const singleColumnWidth = (w, delta) => {
+            const newNext = Math.max(minWidth(), w + delta);
+            return [newNext - w];
+        };
+        const adjustTableWidth = (delta) => {
+            const newWidth = getWidth() + delta;
+            setPixelWidth(table, newWidth);
+        };
+        const getWidths = (warehouse, tableSize) => getPixelWidths(warehouse, table, tableSize);
+        return {
+            width: getWidth,
+            pixelWidth: getWidth,
+            getWidths,
+            getCellDelta,
+            singleColumnWidth,
+            minCellWidth: minWidth,
+            setElementWidth: setPixelWidth,
+            adjustTableWidth,
+            isRelative: false,
+            label: 'pixel'
+        };
+    };
+    const chooseSize = (element, width) => {
+        const percentMatch = percentageBasedSizeRegex().exec(width);
+        if (percentMatch !== null) {
+            return percentageSize(element);
+        }
+        else {
+            return pixelSize(element);
+        }
+    };
+    const getTableSize = (table) => {
+        const width = getRawWidth(table);
+        return width.fold(() => noneSize(table), (w) => chooseSize(table, w));
+    };
+    const TableSize = {
+        getTableSize,
+        pixelSize,
+        percentageSize,
+        noneSize
+    };
+
+    const findInWarehouse = (warehouse, element) => findMap(warehouse.all, (r) => find$1(r.cells, (e) => eq(element, e.element)));
     const extractCells = (warehouse, target, predicate) => {
         const details = map(target.selection, (cell$1) => {
             return cell(cell$1)
@@ -1522,130 +2393,113 @@
     // If any locked columns are present in the selection, then don't want to be able to unmerge
     const onUnlockedUnmergable = (warehouse, target) => onUnmergable(warehouse, target).filter((cells) => allUnlocked(warehouse, cells));
 
-    const isCol = isTag('col');
-    const isColgroup = isTag('colgroup');
-    const isRow = (element) => name(element) === 'tr' || isColgroup(element);
-    const elementToData = (element) => {
-        const colspan = getAttrValue(element, 'colspan', 1);
-        const rowspan = getAttrValue(element, 'rowspan', 1);
-        return {
-            element,
-            colspan,
-            rowspan
-        };
+    const adt = Adt.generate([
+        { none: [] },
+        { only: ['index'] },
+        { left: ['index', 'next'] },
+        { middle: ['prev', 'index', 'next'] },
+        { right: ['prev', 'index'] }
+    ]);
+    const ColumnContext = {
+        ...adt
     };
-    // note that `toData` seems to be only for testing
-    const modification = (generators, toData = elementToData) => {
-        const nuCell = (data) => isCol(data.element) ? generators.col(data) : generators.cell(data);
-        const nuRow = (data) => isColgroup(data.element) ? generators.colgroup(data) : generators.row(data);
-        const add = (element) => {
-            if (isRow(element)) {
-                return nuRow({ element });
-            }
-            else {
-                const cell = element;
-                const replacement = nuCell(toData(cell));
-                recent = Optional.some({ item: cell, replacement });
-                return replacement;
-            }
-        };
-        let recent = Optional.none();
-        const getOrInit = (element, comparator) => {
-            return recent.fold(() => {
-                return add(element);
-            }, (p) => {
-                return comparator(element, p.item) ? p.replacement : add(element);
-            });
-        };
-        return {
-            getOrInit
-        };
+
+    /*
+     * Based on the column index, identify the context
+     */
+    const neighbours = (input, index) => {
+        if (input.length === 0) {
+            return ColumnContext.none();
+        }
+        if (input.length === 1) {
+            return ColumnContext.only(0);
+        }
+        if (index === 0) {
+            return ColumnContext.left(0, 1);
+        }
+        if (index === input.length - 1) {
+            return ColumnContext.right(index - 1, index);
+        }
+        if (index > 0 && index < input.length - 1) {
+            return ColumnContext.middle(index - 1, index, index + 1);
+        }
+        return ColumnContext.none();
     };
-    const transform = (tag) => {
-        return (generators) => {
-            const list = [];
-            const find$1 = (element, comparator) => {
-                return find(list, (x) => {
-                    return comparator(x.item, element);
-                });
-            };
-            const makeNew = (element) => {
-                // Ensure scope is never set on a td element as it's a deprecated attribute
-                const attrs = tag === 'td' ? { scope: null } : {};
-                const cell = generators.replace(element, tag, attrs);
-                list.push({
-                    item: element,
-                    sub: cell
-                });
-                return cell;
-            };
-            const replaceOrInit = (element, comparator) => {
-                if (isRow(element) || isCol(element)) {
-                    return element;
-                }
-                else {
-                    const cell = element;
-                    return find$1(cell, comparator).fold(() => {
-                        return makeNew(cell);
-                    }, (p) => {
-                        return comparator(element, p.item) ? p.sub : makeNew(cell);
-                    });
-                }
-            };
+    /*
+     * Calculate the offsets to apply to each column width (not the absolute widths themselves)
+     * based on a resize at column: column of step: step
+     */
+    const determine = (input, column, step, tableSize, resize) => {
+        const result = input.slice(0);
+        const context = neighbours(input, column);
+        const onNone = constant(map(result, constant(0)));
+        const onOnly = (index) => tableSize.singleColumnWidth(result[index], step);
+        const onLeft = (index, next) => resize.calcLeftEdgeDeltas(result, index, next, step, tableSize.minCellWidth(), tableSize.isRelative);
+        const onMiddle = (prev, index, next) => resize.calcMiddleDeltas(result, prev, index, next, step, tableSize.minCellWidth(), tableSize.isRelative);
+        // Applies to the last column bar
+        const onRight = (prev, index) => resize.calcRightEdgeDeltas(result, prev, index, step, tableSize.minCellWidth(), tableSize.isRelative);
+        return context.fold(onNone, onOnly, onLeft, onMiddle, onRight);
+    };
+
+    // Returns the sum of elements of measures in the half-open range [start, end)
+    // Measures is in pixels, treated as an array of integers or integers in string format.
+    // NOTE: beware of accumulated rounding errors over multiple columns - could result in noticeable table width changes
+    const total = (start, end, measures) => {
+        let r = 0;
+        for (let i = start; i < end; i++) {
+            r += measures[i] !== undefined ? measures[i] : 0;
+        }
+        return r;
+    };
+    // Returns an array of all cells in warehouse with updated cell-widths, using
+    // the array 'widths' of the representative widths of each column of the table 'warehouse'
+    const recalculateWidthForCells = (warehouse, widths) => {
+        const all = Warehouse.justCells(warehouse);
+        return map(all, (cell) => {
+            // width of a spanning cell is sum of widths of representative columns it spans
+            const width = total(cell.column, cell.column + cell.colspan, widths);
             return {
-                replaceOrInit
+                element: cell.element,
+                width,
+                colspan: cell.colspan
             };
-        };
+        });
     };
-    const getScopeAttribute = (cell) => getOpt(cell, 'scope').map(
-    // Attribute can be col, colgroup, row, and rowgroup.
-    // As col and colgroup are to be treated as if they are the same, lob off everything after the first three characters and there is no difference.
-    (attribute) => attribute.substr(0, 3));
-    const merging = (generators) => {
-        const unmerge = (cell) => {
-            const scope = getScopeAttribute(cell);
-            scope.each((attribute) => set$2(cell, 'scope', attribute));
-            return () => {
-                const raw = generators.cell({
-                    element: cell,
-                    colspan: 1,
-                    rowspan: 1
-                });
-                // Remove any width calculations because they are no longer relevant.
-                remove(raw, 'width');
-                remove(cell, 'width');
-                scope.each((attribute) => set$2(raw, 'scope', attribute));
-                return raw;
-            };
-        };
-        const merge = (cells) => {
-            const getScopeProperty = () => {
-                const stringAttributes = cat(map(cells, getScopeAttribute));
-                if (stringAttributes.length === 0) {
-                    return Optional.none();
-                }
-                else {
-                    const baseScope = stringAttributes[0];
-                    const scopes = ['row', 'col'];
-                    const isMixed = exists(stringAttributes, (attribute) => {
-                        return attribute !== baseScope && contains(scopes, attribute);
-                    });
-                    return isMixed ? Optional.none() : Optional.from(baseScope);
-                }
-            };
-            remove(cells[0], 'width');
-            getScopeProperty().fold(() => remove$2(cells[0], 'scope'), (attribute) => set$2(cells[0], 'scope', attribute + 'group'));
-            return constant(cells[0]);
-        };
-        return {
-            unmerge,
-            merge
-        };
+    const recalculateWidthForColumns = (warehouse, widths) => {
+        const groups = Warehouse.justColumns(warehouse);
+        return map(groups, (column, index) => ({
+            element: column.element,
+            width: widths[index],
+            colspan: column.colspan
+        }));
     };
-    const Generators = {
-        modification,
-        transform,
-        merging
+
+    const recalculate = (warehouse, widths) => {
+        if (Warehouse.hasColumns(warehouse)) {
+            return recalculateWidthForColumns(warehouse, widths);
+        }
+        else {
+            return recalculateWidthForCells(warehouse, widths);
+        }
+    };
+    const recalculateAndApply = (warehouse, widths, tableSize) => {
+        // Set the width of each cell based on the column widths
+        const newSizes = recalculate(warehouse, widths);
+        each$1(newSizes, (cell) => {
+            tableSize.setElementWidth(cell.element, cell.width);
+        });
+    };
+    const adjustWidth = (table, delta, index, resizing, tableSize) => {
+        const warehouse = Warehouse.fromTable(table);
+        const step = tableSize.getCellDelta(delta);
+        const widths = tableSize.getWidths(warehouse, tableSize);
+        const isLastColumn = index === warehouse.grid.columns - 1;
+        const clampedStep = resizing.clampTableDelta(widths, index, step, tableSize.minCellWidth(), isLastColumn);
+        // Calculate all of the new widths for columns
+        const deltas = determine(widths, index, clampedStep, tableSize, resizing);
+        const newWidths = map(deltas, (dx, i) => dx + widths[i]);
+        recalculateAndApply(warehouse, newWidths, tableSize);
+        resizing.resizeTable(tableSize.adjustTableWidth, clampedStep, isLastColumn);
     };
 
     var TagBoundaries = [
@@ -1694,15 +2548,15 @@
             if (name(element) === 'body') {
                 return true;
             }
-            return contains(TagBoundaries, name(element));
+            return contains$1(TagBoundaries, name(element));
         };
         const isEmptyTag = (element) => {
             if (!isElement(element)) {
                 return false;
             }
-            return contains(['br', 'img', 'hr', 'input'], name(element));
+            return contains$1(['br', 'img', 'hr', 'input'], name(element));
         };
-        const isNonEditable = (element) => isElement(element) && get$2(element, 'contenteditable') === 'false';
+        const isNonEditable = (element) => isElement(element) && get$3(element, 'contenteditable') === 'false';
         const comparePosition = (element, other) => {
             return element.dom.compareDocumentPosition(other.dom);
         };
@@ -1712,7 +2566,7 @@
         };
         const isSpecial = (element) => {
             const tag = name(element);
-            return contains([
+            return contains$1([
                 'script', 'noscript', 'iframe', 'noframes', 'noembed', 'title', 'style', 'textarea', 'xmp'
             ], tag);
         };
@@ -1729,13 +2583,13 @@
                 predicate: descendants$1
             }),
             styles: constant({
-                get: get$1,
-                getRaw: getRaw$1,
+                get: get$2,
+                getRaw: getRaw$2,
                 set: set$1,
                 remove: remove
             }),
             attrs: constant({
-                get: get$2,
+                get: get$3,
                 set: set$2,
                 remove: remove$2,
                 copyTo: copyAttributesTo
@@ -1784,79 +2638,6 @@
         };
     };
 
-    const leftRight = (left, right) => ({
-        left,
-        right
-    });
-    const brokenPath = (first, second, splits) => ({
-        first,
-        second,
-        splits
-    });
-    const bisect = (universe, parent, child) => {
-        const children = universe.property().children(parent);
-        const index = findIndex(children, curry(universe.eq, child));
-        return index.map((ind) => {
-            return {
-                before: children.slice(0, ind),
-                after: children.slice(ind + 1)
-            };
-        });
-    };
-    /**
-     * Clone parent to the RIGHT and move everything after child in the parent element into
-     * a clone of the parent (placed after parent).
-     */
-    const breakToRight = (universe, parent, child) => {
-        return bisect(universe, parent, child).map((parts) => {
-            const second = universe.create().clone(parent);
-            universe.insert().appendAll(second, parts.after);
-            universe.insert().after(parent, second);
-            return leftRight(parent, second);
-        });
-    };
-    /**
-     * Clone parent to the LEFT and move everything before and including child into
-     * the a clone of the parent (placed before parent)
-     */
-    const breakToLeft = (universe, parent, child) => {
-        return bisect(universe, parent, child).map((parts) => {
-            const prior = universe.create().clone(parent);
-            universe.insert().appendAll(prior, parts.before.concat([child]));
-            universe.insert().appendAll(parent, parts.after);
-            universe.insert().before(parent, prior);
-            return leftRight(prior, parent);
-        });
-    };
-    /*
-     * Using the breaker, break from the child up to the top element defined by the predicate.
-     * It returns three values:
-     *   first: the top level element that completed the break
-     *   second: the optional element representing second part of the top-level split if the breaking completed successfully to the top
-     *   splits: a list of (Element, Element) pairs that represent the splits that have occurred on the way to the top.
-     */
-    const breakPath = (universe, item, isTop, breaker) => {
-        const next = (child, group, splits) => {
-            const fallback = brokenPath(child, Optional.none(), splits);
-            // Found the top, so stop.
-            if (isTop(child)) {
-                return brokenPath(child, group, splits);
-            }
-            else {
-                // Split the child at parent, and keep going
-                return universe.property().parent(child).bind((parent) => {
-                    return breaker(universe, parent, child).map((breakage) => {
-                        const extra = [{ first: breakage.left, second: breakage.right }];
-                        // Our isTop is based on the left-side parent, so keep it regardless of split.
-                        const nextChild = isTop(parent) ? parent : breakage.left;
-                        return next(nextChild, Optional.some(breakage.right), splits.concat(extra));
-                    });
-                }).getOr(fallback);
-            }
-        };
-        return next(item, Optional.none(), []);
-    };
-
     const all = (universe, look, elements, f) => {
         const head = elements[0];
         const tail = elements.slice(1);
@@ -1884,9 +2665,6 @@
     };
 
     const sharedOne$1 = oneAll;
-    breakToLeft;
-    breakToRight;
-    breakPath;
 
     const universe = DomUniverse();
     const sharedOne = (look, elements) => {
@@ -1906,8 +2684,6 @@
             return findCommonRowType(selectedRows);
         }).getOr('');
     };
-    Generators.transform('th');
-    Generators.transform('td');
     const getRowsType = opGetRowsType;
 
     // Note, something is *within* if it is completely contained within the bounds.
@@ -1952,6 +2728,28 @@
     };
     // Private method ... keep warehouse in snooker, please.
     const getWarehouse = Warehouse.fromTable;
+
+    /*
+     NOTE: This file is partially duplicated in the following locations:
+      - models/dom/table/core/TableUtils.ts
+      - advtable
+     Make sure that if making changes to this file, the other files are updated as well
+     */
+    const getNodeName = (elm) => elm.nodeName.toLowerCase();
+    const getBody = (editor) => SugarElement.fromDom(editor.getBody());
+    const getIsRoot = (editor) => (element) => eq(element, getBody(editor));
+    const removeDataStyle = (table) => {
+        const removeStyleAttribute = (element) => remove$2(element, 'data-mce-style');
+        removeStyleAttribute(table);
+        each$1(cells(table), removeStyleAttribute);
+        each$1(columns$1(table), removeStyleAttribute);
+        each$1(rows(table), removeStyleAttribute);
+    };
+    const removePxSuffix = (size) => size ? size.replace(/px$/, '') : '';
+    const addPxSuffix = (size) => /^\d+(\.\d+)?$/.test(size) ? size + 'px' : size;
+    const getSelectionStart = (editor) => SugarElement.fromDom(editor.selection.getStart());
+    const getSelectionEnd = (editor) => SugarElement.fromDom(editor.selection.getEnd());
+    const isInEditableContext = (cell) => closest$2(cell, isTag('table')).forall(isEditable);
 
     var global$2 = tinymce.util.Tools.resolve('tinymce.util.Tools');
 
@@ -2005,6 +2803,11 @@
 
     var global$1 = tinymce.util.Tools.resolve('tinymce.Env');
 
+    const appearanceFields = ['cellspacing', 'cellpadding', 'borderwidth', 'caption'];
+    const isAppearanceOptions = (value) => isPlainObject(value) && forall(appearanceFields, (field) => {
+        const fieldValue = value[field];
+        return isUndefined(fieldValue) || isBoolean(fieldValue);
+    });
     const defaultTableToolbar = 'tableprops tabledelete | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol';
     const defaultCellBorderWidths = range(5, (i) => {
         const size = `${i + 1}px`;
@@ -2069,7 +2872,18 @@
             default: true
         });
         registerOption('table_appearance_options', {
-            processor: 'boolean',
+            processor: (value) => {
+                // Accept boolean value as applied to all options
+                if (isBoolean(value)) {
+                    return { valid: true, value: mapToObject(appearanceFields, constant(value)) };
+                }
+                else if (isAppearanceOptions(value)) {
+                    return { valid: true, value: mapToObject(appearanceFields, (field) => value[field] !== false) };
+                }
+                else {
+                    return { valid: false, message: `Must be a boolean or an object with boolean values for: ${appearanceFields.join(', ')}.` };
+                }
+            },
             default: true
         });
         registerOption('table_grid', {
@@ -2108,7 +2922,7 @@
     const hasAdvancedCellTab = option('table_cell_advtab');
     const hasAdvancedRowTab = option('table_row_advtab');
     const hasAdvancedTableTab = option('table_advtab');
-    const hasAppearanceOptions = option('table_appearance_options');
+    const getAppearanceOptions = option('table_appearance_options');
     const hasTableGrid = option('table_grid');
     const shouldStyleWithCss = option('table_style_by_css');
     const getCellClassList = option('table_cell_class_list');
@@ -2196,17 +3010,13 @@
      Make sure that if making changes to this file, the other files are updated as well
      */
     const strSelected = 'data-mce-selected';
-    const strSelectedSelector = 'td[' + strSelected + '],th[' + strSelected + ']';
     const strFirstSelected = 'data-mce-first-selected';
     const strFirstSelectedSelector = 'td[' + strFirstSelected + '],th[' + strFirstSelected + ']';
     const strLastSelected = 'data-mce-last-selected';
     const strLastSelectedSelector = 'td[' + strLastSelected + '],th[' + strLastSelected + ']';
     const ephemera = {
         selected: strSelected,
-        selectedSelector: strSelectedSelector,
-        firstSelected: strFirstSelected,
         firstSelectedSelector: strFirstSelectedSelector,
-        lastSelected: strLastSelected,
         lastSelectedSelector: strLastSelectedSelector
     };
 
@@ -2229,7 +3039,7 @@
         const cellOpt = getSelectionCell(selected);
         const rowsOpt = cellOpt.bind((cell) => table(cell))
             .map((table) => rows(table));
-        return lift2(cellOpt, rowsOpt, (cell, rows) => filter$1(rows, (row) => exists(fromDom(row.dom.cells), (rowCell) => get$2(rowCell, selector) === '1' || eq(rowCell, cell)))).getOr([]);
+        return lift2(cellOpt, rowsOpt, (cell, rows) => filter$1(rows, (row) => exists(fromDom(row.dom.cells), (rowCell) => get$3(rowCell, selector) === '1' || eq(rowCell, cell)))).getOr([]);
     };
 
     const verticalAlignValues = [
@@ -2548,10 +3358,10 @@
     const extractAdvancedStyles = (elm) => {
         const element = SugarElement.fromDom(elm);
         return {
-            borderwidth: getRaw$1(element, 'border-width').getOr(''),
-            borderstyle: getRaw$1(element, 'border-style').getOr(''),
-            bordercolor: getRaw$1(element, 'border-color').map(rgbToHex).getOr(''),
-            backgroundcolor: getRaw$1(element, 'background-color').map(rgbToHex).getOr('')
+            borderwidth: getRaw$2(element, 'border-width').getOr(''),
+            borderstyle: getRaw$2(element, 'border-style').getOr(''),
+            bordercolor: getRaw$2(element, 'border-color').map(rgbToHex).getOr(''),
+            backgroundcolor: getRaw$2(element, 'background-color').map(rgbToHex).getOr('')
         };
     };
     const getSharedValues = (data) => {
@@ -2576,16 +3386,16 @@
     };
     // The extractDataFrom... functions are in this file partly for code reuse and partly so we can test them,
     // because some of these are crazy complicated
-    const getAlignment = (formats, formatName, editor, elm) => find(formats, (name) => !isUndefined(editor.formatter.matchNode(elm, formatName + name))).getOr('');
+    const getAlignment = (formats, formatName, editor, elm) => find$1(formats, (name) => !isUndefined(editor.formatter.matchNode(elm, formatName + name))).getOr('');
     const getHAlignment = curry(getAlignment, ['left', 'center', 'right'], 'align');
     const getVAlignment = curry(getAlignment, ['top', 'middle', 'bottom'], 'valign');
     const extractDataFromSettings = (editor, hasAdvTableTab) => {
         const style = getDefaultStyles(editor);
         const attrs = getDefaultAttributes(editor);
         const extractAdvancedStyleData = () => ({
-            borderstyle: get$3(style, 'border-style').getOr(''),
-            bordercolor: rgbToHex(get$3(style, 'border-color').getOr('')),
-            backgroundcolor: rgbToHex(get$3(style, 'background-color').getOr(''))
+            borderstyle: get$4(style, 'border-style').getOr(''),
+            bordercolor: rgbToHex(get$4(style, 'border-color').getOr('')),
+            backgroundcolor: rgbToHex(get$4(style, 'background-color').getOr(''))
         });
         const defaultData = {
             height: '',
@@ -2602,12 +3412,12 @@
             if (shouldStyleWithCss(editor) && borderWidth) {
                 return { border: borderWidth };
             }
-            return get$3(attrs, 'border').fold(() => ({}), (border) => ({ border }));
+            return get$4(attrs, 'border').fold(() => ({}), (border) => ({ border }));
         };
         const advStyle = (hasAdvTableTab ? extractAdvancedStyleData() : {});
         const getCellPaddingCellSpacing = () => {
-            const spacing = get$3(style, 'border-spacing').or(get$3(attrs, 'cellspacing')).fold(() => ({}), (cellspacing) => ({ cellspacing }));
-            const padding = get$3(style, 'border-padding').or(get$3(attrs, 'cellpadding')).fold(() => ({}), (cellpadding) => ({ cellpadding }));
+            const spacing = get$4(style, 'border-spacing').or(get$4(attrs, 'cellspacing')).fold(() => ({}), (cellspacing) => ({ cellspacing }));
+            const padding = get$4(style, 'border-padding').or(get$4(attrs, 'cellpadding')).fold(() => ({}), (cellpadding) => ({ cellpadding }));
             return {
                 ...spacing,
                 ...padding
@@ -2633,7 +3443,7 @@
             // 1. shouldStyleWithCss - extract border-width style if it exists
             // 2. !shouldStyleWithCss && border attribute - set border attribute as value
             // 3. !shouldStyleWithCss && nothing on the table - grab styles from the first th or td
-            const optBorderWidth = getRaw$1(SugarElement.fromDom(elm), 'border-width');
+            const optBorderWidth = getRaw$2(SugarElement.fromDom(elm), 'border-width');
             if (shouldStyleWithCss(editor) && optBorderWidth.isSome()) {
                 return optBorderWidth.getOr('');
             }
@@ -2693,15 +3503,44 @@
             column: Warehouse.getColumnAt(warehouse, cell.column).map((col) => col.element.dom)
         }));
     };
-    const updateSimpleProps$1 = (modifier, colModifier, data, shouldUpdate) => {
+    const getTargetPixelWidth = (tableSize, width) => parse(width, ['fixed', 'relative', 'empty'])
+        .filter(({ value, unit }) => tableSize.label !== 'none' && unit !== 'pt' && value >= 0)
+        .map(({ value, unit }) => unit === '%' ? value / 100 * tableSize.pixelWidth() : value);
+    const resizeColumns = (table, selectedCells, target, tableSize) => {
+        const warehouse = Warehouse.fromTable(table);
+        const selectedDetails = bind(selectedCells, (cell) => Warehouse.findItem(warehouse, cell, eq).toArray());
+        const ranges = unique(selectedDetails, (a, b) => a.column === b.column && a.colspan === b.colspan);
+        const toPixels = (width) => tableSize.label === 'percent' ? width / 100 * tableSize.pixelWidth() : width;
+        each$1(ranges, (range) => {
+            const widths = tableSize.getWidths(Warehouse.fromTable(table), tableSize);
+            const end = range.column + range.colspan - 1;
+            const width = foldl(widths.slice(range.column, end + 1), (acc, w) => acc + w, 0);
+            const delta = target - toPixels(width);
+            if (end < widths.length - 1) {
+                adjustWidth(table, delta, end, preserveTable(), tableSize);
+            }
+            else if (range.column > 0) {
+                adjustWidth(table, -delta, range.column - 1, preserveTable(), tableSize);
+            }
+        });
+        return ranges.length > 0;
+    };
+    const setColumnWidths = (table, selectedCells, width) => {
+        const tableSize = TableSize.getTableSize(table);
+        return getTargetPixelWidth(tableSize, width).exists((target) => {
+            const isApplied = resizeColumns(table, selectedCells, target, tableSize);
+            if (isApplied) {
+                removeDataStyle(table);
+            }
+            return isApplied;
+        });
+    };
+    const updateSimpleProps$1 = (modifier, data, shouldUpdate) => {
         if (shouldUpdate('scope')) {
             modifier.setAttrib('scope', data.scope);
         }
         if (shouldUpdate('class') && data.class !== 'mce-no-match') {
             modifier.setAttrib('class', data.class);
-        }
-        if (shouldUpdate('width')) {
-            colModifier.setStyle('width', addPxSuffix(data.width));
         }
     };
     const updateAdvancedProps$1 = (modifier, data, shouldUpdate) => {
@@ -2718,14 +3557,17 @@
             modifier.setFormat('tablecellborderwidth', addPxSuffix(data.borderwidth));
         }
     };
-    const applyStyleData$1 = (editor, cells, data, wasChanged) => {
+    const applyStyleData$1 = (editor, cells, data, wasChanged, isColumnResized) => {
         const isSingleCell = cells.length === 1;
         each$1(cells, (item) => {
             const cellElm = item.element;
             const shouldOverrideCurrentValue = isSingleCell ? always : wasChanged;
             const modifier = DomModifier.normal(editor, cellElm);
-            const colModifier = item.column.map((col) => DomModifier.normal(editor, col)).getOr(modifier);
-            updateSimpleProps$1(modifier, colModifier, data, shouldOverrideCurrentValue);
+            updateSimpleProps$1(modifier, data, shouldOverrideCurrentValue);
+            if (!isColumnResized && shouldOverrideCurrentValue('width')) {
+                const colModifier = item.column.map((col) => DomModifier.normal(editor, col)).getOr(modifier);
+                colModifier.setStyle('width', addPxSuffix(data.width));
+            }
             if (hasAdvancedCellTab(editor)) {
                 updateAdvancedProps$1(modifier, data, shouldOverrideCurrentValue);
             }
@@ -2756,7 +3598,8 @@
                 const structureModified = has(modifiedData, 'celltype');
                 // Update the cells styling using the dialog data
                 if (styleModified || has(modifiedData, 'scope')) {
-                    applyStyleData$1(editor, selectedCells, data, curry(has, modifiedData));
+                    const isColumnResized = has(modifiedData, 'width') && setColumnWidths(table, cells, data.width);
+                    applyStyleData$1(editor, selectedCells, data, curry(has, modifiedData), isColumnResized);
                 }
                 // Update the cells structure using the dialog data
                 if (structureModified) {
@@ -3020,25 +3863,27 @@
                 label: 'Height'
             }
         ];
-        const appearanceItems = hasAppearanceOptions(editor) ? [
-            {
+        const appearanceOptions = getAppearanceOptions(editor);
+        const appearanceItem = (field, spec) => appearanceOptions[field] ? [spec] : [];
+        const appearanceItems = [
+            ...appearanceItem('cellspacing', {
                 type: 'input',
                 name: 'cellspacing',
                 label: 'Cell spacing',
                 inputMode: 'numeric'
-            },
-            {
+            }),
+            ...appearanceItem('cellpadding', {
                 type: 'input',
                 name: 'cellpadding',
                 label: 'Cell padding',
                 inputMode: 'numeric'
-            },
-            {
+            }),
+            ...appearanceItem('borderwidth', {
                 type: 'input',
                 name: 'border',
                 label: 'Border width'
-            },
-            {
+            }),
+            ...appearanceItem('caption', {
                 type: 'label',
                 label: 'Caption',
                 items: [
@@ -3048,8 +3893,8 @@
                         label: 'Show caption'
                     }
                 ]
-            }
-        ] : [];
+            })
+        ];
         const alignmentItem = [
             {
                 type: 'listbox',
@@ -3092,13 +3937,21 @@
             }
         }
     };
+    const defaultKeyToField = {
+        'border': 'border',
+        'border-width': 'border',
+        'cellspacing': 'cellspacing',
+        'border-spacing': 'cellspacing',
+        'cellpadding': 'cellpadding'
+    };
+    const getApplicableDefaults = (defaults, data) => filter(defaults, (_value, key) => get$4(defaultKeyToField, key).forall((field) => isNonNullable(data[field])));
     const applyDataToElement = (editor, tableElm, data, shouldApplyOnCell) => {
         const dom = editor.dom;
         const attrs = {};
         const styles = {};
         const shouldStyleWithCss$1 = shouldStyleWithCss(editor);
         const hasAdvancedTableTab$1 = hasAdvancedTableTab(editor);
-        const borderIsZero = parseFloat(data.border) === 0;
+        const borderIsZero = isNonNullable(data.border) && parseFloat(data.border) === 0;
         if (!isUndefined(data.class) && data.class !== 'mce-no-match') {
             attrs.class = data.class;
         }
@@ -3113,20 +3966,30 @@
             styles.width = '';
         }
         if (shouldStyleWithCss$1) {
-            if (borderIsZero) {
-                attrs.border = 0;
-                styles['border-width'] = '';
+            if (isNonNullable(data.border)) {
+                if (borderIsZero) {
+                    attrs.border = 0;
+                    styles['border-width'] = '';
+                }
+                else {
+                    styles['border-width'] = addPxSuffix(data.border);
+                    attrs.border = 1;
+                }
             }
-            else {
-                styles['border-width'] = addPxSuffix(data.border);
-                attrs.border = 1;
+            if (isNonNullable(data.cellspacing)) {
+                styles['border-spacing'] = addPxSuffix(data.cellspacing);
             }
-            styles['border-spacing'] = addPxSuffix(data.cellspacing);
         }
         else {
-            attrs.border = borderIsZero ? 0 : data.border;
-            attrs.cellpadding = data.cellpadding;
-            attrs.cellspacing = data.cellspacing;
+            if (isNonNullable(data.border)) {
+                attrs.border = borderIsZero ? 0 : data.border;
+            }
+            if (isNonNullable(data.cellpadding)) {
+                attrs.cellpadding = data.cellpadding;
+            }
+            if (isNonNullable(data.cellspacing)) {
+                attrs.cellspacing = data.cellspacing;
+            }
         }
         // TINY-9837: Relevant data are applied on child TD/THs only if they have been modified since the previous dialog submission
         if (shouldStyleWithCss$1 && tableElm.children) {
@@ -3134,10 +3997,10 @@
             if (borderIsZero) {
                 cellStyles['border-width'] = '';
             }
-            else if (shouldApplyOnCell.border) {
+            else if (shouldApplyOnCell.border && isNonNullable(data.border)) {
                 cellStyles['border-width'] = addPxSuffix(data.border);
             }
-            if (shouldApplyOnCell.cellpadding) {
+            if (shouldApplyOnCell.cellpadding && isNonNullable(data.cellpadding)) {
                 cellStyles.padding = addPxSuffix(data.cellpadding);
             }
             if (hasAdvancedTableTab$1 && shouldApplyOnCell.bordercolor) {
@@ -3155,8 +4018,8 @@
             styles['border-color'] = advData.bordercolor;
             styles['border-style'] = advData.borderstyle;
         }
-        dom.setStyles(tableElm, { ...getDefaultStyles(editor), ...styles });
-        dom.setAttribs(tableElm, { ...getDefaultAttributes(editor), ...attrs });
+        dom.setStyles(tableElm, { ...getApplicableDefaults(getDefaultStyles(editor), data), ...styles });
+        dom.setAttribs(tableElm, { ...getApplicableDefaults(getDefaultAttributes(editor), data), ...attrs });
     };
     const onSubmitTableForm = (editor, tableElm, oldData, api) => {
         const dom = editor.dom;
@@ -3183,7 +4046,7 @@
                 applyDataToElement(editor, tableElm, data, applicableCellProperties);
                 // Toggle caption on/off
                 const captionElm = dom.select('caption', tableElm)[0];
-                if (captionElm && !data.caption || !captionElm && data.caption) {
+                if (isNonNullable(data.caption) && (captionElm && !data.caption || !captionElm && data.caption)) {
                     editor.execCommand('mceTableToggleCaption');
                 }
                 setAlign(editor, tableElm, data.align);
@@ -3881,21 +4744,21 @@
             command: 'mceTableDelete'
         });
         // if any of the row menu items returned true
-        if (contains(hasRowMenuItems, true)) {
+        if (contains$1(hasRowMenuItems, true)) {
             editor.ui.registry.addNestedMenuItem('row', {
                 type: 'nestedmenuitem',
                 text: 'Row',
                 getSubmenuItems: constant('tableinsertrowbefore tableinsertrowafter tabledeleterow tablerowprops | tablecutrow tablecopyrow tablepasterowbefore tablepasterowafter')
             });
         }
-        if (contains(hasColumnMenuItems, true)) {
+        if (contains$1(hasColumnMenuItems, true)) {
             editor.ui.registry.addNestedMenuItem('column', {
                 type: 'nestedmenuitem',
                 text: 'Column',
                 getSubmenuItems: constant('tableinsertcolumnbefore tableinsertcolumnafter tabledeletecolumn | tablecutcolumn tablecopycolumn tablepastecolumnbefore tablepastecolumnafter')
             });
         }
-        if (contains(hasCellMenuItems, true)) {
+        if (contains$1(hasCellMenuItems, true)) {
             editor.ui.registry.addNestedMenuItem('cell', {
                 type: 'nestedmenuitem',
                 text: 'Cell',

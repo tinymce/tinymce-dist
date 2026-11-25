@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.10.2 (2026-11-11)
+ * TinyMCE version 8.11.0 (2026-11-25)
  */
 
 (function () {
@@ -444,19 +444,6 @@
 
     const punctuation$1 = constant(punctuationStr);
 
-    // tslint:disable-next-line:variable-name
-    const Custom = (regex, prefix, suffix, flags) => {
-        const term = () => {
-            return new RegExp(regex, flags.getOr('g'));
-        };
-        return {
-            term,
-            prefix,
-            suffix
-        };
-    };
-
-    Custom;
     const punctuation = punctuation$1;
 
     var global$2 = tinymce.util.Tools.resolve('tinymce.Env');

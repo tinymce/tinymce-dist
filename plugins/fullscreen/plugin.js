@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.10.2 (2026-11-11)
+ * TinyMCE version 8.11.0 (2026-11-25)
  */
 
 (function () {
@@ -608,7 +608,7 @@
         // IE fix for complex queries on empty nodes: http://jsfiddle.net/spyder/fv9ptr5L/
         dom.childElementCount === 0;
     const all$1 = (selector, scope) => {
-        const base = scope === undefined ? document : scope.dom;
+        const base = document ;
         return bypassSelector(base) ? [] : map(base.querySelectorAll(selector), SugarElement.fromDom);
     };
 
@@ -618,7 +618,7 @@
         const isiPad = os.isiOS() && /ipad/i.test(userAgent) === true;
         const isiPhone = os.isiOS() && !isiPad;
         const isMobile = os.isiOS() || os.isAndroid();
-        const isTouch = isMobile || mediaMatch('(pointer:coarse)');
+        const isTouch = isMobile || !mediaMatch('(any-pointer:fine)');
         const isTablet = isiPad || !isiPhone && isMobile && mediaMatch('(min-device-width:768px)');
         const isPhone = isiPhone || isMobile && !isTablet;
         const iOSwebview = browser.isSafari() && os.isiOS() && /safari/i.test(userAgent) === false;
@@ -840,14 +840,7 @@
     };
     const Browser = {
         unknown: unknown$1,
-        nu: nu$1,
-        edge: constant(edge),
-        chromium: constant(chromium),
-        ie: constant(ie),
-        opera: constant(opera),
-        firefox: constant(firefox),
-        safari: constant(safari)
-    };
+        nu: nu$1};
 
     const windows = 'Windows';
     const ios = 'iOS';
@@ -885,16 +878,7 @@
     };
     const OperatingSystem = {
         unknown,
-        nu,
-        windows: constant(windows),
-        ios: constant(ios),
-        android: constant(android),
-        linux: constant(linux),
-        macos: constant(macos),
-        solaris: constant(solaris),
-        freebsd: constant(freebsd),
-        chromeos: constant(chromeos)
-    };
+        nu};
 
     const detect$1 = (userAgent, userAgentDataOpt, mediaMatch) => {
         const browsers = PlatformInfo.browsers();

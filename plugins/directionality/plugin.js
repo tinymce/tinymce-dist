@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.10.2 (2026-11-11)
+ * TinyMCE version 8.11.0 (2026-11-25)
  */
 
 (function () {
@@ -306,7 +306,6 @@
         }
     }
 
-    const nativeSlice = Array.prototype.slice;
     const map = (xs, f) => {
         // pre-allocating array size when it's guaranteed to be known
         // http://jsperf.com/push-allocated-vs-dynamic/22
@@ -337,7 +336,6 @@
         }
         return r;
     };
-    isFunction(Array.from) ? Array.from : (x) => nativeSlice.call(x);
 
     /**
      * **Is** the value stored inside this Optional object equal to `rhs`?

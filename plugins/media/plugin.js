@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.10.2 (2026-11-11)
+ * TinyMCE version 8.11.0 (2026-11-25)
  */
 
 (function () {
@@ -33,13 +33,11 @@
         }
     };
     const isType = (type) => (value) => typeOf(value) === type;
-    const isSimpleType = (type) => (value) => typeof value === type;
     const isString = isType('string');
     const isObject = isType('object');
     const isArray = isType('array');
     const isNullable = (a) => a === null || a === undefined;
     const isNonNullable = (a) => !isNullable(a);
-    const isFunction = isSimpleType('function');
 
     /**
      * The `Optional` type represents a value (of any type) that potentially does
@@ -294,7 +292,6 @@
         }
     }
 
-    const nativeSlice = Array.prototype.slice;
     const nativePush = Array.prototype.push;
     // Unwound implementing other functions in terms of each.
     // The code size is roughly the same, and it should allow for better optimisation.
@@ -320,7 +317,6 @@
         }
         return r;
     };
-    isFunction(Array.from) ? Array.from : (x) => nativeSlice.call(x);
 
     // There are many variations of Object iteration that are faster than the 'for-in' style:
     // http://jsperf.com/object-keys-iteration/107
@@ -355,7 +351,7 @@
         };
     };
 
-    const checkRange = (str, substr, start) => substr === '' || str.length >= substr.length && str.substr(start, start + substr.length) === substr;
+    const checkRange = (str, substr, start) => str.length >= substr.length && str.substr(start, start + substr.length) === substr;
     /** Does 'str' start with 'prefix'?
      *  Note: all strings start with the empty string.
      *        More formally, for all strings x, startsWith(x, "").

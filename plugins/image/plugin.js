@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.10.2 (2026-11-11)
+ * TinyMCE version 8.11.0 (2026-11-25)
  */
 
 (function () {
@@ -314,7 +314,6 @@
         }
     }
 
-    const nativeSlice = Array.prototype.slice;
     const nativePush = Array.prototype.push;
     const flatten = (xs) => {
         // Note, this is possible because push supports multiple arguments:
@@ -333,7 +332,6 @@
     };
     const get = (xs, i) => i >= 0 && i < xs.length ? Optional.some(xs[i]) : Optional.none();
     const head = (xs) => get(xs, 0);
-    isFunction(Array.from) ? Array.from : (x) => nativeSlice.call(x);
     const findMap = (arr, f) => {
         for (let i = 0; i < arr.length; i++) {
             const r = f(arr[i], i);
@@ -462,19 +460,36 @@
         element.dom.removeAttribute(key);
     };
 
-    const getImageSize = (url) => new Promise((resolve, reject) => {
-        const img = document.createElement('img');
-        img.addEventListener('load', () => {
-            resolve({
-                width: img.naturalWidth,
-                height: img.naturalHeight
-            });
-        });
-        img.addEventListener('error', () => {
-            reject(`Failed to get image dimensions for: ${url}`);
-        });
-        img.src = url;
+    const getNaturalSize = (img) => ({
+        width: img.naturalWidth,
+        height: img.naturalHeight
     });
+    const waitForImageSize = (img, errorMessage) => new Promise((resolve, reject) => {
+        const resolveSize = () => {
+            resolve(getNaturalSize(img));
+        };
+        if (img.complete) {
+            resolveSize();
+        }
+        else {
+            const onLoad = () => {
+                img.removeEventListener('error', onError);
+                resolveSize();
+            };
+            const onError = () => {
+                img.removeEventListener('load', onLoad);
+                reject(new Error(errorMessage));
+            };
+            img.addEventListener('load', onLoad, { once: true });
+            img.addEventListener('error', onError, { once: true });
+        }
+    });
+    const getImageSizeFromImg = (img) => waitForImageSize(img, `Failed to get image dimensions for: ${img.src}`);
+    const getImageSizeFromUrl = (url) => {
+        const img = document.createElement('img');
+        img.src = url;
+        return getImageSizeFromImg(img);
+    };
 
     var global$3 = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
 
@@ -1484,7 +1499,7 @@
                 type: 'tabpanel',
                 tabs: flatten([
                     [MainTab.makeTab(info)],
-                    info.hasAdvTab ? [AdvTab.makeTab(info)] : [],
+                    info.hasAdvTab ? [AdvTab.makeTab()] : [],
                     info.hasUploadTab && (info.hasUploadUrl || info.hasUploadHandler) ? [UploadTab.makeTab(info, () => new Promise((r) => info.alertErr('Selected images do not have allowed extensions', r)))] : []
                 ])
             };
@@ -1518,7 +1533,7 @@
             return Promise.resolve({ width: '', height: '' });
         }
         else {
-            return getImageSize(editor.documentBaseURI.toAbsolute(url)).then((dimensions) => ({
+            return getImageSizeFromUrl(editor.documentBaseURI.toAbsolute(url)).then((dimensions) => ({
                 width: String(dimensions.width),
                 height: String(dimensions.height)
             }));

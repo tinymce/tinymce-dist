@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.10.2 (2026-11-11)
+ * TinyMCE version 8.11.0 (2026-11-25)
  */
 
 (function () {
@@ -321,7 +321,6 @@
         }
     }
 
-    const nativeSlice = Array.prototype.slice;
     const nativeIndexOf = Array.prototype.indexOf;
     const nativePush = Array.prototype.push;
     const rawIndexOf = (ts, t) => nativeIndexOf.call(ts, t);
@@ -370,7 +369,6 @@
     const bind = (xs, f) => flatten(map(xs, f));
     const get = (xs, i) => i >= 0 && i < xs.length ? Optional.some(xs[i]) : Optional.none();
     const head = (xs) => get(xs, 0);
-    isFunction(Array.from) ? Array.from : (x) => nativeSlice.call(x);
     const findMap = (arr, f) => {
         for (let i = 0; i < arr.length; i++) {
             const r = f(arr[i], i);
@@ -475,7 +473,7 @@
         return str.substring(numChars);
     };
 
-    const checkRange = (str, substr, start) => substr === '' || str.length >= substr.length && str.substr(start, start + substr.length) === substr;
+    const checkRange = (str, substr, start) => str.length >= substr.length && str.substr(start, start + substr.length) === substr;
     const removeLeading = (str, prefix) => {
         return startsWith(str, prefix) ? removeFromStart(str, prefix.length) : str;
     };

@@ -26,8 +26,6 @@ export interface Classes {
   "tox-dialog__body-content": string;
   "accessibility-issue--info": string;
   "accessibility-issue__icon": string;
-  "tox-button--naked": string;
-  "tox-button--icon": string;
   "accessibility-issue--warn": string;
   "accessibility-issue--error": string;
   "accessibility-issue--success": string;
@@ -64,12 +62,14 @@ export interface Classes {
   "tox-anchorbar": string;
   "tox-bottom-anchorbar": string;
   "tox-bar": string;
+  "tox-button--icon": string;
   "tox-icon--success": string;
   "tox-icon--error": string;
   "tox-button--stretch": string;
   "tox-context-form__group": string;
   "tox-button--enabled": string;
   "tox-button--secondary": string;
+  "tox-button--naked": string;
   "tox-button--secondary--outline": string;
   "tox-checkbox": string;
   "tox-checkbox__input": string;
@@ -469,7 +469,6 @@ export interface Classes {
   "tox-tinymceai__diff-focus-overlay-dim": string;
   "tox-card-group": string;
   "tox-ai__review-sidebar-container": string;
-  "tox-card-group__title": string;
   "tox-ai__review-initializing": string;
   "tox-ai__review-description": string;
   "tox-ai__review-choose-container": string;
@@ -621,6 +620,7 @@ export interface Classes {
   "tox-card__expansion-content": string;
   "tox-card__expansion-content--expanded": string;
   "tox-card__expansion-content-inner": string;
+  "tox-card-group__title": string;
   "tox-card-group__title-text": string;
   "tox-card-group__status": string;
   "tox-card-group__content": string;

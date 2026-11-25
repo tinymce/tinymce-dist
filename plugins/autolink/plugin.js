@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.10.2 (2026-11-11)
+ * TinyMCE version 8.11.0 (2026-11-25)
  */
 
 (function () {
@@ -44,7 +44,7 @@
     const hasOwnProperty = Object.hasOwnProperty;
     const has = (obj, key) => hasOwnProperty.call(obj, key);
 
-    const checkRange = (str, substr, start) => substr === '' || str.length >= substr.length && str.substr(start, start + substr.length) === substr;
+    const checkRange = (str, substr, start) => str.length >= substr.length && str.substr(start, start + substr.length) === substr;
     const contains = (str, substr, start = 0, end) => {
         const idx = str.indexOf(substr, start);
         if (idx !== -1) {

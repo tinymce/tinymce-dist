@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.10.2 (2026-11-11)
+ * TinyMCE version 8.11.0 (2026-11-25)
  */
 
 (function () {
@@ -1292,7 +1292,7 @@
         const isiPad = os.isiOS() && /ipad/i.test(userAgent) === true;
         const isiPhone = os.isiOS() && !isiPad;
         const isMobile = os.isiOS() || os.isAndroid();
-        const isTouch = isMobile || mediaMatch('(pointer:coarse)');
+        const isTouch = isMobile || !mediaMatch('(any-pointer:fine)');
         const isTablet = isiPad || !isiPhone && isMobile && mediaMatch('(min-device-width:768px)');
         const isPhone = isiPhone || isMobile && !isTablet;
         const iOSwebview = browser.isSafari() && os.isiOS() && /safari/i.test(userAgent) === false;
@@ -1514,14 +1514,7 @@
     };
     const Browser = {
         unknown: unknown$1,
-        nu: nu$1,
-        edge: constant(edge),
-        chromium: constant(chromium),
-        ie: constant(ie),
-        opera: constant(opera),
-        firefox: constant(firefox),
-        safari: constant(safari)
-    };
+        nu: nu$1};
 
     const windows = 'Windows';
     const ios = 'iOS';
@@ -1559,16 +1552,7 @@
     };
     const OperatingSystem = {
         unknown,
-        nu,
-        windows: constant(windows),
-        ios: constant(ios),
-        android: constant(android),
-        linux: constant(linux),
-        macos: constant(macos),
-        solaris: constant(solaris),
-        freebsd: constant(freebsd),
-        chromeos: constant(chromeos)
-    };
+        nu};
 
     const detect$3 = (userAgent, userAgentDataOpt, mediaMatch) => {
         const browsers = PlatformInfo.browsers();
@@ -1952,7 +1936,7 @@
     };
 
     const fromHtml = (html, scope) => {
-        const doc = scope || document;
+        const doc = document;
         const div = doc.createElement('div');
         div.innerHTML = html;
         return children$2(SugarElement.fromDom(div));
@@ -2165,11 +2149,11 @@
     const getCalculatedWidth = (element, boxSizing) => {
         const dom = element.dom;
         const width = dom.getBoundingClientRect().width || dom.offsetWidth;
-        return boxSizing === 'border-box' ? width : calcContentBoxSize(element, width, 'left', 'right');
+        return calcContentBoxSize(element, width, 'left', 'right');
     };
     const getHeight$1 = (element) => getProp(element, 'height', element.dom.offsetHeight);
     const getWidth = (element) => getProp(element, 'width', element.dom.offsetWidth);
-    const getInnerWidth = (element) => getCalculatedWidth(element, 'content-box');
+    const getInnerWidth = (element) => getCalculatedWidth(element);
 
     const api$2 = Dimension('height', (element) => {
         // getBoundingClientRect gives better results than offsetHeight for tables with captions on Firefox
@@ -3539,7 +3523,7 @@
     const getHeightFrom = (warehouse, table, getHeight, fallback) => {
         const rowCells = rows(warehouse);
         const rows$1 = map$1(warehouse.all, (r) => Optional.some(r.element));
-        const backups = [Optional.some(height.edge(table))].concat(map$1(height.positions(rowCells, table), (pos) => pos.map((p) => p.y)));
+        const backups = [Optional.some(height.edge(table))].concat(map$1(height.positions(rowCells), (pos) => pos.map((p) => p.y)));
         return map$1(rows$1, (row, i) => getDimension(row, i, backups, always, getHeight, fallback));
     };
     const getPixelHeights = (warehouse, table) => {
@@ -4930,7 +4914,6 @@
     };
     const seekLeft$1 = left;
     const seekRight$1 = right;
-    go;
 
     const universe$2 = DomUniverse();
     const before = (element, isRoot) => {
@@ -4991,79 +4974,6 @@
         return contains$2(['br', 'img', 'hr', 'input'], universe.property().name(item));
     };
 
-    const leftRight = (left, right) => ({
-        left,
-        right
-    });
-    const brokenPath = (first, second, splits) => ({
-        first,
-        second,
-        splits
-    });
-    const bisect = (universe, parent, child) => {
-        const children = universe.property().children(parent);
-        const index = findIndex(children, curry(universe.eq, child));
-        return index.map((ind) => {
-            return {
-                before: children.slice(0, ind),
-                after: children.slice(ind + 1)
-            };
-        });
-    };
-    /**
-     * Clone parent to the RIGHT and move everything after child in the parent element into
-     * a clone of the parent (placed after parent).
-     */
-    const breakToRight = (universe, parent, child) => {
-        return bisect(universe, parent, child).map((parts) => {
-            const second = universe.create().clone(parent);
-            universe.insert().appendAll(second, parts.after);
-            universe.insert().after(parent, second);
-            return leftRight(parent, second);
-        });
-    };
-    /**
-     * Clone parent to the LEFT and move everything before and including child into
-     * the a clone of the parent (placed before parent)
-     */
-    const breakToLeft = (universe, parent, child) => {
-        return bisect(universe, parent, child).map((parts) => {
-            const prior = universe.create().clone(parent);
-            universe.insert().appendAll(prior, parts.before.concat([child]));
-            universe.insert().appendAll(parent, parts.after);
-            universe.insert().before(parent, prior);
-            return leftRight(prior, parent);
-        });
-    };
-    /*
-     * Using the breaker, break from the child up to the top element defined by the predicate.
-     * It returns three values:
-     *   first: the top level element that completed the break
-     *   second: the optional element representing second part of the top-level split if the breaking completed successfully to the top
-     *   splits: a list of (Element, Element) pairs that represent the splits that have occurred on the way to the top.
-     */
-    const breakPath = (universe, item, isTop, breaker) => {
-        const next = (child, group, splits) => {
-            const fallback = brokenPath(child, Optional.none(), splits);
-            // Found the top, so stop.
-            if (isTop(child)) {
-                return brokenPath(child, group, splits);
-            }
-            else {
-                // Split the child at parent, and keep going
-                return universe.property().parent(child).bind((parent) => {
-                    return breaker(universe, parent, child).map((breakage) => {
-                        const extra = [{ first: breakage.left, second: breakage.right }];
-                        // Our isTop is based on the left-side parent, so keep it regardless of split.
-                        const nextChild = isTop(parent) ? parent : breakage.left;
-                        return next(nextChild, Optional.some(breakage.right), splits.concat(extra));
-                    });
-                }).getOr(fallback);
-            }
-        };
-        return next(item, Optional.none(), []);
-    };
-
     const all = (universe, look, elements, f) => {
         const head = elements[0];
         const tail = elements.slice(1);
@@ -5122,9 +5032,6 @@
 
     const sharedOne$1 = oneAll;
     const ancestors$1 = ancestors$2;
-    breakToLeft;
-    breakToRight;
-    breakPath;
 
     const universe$1 = DomUniverse();
     const sharedOne = (look, elements) => {
@@ -6615,7 +6522,7 @@
     const refreshGrid = (warhouse, wire, table, rows, cols) => {
         const position = absolute(table);
         const isResizable = wire.isResizable;
-        const rowPositions = rows.length > 0 ? height.positions(rows, table) : [];
+        const rowPositions = rows.length > 0 ? height.positions(rows) : [];
         const resizableRowBars = rowPositions.length > 0 ? resizableRows(warhouse, isResizable) : [];
         const resizableRowPositions = filter$2(rowPositions, (_pos, i) => exists(resizableRowBars, (barIndex) => i === barIndex));
         refreshRow(wire, resizableRowPositions, position, getOuter(table));
@@ -6779,7 +6686,7 @@
         manager.events.adjustHeight.bind((event) => {
             const table = event.table;
             events.trigger.beforeResize(table, 'row');
-            const delta = hdirection.delta(event.delta, table);
+            const delta = hdirection.delta(event.delta);
             // TODO: Use the resizing behaviour for heights as well
             adjustHeight(table, delta, event.row);
             events.trigger.afterResize(table, 'row');
@@ -7897,7 +7804,7 @@
                     return Optional.none;
                 }
                 else if (isDown(keycode) && shiftKey) {
-                    return update$1([rc(+1, 0)]);
+                    return update$1([rc(1, 0)]);
                 }
                 else if (isUp(keycode) && shiftKey) {
                     return update$1([rc(-1, 0)]);
@@ -7906,7 +7813,7 @@
                     return update$1([rc(0, -1), rc(-1, 0)]);
                 }
                 else if (direction.isForward(keycode) && shiftKey) {
-                    return update$1([rc(0, +1), rc(+1, 0)]);
+                    return update$1([rc(0, 1), rc(1, 0)]);
                 }
                 else if (isNavigation(keycode) && !shiftKey) { // Clear the selection on normal arrow keys.
                     return clearToNavigate;

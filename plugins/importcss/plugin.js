@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.10.2 (2026-11-11)
+ * TinyMCE version 8.11.0 (2026-11-25)
  */
 
 (function () {
@@ -39,7 +39,6 @@
     const isArray = isType('array');
     const isFunction = isSimpleType('function');
 
-    const nativeSlice = Array.prototype.slice;
     const nativePush = Array.prototype.push;
     const map = (xs, f) => {
         // pre-allocating array size when it's guaranteed to be known
@@ -68,7 +67,6 @@
         return r;
     };
     const bind = (xs, f) => flatten(map(xs, f));
-    isFunction(Array.from) ? Array.from : (x) => nativeSlice.call(x);
 
     var global$3 = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
 

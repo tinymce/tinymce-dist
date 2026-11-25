@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.10.2 (2026-11-11)
+ * TinyMCE version 8.11.0 (2026-11-25)
  */
 
 (function () {
@@ -39,7 +39,6 @@
     const isBoolean = isSimpleType('boolean');
     const isNullable = (a) => a === null || a === undefined;
     const isNonNullable = (a) => !isNullable(a);
-    const isFunction = isSimpleType('function');
     const isNumber = isSimpleType('number');
 
     /**
@@ -295,7 +294,6 @@
         }
     }
 
-    const nativeSlice = Array.prototype.slice;
     const map = (xs, f) => {
         // pre-allocating array size when it's guaranteed to be known
         // http://jsperf.com/push-allocated-vs-dynamic/22
@@ -326,7 +324,6 @@
         }
         return r;
     };
-    isFunction(Array.from) ? Array.from : (x) => nativeSlice.call(x);
 
     // There are many variations of Object iteration that are faster than the 'for-in' style:
     // http://jsperf.com/object-keys-iteration/107

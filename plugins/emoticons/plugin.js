@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.10.2 (2026-11-11)
+ * TinyMCE version 8.11.0 (2026-11-25)
  */
 
 (function () {
@@ -8,13 +8,11 @@
     var global$1 = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
     /* eslint-disable @typescript-eslint/no-wrapper-object-types */
-    const isSimpleType = (type) => (value) => typeof value === type;
     const eq = (t) => (a) => t === a;
     const isNull = eq(null);
     const isUndefined = eq(undefined);
     const isNullable = (a) => a === null || a === undefined;
     const isNonNullable = (a) => !isNullable(a);
-    const isFunction = isSimpleType('function');
 
     const noop = () => { };
 
@@ -271,7 +269,6 @@
         }
     }
 
-    const nativeSlice = Array.prototype.slice;
     const exists = (xs, pred) => {
         for (let i = 0, len = xs.length; i < len; i++) {
             const x = xs[i];
@@ -301,7 +298,6 @@
             f(x, i);
         }
     };
-    isFunction(Array.from) ? Array.from : (x) => nativeSlice.call(x);
 
     // There are many variations of Object iteration that are faster than the 'for-in' style:
     // http://jsperf.com/object-keys-iteration/107

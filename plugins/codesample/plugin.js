@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.10.2 (2026-11-11)
+ * TinyMCE version 8.11.0 (2026-11-25)
  */
 
 (function () {
@@ -1494,15 +1494,6 @@
 
     }(_self));
 
-    if (typeof module !== 'undefined' && module.exports) {
-    	module.exports = Prism;
-    }
-
-    // hack for components to work correctly in node.js
-    if (typeof global !== 'undefined') {
-    	global.Prism = Prism;
-    }
-
     // some additional documentation/types
 
     /**
@@ -1914,7 +1905,7 @@
     	 * @returns {RegExp}
     	 */
     	function re(pattern, replacements, flags) {
-    		return RegExp(replace(pattern, replacements), flags || '');
+    		return RegExp(replace(pattern, replacements), '');
     	}
 
     	/**
@@ -3409,7 +3400,7 @@
     // restore the original Prism reference
     window.Prism = oldprism;
     return Prism;
-    }(undefined, undefined);
+    }();
 
     const option = (name) => (editor) => editor.options.get(name);
     const register$2 = (editor) => {
